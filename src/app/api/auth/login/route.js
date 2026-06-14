@@ -1,26 +1,33 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { prisma } from "@prisma/client";
+import { enableCompileCache } from "node:module";
 
 export async function POST(req) {
-	const { email, password } = await req.json();
+	const { email, password }= await req.json();
+	console.log(email);
+	try {
 
+		// const user = await prisma.user.findUnique({
+		// 	where: {
+		// 		email: email,
+		// 	},
+		// });
+		// console.log(user);
 
-    const user =  await Prisma.user.findUnique({
-        where:{
-            email : email,
-        },
-    });
- console.log(user);
+		return NextResponse.json({
+			success: true,
+			message: "Login Successful",
+			
+		});
+	} catch (error) {
+		console.error("Login Error:", error);
 
-
-	// console.log(email);
-	// console.log(password);
-
-	// Check user in database
-	// Generate JWT / Session
-
-	return NextResponse.json({
-		success: true,
-		message: "Login successful",
-	});
+		return NextResponse.json(
+			{
+				success: false,
+				message: error.message,
+			},
+			{ status: 500 },
+		);
+	}
 }

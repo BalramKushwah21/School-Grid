@@ -26,8 +26,14 @@ export default function LoginPage() {
         password,
       }),
     });
-
-    const data = await res.json();
+	let data;
+	try {
+		data = await res.json();
+	} catch (err) {
+		console.error("Invalid API Response");
+		alert("Server Error. Check API logs.");
+		return;
+	}
 
     if (res.ok) {
       console.log("Login Success", data);

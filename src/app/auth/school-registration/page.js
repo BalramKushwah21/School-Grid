@@ -70,18 +70,24 @@ if (school.password !== school.confirmPassword) {
   return;
 }
 
-console.log(school);
+// console.log(school);
 const res = await fetch("/api/auth/register", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify({
-    school,
-  }),
+  body: JSON.stringify(school),
 });
 
-const data = await res.json();
+let data;
+
+try {
+	data = await res.json();
+} catch (err) {
+	console.error("Invalid API Response");
+	alert("Server Error. Check API logs.");
+	return;
+}
 
 if (res.ok) {
   console.log("Login Success", data);
@@ -349,7 +355,7 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             name="pinpode"
             value={school.pincode}
             onChange={handleChange}
-            required
+           
             className="w-full mt-2 p-3 border rounded-xl"
             placeholder="Pin Code"
           />
