@@ -26,12 +26,12 @@ logo: null,
 const handleChange = (e) => {
 const { name, value, files } = e.target;
 
-```
+
 setSchool({
   ...school,
   [name]: files ? files[0] : value,
 });
-```
+
 
 };
 
@@ -41,17 +41,17 @@ alert("Enter email first");
 return;
 }
 
-```
+
 setOtpSent(true);
 alert("OTP Sent Successfully");
-```
+
 
 };
 
 const handleSubmit = async (e) => {
 e.preventDefault();
 
-```
+
 if (school.password !== school.confirmPassword) {
   alert("Passwords do not match");
   return;
@@ -60,13 +60,13 @@ if (school.password !== school.confirmPassword) {
 console.log(school);
 
 alert("School Registered Successfully");
-```
+
 
 };
 
 return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
-```
+
   <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
 
     {/* Header */}
@@ -90,6 +90,20 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
       onSubmit={handleSubmit}
       className="p-8 md:p-10"
     >
+      <div className="mb-8 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+  <span className="text-2xl">🔒</span>
+
+  <div>
+    <p className="font-semibold text-green-700">
+      Secure Registration
+    </p>
+
+    <p className="text-sm text-gray-600">
+      Your information is protected using industry-standard encryption.
+    </p>
+  </div>
+</div>
+
       <div className="grid md:grid-cols-2 gap-6">
 
         <div>
@@ -294,6 +308,32 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             className="w-full mt-2 p-3 border rounded-xl"
           />
         </div>
+        <div>
+          <label className="font-semibold">
+            Village/City
+          </label>
+
+          <input
+            type="text"
+            name="VillageCity"
+            value={school.VillageCity}
+            onChange={handleChange}
+            className="w-full mt-2 p-3 border rounded-xl"
+          />
+        </div>
+        <div>
+          <label className="font-semibold">
+            District
+          </label>
+
+          <input
+            type="text"
+            name="district"
+            value={school.district}
+            onChange={handleChange}
+            className="w-full mt-2 p-3 border rounded-xl"
+          />
+        </div>
 
         <div className="md:col-span-2">
           <label className="font-semibold">
@@ -338,6 +378,10 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             className="w-full mt-2 p-3 border rounded-xl"
           />
         </div>
+        <p className="text-sm text-gray-500 mt-2">
+  Password must contain at least 8 characters,
+  one uppercase letter and one number.
+</p>
 
         <div>
           <label className="font-semibold">
@@ -356,13 +400,87 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
       </div>
 
+      <div className="mt-8">
+  <label className="flex items-start gap-3">
+    <input
+      type="checkbox"
+      required
+      className="mt-1"
+    />
+
+    <span className="text-sm text-gray-600">
+      I agree to the{" "}
+      <a
+        href="/terms"
+        className="text-blue-600 font-medium"
+      >
+        Terms of Service
+      </a>{" "}
+      and{" "}
+      <a
+        href="/privacy"
+        className="text-blue-600 font-medium"
+      >
+        Privacy Policy
+      </a>.
+    </span>
+  </label>
+</div>
+
       <button
         type="submit"
         className="w-full mt-8 bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-4 rounded-xl text-lg font-semibold hover:scale-[1.01] transition"
       >
         Register School
       </button>
+      <div className="text-center mt-6">
+  <p className="text-gray-600">
+    Already have an account?{" "}
+    <a
+      href="/login"
+      className="text-blue-700 font-semibold hover:underline"
+    >
+      Sign In
+    </a>
+  </p>
+</div>
     </form>
+
+    <div className="border-t mt-10 pt-8">
+  <div className="grid md:grid-cols-3 gap-5 text-center">
+
+    <div>
+      <div className="text-3xl">⚡</div>
+      <h3 className="font-semibold mt-2">
+        Quick Setup
+      </h3>
+      <p className="text-sm text-gray-500">
+        Start your school workspace in minutes.
+      </p>
+    </div>
+
+    <div>
+      <div className="text-3xl">🔒</div>
+      <h3 className="font-semibold mt-2">
+        Secure Platform
+      </h3>
+      <p className="text-sm text-gray-500">
+        Encrypted data and role-based access.
+      </p>
+    </div>
+
+    <div>
+      <div className="text-3xl">☁️</div>
+      <h3 className="font-semibold mt-2">
+        Cloud Based
+      </h3>
+      <p className="text-sm text-gray-500">
+        Access from anywhere, anytime.
+      </p>
+    </div>
+
+  </div>
+</div>
   </div>
 </div>
 
