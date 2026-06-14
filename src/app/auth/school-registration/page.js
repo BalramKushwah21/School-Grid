@@ -22,13 +22,13 @@ subdomain: "",
 udiseCode: "",
 schoolType: "",
 adminName: "",
-contact: "",
+phone: "",
 email: "",
-villageCity: "",
+city: "",
 district: "",
 state: "",
 address: "",
-pinCode: "",
+pincode: "",
 password: "",
 confirmPassword: "",
 otp: "",
@@ -232,8 +232,8 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
           <input
             type="tel"
-            name="contact"
-            value={school.contact}
+            name="phone"
+            value={school.phone}
             onChange={handleChange}
             required
             className="w-full mt-2 p-3 border rounded-xl"
@@ -318,8 +318,8 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
           <input
             type="text"
-            name="villageCity"
-            value={school.villageCity}
+            name="city"
+            value={school.city}
             onChange={handleChange}
             className="w-full mt-2 p-3 border rounded-xl"
           />
@@ -332,8 +332,8 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
           <input
             type="text"
-            name="pinCode"
-            value={school.pinCode}
+            name="pinpode"
+            value={school.pincode}
             onChange={handleChange}
             required
             className="w-full mt-2 p-3 border rounded-xl"
