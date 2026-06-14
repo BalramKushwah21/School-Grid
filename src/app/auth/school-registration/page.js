@@ -6,21 +6,24 @@ export default function SchoolRegistration() {
 const [otpSent, setOtpSent] = useState(false);
 
 const [school, setSchool] = useState({
-schoolId: "",
+
 schoolName: "",
+subdomain: "",
 udiseCode: "",
 schoolType: "",
-principalName: "",
+adminName: "",
 contact: "",
 email: "",
-website: "",
+villageCity: "",
+district: "",
+state: "",
 address: "",
-totalStudents: "",
-totalTeachers: "",
+pinCode: "",
 password: "",
 confirmPassword: "",
 otp: "",
 logo: null,
+subcriptionPlan:""
 });
 
 const handleChange = (e) => {
@@ -106,21 +109,7 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        <div>
-          <label className="font-semibold">
-            School ID *
-          </label>
-
-          <input
-            type="text"
-            name="schoolId"
-            value={school.schoolId}
-            onChange={handleChange}
-            required
-            className="w-full mt-2 p-3 border rounded-xl"
-            placeholder="SCH001"
-          />
-        </div>
+        
 
         <div>
           <label className="font-semibold">
@@ -135,6 +124,22 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             required
             className="w-full mt-2 p-3 border rounded-xl"
             placeholder="ABC Public School"
+          />
+        </div>
+
+        <div>
+          <label className="font-semibold">
+            School Subdomain *
+          </label>
+
+          <input
+            type="text"
+            name="subdomain"
+            value={school.subdomain}
+            onChange={handleChange}
+            required
+            className="w-full mt-2 p-3 border rounded-xl"
+            placeholder="abc_public_school_bhopal"
           />
         </div>
 
@@ -198,13 +203,13 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
         <div>
           <label className="font-semibold">
-            Principal Name
+            Admin Name
           </label>
 
           <input
             type="text"
-            name="principalName"
-            value={school.principalName}
+            name="adminName"
+            value={school.adminName}
             onChange={handleChange}
             className="w-full mt-2 p-3 border rounded-xl"
           />
@@ -269,58 +274,18 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
         <div>
           <label className="font-semibold">
-            Total Students
-          </label>
-
-          <input
-            type="number"
-            name="totalStudents"
-            value={school.totalStudents}
-            onChange={handleChange}
-            className="w-full mt-2 p-3 border rounded-xl"
-          />
-        </div>
-
-        <div>
-          <label className="font-semibold">
-            Total Teachers
-          </label>
-
-          <input
-            type="number"
-            name="totalTeachers"
-            value={school.totalTeachers}
-            onChange={handleChange}
-            className="w-full mt-2 p-3 border rounded-xl"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="font-semibold">
-            School Website
-          </label>
-
-          <input
-            type="url"
-            name="website"
-            value={school.website}
-            onChange={handleChange}
-            className="w-full mt-2 p-3 border rounded-xl"
-          />
-        </div>
-        <div>
-          <label className="font-semibold">
-            Village/City
+            State
           </label>
 
           <input
             type="text"
-            name="VillageCity"
-            value={school.VillageCity}
+            name="state"
+            value={school.state}
             onChange={handleChange}
             className="w-full mt-2 p-3 border rounded-xl"
           />
         </div>
+
         <div>
           <label className="font-semibold">
             District
@@ -334,6 +299,38 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             className="w-full mt-2 p-3 border rounded-xl"
           />
         </div>
+
+        
+        <div>
+          <label className="font-semibold">
+            Village/City
+          </label>
+
+          <input
+            type="text"
+            name="villageCity"
+            value={school.villageCity}
+            onChange={handleChange}
+            className="w-full mt-2 p-3 border rounded-xl"
+          />
+        </div>
+
+        <div>
+          <label className="font-semibold">
+            Pin Code *
+          </label>
+
+          <input
+            type="text"
+            name="pinCode"
+            value={school.pinCode}
+            onChange={handleChange}
+            required
+            className="w-full mt-2 p-3 border rounded-xl"
+            placeholder="Pin Code"
+          />
+        </div>
+        
 
         <div className="md:col-span-2">
           <label className="font-semibold">
@@ -398,6 +395,46 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
           />
         </div>
 
+
+        <div>
+          <label className="font-semibold">
+            School Type *
+          </label>
+
+          <select
+            name="subscriptionType"
+            value={school.subscriptionType}
+            onChange={handleChange}
+            required
+            className="w-full mt-2 p-3 border rounded-xl"
+          >
+            <option value="">
+              Select Subscription Type
+            </option>
+
+            <option>
+              Up to 100 Students
+            </option>
+
+            <option>
+              101 - 250 Students
+            </option>
+
+            <option>
+              251 - 500 Students
+            </option>
+
+            <option>
+              500 - 1000 Students
+            </option>
+
+            <option>
+              More than 1000
+            </option>
+
+          </select>
+        </div>
+
       </div>
 
       <div className="mt-8">
@@ -437,7 +474,7 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
   <p className="text-gray-600">
     Already have an account?{" "}
     <a
-      href="/school/school-login"
+      href="/auth/school-login"
       className="text-blue-700 font-semibold hover:underline"
     >
       Sign In

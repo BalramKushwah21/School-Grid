@@ -48,7 +48,7 @@ export default function HomePage() {
 
 						<div className="flex gap-4 mt-8 flex-wrap">
 							<Link
-								href="/school/school-registration"
+								href="/auth/school-registration"
 								className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium"
 							>
 								Register School
@@ -61,7 +61,7 @@ export default function HomePage() {
 								Watch Demo
 							</a>
 							<Link
-								href="/school/school-login"
+								href="/auth/school-login"
 								className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium"
 							>
 								Login

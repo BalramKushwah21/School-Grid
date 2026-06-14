@@ -112,16 +112,19 @@ export default function LoginPage() {
 						Sign In
 					</button>
 
-					<div className="text-center text-sm text-gray-600">
-						Don't have an account?{" "}
-						<Link
-							href="/school/school-registration"
-							className="text-blue-700 font-semibold hover:underline"
-						>
-							Register School
-						</Link>
-					</div>
-				</form>
+          <div className="text-center text-sm text-gray-600">
+
+            Don't have an account?{" "}
+            <Link
+              href="/auth/school-registration"
+              className="text-blue-700 font-semibold hover:underline"
+            >
+              Register School
+            </Link>
+
+          </div>
+
+        </form>
 
 				{/* Footer */}
 				<div className="border-t p-4 text-center text-xs text-gray-500">
