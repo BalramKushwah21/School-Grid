@@ -61,7 +61,7 @@ export default function HomePage() {
 								Watch Demo
 							</a>
 							<Link
-								href="/school/login"
+								href="/school/school-login"
 								className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium"
 							>
 								Login
