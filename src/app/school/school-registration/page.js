@@ -437,7 +437,7 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
   <p className="text-gray-600">
     Already have an account?{" "}
     <a
-      href="/login"
+      href="/school/school-login"
       className="text-blue-700 font-semibold hover:underline"
     >
       Sign In

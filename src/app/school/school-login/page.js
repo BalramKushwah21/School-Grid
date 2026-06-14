@@ -104,29 +104,19 @@ export default function LoginPage() {
 
           </div>
 
+          
           <button
             type="submit"
-            className="
-            w-full
-            bg-gradient-to-r
-            from-blue-700
-            to-indigo-700
-            text-white
-            py-3
-            rounded-xl
-            font-semibold
-            hover:shadow-lg
-            transition
-            "
-          >
+            className="w-full bg-blue-700 text-white py-3 rounded-xl"
+            >
             Sign In
-          </button>
+            </button>
 
           <div className="text-center text-sm text-gray-600">
 
             Don't have an account?{" "}
             <Link
-              href="/school-registration"
+              href="/school/school-registration"
               className="text-blue-700 font-semibold hover:underline"
             >
               Register School
