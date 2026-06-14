@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Home from '@/app/super-admin/home/home'
+import Home from '@/components/ui/home'
 export default function HomeLayout() {
   return (
     <div>
