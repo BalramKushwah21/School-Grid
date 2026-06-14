@@ -116,7 +116,7 @@ export default function LoginPage() {
 
             Don't have an account?{" "}
             <Link
-              href="/school/school-registration"
+              href="/auth/school-registration"
               className="text-blue-700 font-semibold hover:underline"
             >
               Register School
