@@ -28,6 +28,7 @@ model Schooldata{
  subdomain String @unique
  schoolType String
  adminName String?
+ udiseCode String @unique
  phone String
  email String
  city String
@@ -35,8 +36,7 @@ model Schooldata{
  state String
  address String
  pincode String
- password String
- logo String
+ logo String?
  subscriptionPlan String
 
 }

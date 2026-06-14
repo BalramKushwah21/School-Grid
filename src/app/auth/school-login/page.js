@@ -1,9 +1,11 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import { useState } from "react";
 
 export default function LoginPage() {
+	const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,37 +14,39 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(email);
-    console.log(password);
+    // console.log(email);
+    // console.log(password);
 
     // API Call Here
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-	let data;
-	try {
+	const res = await fetch("/api/auth/login", {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+		  email,
+		  password,
+		}),
+	  });
+	  
+	  
+	  //   console.log("Status:", res.status);
+	  //   console.log("Response:", text);
+	  
+	  let data;
+	  try {
 		data = await res.json();
-	} catch (err) {
-		console.error("Invalid API Response");
-		alert("Server Error. Check API logs.");
+	  } catch (err) {
+		console.error("Invalid JSON Response");
 		return;
-	}
+	  }
+	  if(res.ok){
+		alert(data.message);
+		router.push("Dashboard")
+	  }
+	
 
-    if (res.ok) {
-      console.log("Login Success", data);
-    } else {
-      console.log("Login Failed", data.message);
-    }
-  };
-
-
+}
 
   return (
 		<div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">

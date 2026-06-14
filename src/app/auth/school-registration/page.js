@@ -1,8 +1,9 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SchoolRegistration() {
+  const router = useRouter();
 const plans = {
 
   plan1 : "up to 100 students",
@@ -33,7 +34,7 @@ password: "",
 confirmPassword: "",
 otp: "",
 logo: null,
-subcriptionPlan:""
+subscriptionPlan:""
 });
 
 const handleChange = (e) => {
@@ -65,12 +66,12 @@ const handleSubmit = async (e) => {
 e.preventDefault();
 
 
+
 if (school.password !== school.confirmPassword) {
   alert("Passwords do not match");
   return;
 }
 
-// console.log(school);
 const res = await fetch("/api/auth/register", {
   method: "POST",
   headers: {
@@ -79,20 +80,20 @@ const res = await fetch("/api/auth/register", {
   body: JSON.stringify(school),
 });
 
-let data;
-
-try {
-	data = await res.json();
-} catch (err) {
-	console.error("Invalid API Response");
-	alert("Server Error. Check API logs.");
-	return;
-}
+const data = await res.json();
 
 if (res.ok) {
-  console.log("Login Success", data);
-} else {
-  console.log("Login Failed", data.message);
+  alert(data.message)
+  router.push("school-login")
+
+} 
+else if(res.status===409){
+  alert(data.message);
+  router.push("school-login");
+}
+
+else {
+  alert(data.message)
 }
 };
 
@@ -432,14 +433,14 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
           </label>
 
           <select
-            name="subscriptionType"
-            value={school.subscriptionType}
+            name="subscriptionPlan"
+            value={school.subscriptionPlan}
             onChange={handleChange}
             required
             className="w-full mt-2 p-3 border rounded-xl"
           >
             <option value="">
-              Select Subscription Type
+              Select Subscription Plan
             </option>
 
             <option>
