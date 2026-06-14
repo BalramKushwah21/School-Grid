@@ -3,6 +3,16 @@
 import { useState } from "react";
 
 export default function SchoolRegistration() {
+const plans = {
+
+  plan1 : "up to 100 students",
+  plan2 : "up to 250 students",
+  plan3 : "up to 500 students",
+  plan4 : "up to 1000 students",
+  plan5 : "More than 1000 students"
+}
+  
+
 const [otpSent, setOtpSent] = useState(false);
 
 const [school, setSchool] = useState({
@@ -413,23 +423,23 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
             </option>
 
             <option>
-              Up to 100 Students
+              {plans.plan1}
             </option>
 
             <option>
-              101 - 250 Students
+              {plans.plan2}
             </option>
 
             <option>
-              251 - 500 Students
+              {plans.plan3}
             </option>
 
             <option>
-              500 - 1000 Students
+              {plans.plan4}
             </option>
 
             <option>
-              More than 1000
+              {plans.plan5}
             </option>
 
           </select>
