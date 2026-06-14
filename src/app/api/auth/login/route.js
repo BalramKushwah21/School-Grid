@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req) {
-	const { formData } = await req.json();
+	const { email, password } = await req.json();
 
-    const email = formData.get("email");
-	const password = formData.get("password");
-    
 
-	console.log(email);
-	console.log(password);
+    const user =  await Prisma.user.findUnique({
+        where:{
+            email : email,
+        },
+    });
+ console.log(user);
+
+
+	// console.log(email);
+	// console.log(password);
 
 	// Check user in database
 	// Generate JWT / Session
