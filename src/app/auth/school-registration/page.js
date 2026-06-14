@@ -71,11 +71,25 @@ if (school.password !== school.confirmPassword) {
 }
 
 console.log(school);
+const res = await fetch("/api/auth/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    school,
+  }),
+});
 
-alert("School Registered Successfully");
+const data = await res.json();
 
-
+if (res.ok) {
+  console.log("Login Success", data);
+} else {
+  console.log("Login Failed", data.message);
+}
 };
+
 
 return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
 
