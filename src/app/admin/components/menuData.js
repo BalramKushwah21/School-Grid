@@ -1,3 +1,5 @@
+
+
 import { 
   Users, UserCheck, BookOpen, ClipboardCheck, FileSpreadsheet, 
   CreditCard, Users2, Bookmark, Bus, MessageSquare, HeartPulse, 
@@ -16,9 +18,9 @@ export const menuConfig = [
     icon: Users,
     isDropdown: true,
     subItems: [
-      { label: "Student List", link: "/dashboard/students/list" },
-      { label: "New Admission", link: "/dashboard/students/admission" },
-      { label: "Student Attendance", link: "/dashboard/students/attendance" },
+      { label: "Student List", link: "/admin/pages/students/studentsList" },
+      { label: "New Admission", link: "/admin/pages/students/admission" },
+      { label: "Student Attendance", link: "/admin/pages/students/attendance" },
       { label: "Student Promotion", link: "/dashboard/students/promotion" },
       { label: "Transfer Certificate (TC)", link: "/dashboard/students/tc" },
       { label: "Student ID Cards", link: "/dashboard/students/id-cards" },
