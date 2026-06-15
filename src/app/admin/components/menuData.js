@@ -9,7 +9,7 @@ export const menuConfig = [
     name: "Dashboard",
     icon: LayoutDashboard,
     isDropdown: false,
-    link: "/dashboard"
+    link: "/admin/dashboard"
   },
   {
     name: "Students",

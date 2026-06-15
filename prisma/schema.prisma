@@ -18,7 +18,7 @@ model User{
  userRole String 
  email String @unique
  password String
- 
+ school Schooldata[]
 
 }
 
@@ -30,7 +30,7 @@ model Schooldata{
  adminName String?
  udiseCode String @unique
  phone String
- email String
+ email String @unique  
  city String
  district String
  state String
@@ -38,5 +38,21 @@ model Schooldata{
  pincode String
  logo String?
  subscriptionPlan String
+ teachers Teacher[]
+ student Student[]
+}
+
+model Teacher{
+
+
+}
+
+model Student{
+
+
+parents Parent[]
+}
+
+model Parent{
 
 }

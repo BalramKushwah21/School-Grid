@@ -42,7 +42,7 @@ export default function LoginPage() {
 	  }
 	  if(res.ok){
 		alert(data.message);
-		router.push("Dashboard")
+		router.push("/admin/dashboard")
 	  }
 	
 
