@@ -479,14 +479,14 @@ return ( <div className="min-h-screen bg-slate-100 py-10 px-4">
     <span className="text-sm text-gray-600">
       I agree to the{" "}
       <a
-        href="/terms"
+        href="/policy-term/term"
         className="text-blue-600 font-medium"
       >
         Terms of Service
       </a>{" "}
       and{" "}
       <a
-        href="/privacy"
+        href="/policy-term/policy"
         className="text-blue-600 font-medium"
       >
         Privacy Policy

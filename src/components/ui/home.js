@@ -204,7 +204,7 @@ export default function HomePage() {
 				</p>
 
 				<Link
-					href="/register-school"
+					href="/auth/school-registration"
 					className="inline-block mt-8 bg-white text-black px-8 py-4 rounded-xl font-semibold"
 				>
 					Register Your School
