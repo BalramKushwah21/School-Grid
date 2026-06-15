@@ -2,10 +2,22 @@ import React from 'react';
 import { Menu, Search, Bell } from 'lucide-react';
 
 export default function Header({ onMenuOpen }) {
+  
+  // मोबाइल और डेस्कटॉप दोनों के लिए एक सुरक्षित क्लिक/टच हैंडलर
+  const handleMobileMenuClick = (e) => {
+    e.preventDefault(); // डिफ़ॉल्ट ज़ूम या डिले को रोकता है
+    onMenuOpen();
+  };
+
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30">
       <div className="flex items-center gap-4">
-        <button onClick={onMenuOpen} className="lg:hidden text-gray-600 hover:text-gray-900 focus:outline-none">
+        {/* मोबाइल मेनू बटन - अब पूरी तरह टच फ्रेंडली है */}
+        <button 
+          onClick={handleMobileMenuClick} 
+          onTouchStart={handleMobileMenuClick} // 👈 असली मोबाइल के लिए सबसे ज़रूरी लाइन
+          className="lg:hidden text-gray-600 hover:text-gray-900 focus:outline-none p-2 relative z-40 cursor-pointer touch-manipulation"
+        >
           <Menu className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-semibold text-gray-800 hidden sm:block">Dashboard Overview</h1>
