@@ -1,18 +1,14 @@
-"use client";
+'use client'
 
-import React from "react";
-import Sidebar from "../admin/components/Sidebar";
-import Header from "../admin/components/header";
-import { useState } from "react";
+import React from 'react'
+import Sidebar from './components/Sidebar'
+import Header from './components/header'
+import { useState } from "react";   
 
-export default function userLayout({ child }) {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+export default function adminLayout({children}) {
 
-	const user = "admin";
-	const isLogin = true;
-
-	if (isLogin && user === "admin") {
-		return (
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+			return (
 			<div className="flex h-screen overflow-hidden bg-gray-100 font-sans antialiased text-gray-800 ">
 				<Sidebar
 					isOpen={isSidebarOpen}
@@ -23,12 +19,9 @@ export default function userLayout({ child }) {
 					<Header onMenuOpen={() => setIsSidebarOpen(true)} />
 
 					<main className="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
-						{child}
+						{children}
 					</main>
 				</div>
 			</div>
-		);
-	} else {
-		return <div>visitor page</div>;
-	}
+  );
 }

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { Users, UserCheck, CalendarCheck, DollarSign, PlusCircle } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/header';
+
 import MetricCard from '../components/MetricCard';
 
 export default function DashboardPage() {

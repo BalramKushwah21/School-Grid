@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import {
 	Home,
 	Info,
@@ -27,7 +28,7 @@ export default function LandingPage() {
 					</div>
 					<div>
 						<h1 className="text-2xl font-bold text-blue-900 leading-none">
-							EduManage
+							SchoolGrid
 						</h1>
 						<p className="text-xs text-gray-500 font-medium mt-1">
 							School Management System

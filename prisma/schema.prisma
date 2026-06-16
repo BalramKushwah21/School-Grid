@@ -44,14 +44,34 @@ model Schooldata {
 }
 
 model Teacher {
-  id       String @id @default(cuid())
+  id              String @id @default(cuid())
 
-  schoolId String
-  school   Schooldata @relation(fields: [schoolId], references: [id])
+  schoolId        String
+  school          Schooldata @relation(fields: [schoolId], references: [id])
 }
 
 model Student {
-  id       String @id @default(cuid())
+  id              String @id @default(cuid())
+  fisrt_name      String
+  middle_name     String?
+  last_name       String
+  admission_date  String
+  gender          String
+  date_of_birth   String
+  blood_group     String?
+  category        String
+  nationality     String?
+  staff_child     String?
+  visible_identification_mark String?
+  aadhar_number   String?
+  class           String
+  section         String
+  academic_session String
+  previous_school String?
+  previous_school_median String?
+
+
+
 
   schoolId String
   school   Schooldata @relation(fields: [schoolId], references: [id])
@@ -61,6 +81,7 @@ model Student {
 
 model Parent {
   id       String @id @default(cuid())
+  
 
   students Student[]
 }

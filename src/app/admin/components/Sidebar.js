@@ -1,9 +1,24 @@
+
+
 import React, { useState } from "react";
 import { GraduationCap, Settings, X } from "lucide-react";
 import { menuConfig } from "./menuData";
 import NavItem from "./NavItem";
+import { prisma } from "@/lib/prisma";
 
 export default function Sidebar({ isOpen, onClose }) {
+	
+
+	const getData = async () => {
+		const data =  await prisma.schooldata.findUniue({
+			where:{ 
+				subdomain:subdomain,
+
+			}
+		})
+	};
+
+
 	const [openDropdown, setOpenDropdown] = useState(null);
 
 	const handleToggle = (menuName) => {
