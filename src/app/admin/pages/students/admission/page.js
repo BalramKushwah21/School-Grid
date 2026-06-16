@@ -107,8 +107,8 @@ export default function StudentAdmissionForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-10">
+    <div className="bg-slate-50">
+      <div className=" bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-10">
         
         {/* Form Header */}
         <div className="text-center border-b border-slate-100 pb-6">

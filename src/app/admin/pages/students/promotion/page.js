@@ -81,7 +81,7 @@ export default function PromotionPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-slate-50 min-h-screen rounded-xl shadow-sm">
+    <div className=" p-6 bg-slate-50 min-h-screen rounded-xl shadow-sm">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">Student Batch Promotion Panel</h1>
         <p className="text-slate-500 text-sm mt-1">

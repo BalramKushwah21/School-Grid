@@ -1,5 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Home from "@/app/home/home"
+
+
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -16,10 +19,19 @@ export const metadata = {
 	description: "This is school management system",
 };
 
-export default function RootLayout({ children }) {
-	return (
-		<html lang="en">
-			<body>{children}</body>
-		</html>
-	);
+let user = "admin";
+let isLogin = true;
+
+export default function RootLayout({children}) {
+   
+
+	
+		return (
+			<html lang="en">
+				<body>
+					<Home child={children} />
+				</body>
+			</html>
+		);
+	
 }

@@ -10,7 +10,7 @@ export default function Header({ onMenuOpen }) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30">
+    <header className=" bg-white border-b border-gray-200 flex items-center justify-between p-3 sticky top-0 z-30">
       <div className="flex items-center gap-4">
         {/* मोबाइल मेनू बटन - अब पूरी तरह टच फ्रेंडली है */}
         <button 
