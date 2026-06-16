@@ -1,4 +1,4 @@
-
+// "use client"
 
 import { 
   Users, UserCheck, BookOpen, ClipboardCheck, FileSpreadsheet, 
@@ -22,10 +22,10 @@ export const menuConfig = [
       { label: "New Admission", link: "/admin/pages/students/admission" },
       { label: "Student Attendance", link: "/admin/pages/students/attendance" },
       { label: "Student Promotion", link: "/admin/pages/students/promotion" },
-      { label: "Transfer Certificate (TC)", link: "/dashboard/students/tc" },
-      { label: "Student ID Cards", link: "/dashboard/students/id-cards" },
-      { label: "Alumni Students", link: "/dashboard/students/alumni" },
-      { label: "Documents Management", link: "/dashboard/students/documents" }
+      { label: "Transfer Certificate (TC)", link: "/admin/pages/students/tc" },
+      { label: "Student ID Cards", link: "/admin/pages/students/IdCard" },
+      { label: "Alumni Students", link: "/admin/pages/students/alumni" },
+      { label: "Documents Management", link: "/admin/pages/students/documents" }
     ]
   },
   {
@@ -33,10 +33,10 @@ export const menuConfig = [
     icon: UserCheck,
     isDropdown: true,
     subItems: [
-      { label: "Teacher List", link: "/dashboard/teachers/list" },
-      { label: "Add Teacher", link: "/dashboard/teachers/add" },
-      { label: "Attendance", link: "/dashboard/teachers/attendance" },
-      { label: "Leave Requests", link: "/dashboard/teachers/leaves" },
+      { label: "Teacher List", link: "/admin/pages/teachers/list" },
+      { label: "Add Teacher", link: "/admin/pages/teachers/add" },
+      { label: "Attendance", link: "/admin/pages/teachers/attendance" },
+      { label: "Leave Requests", link: "/admin/pages/teachers/leaves" },
       { label: "Payroll", link: "/dashboard/teachers/payroll" },
       { label: "Performance Evaluation", link: "/dashboard/teachers/performance" },
       { label: "Teacher Documents", link: "/dashboard/teachers/documents" }
