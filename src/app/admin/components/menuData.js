@@ -21,7 +21,7 @@ export const menuConfig = [
       { label: "Student List", link: "/admin/pages/students/studentsList" },
       { label: "New Admission", link: "/admin/pages/students/admission" },
       { label: "Student Attendance", link: "/admin/pages/students/attendance" },
-      { label: "Student Promotion", link: "/dashboard/students/promotion" },
+      { label: "Student Promotion", link: "/admin/pages/students/promotion" },
       { label: "Transfer Certificate (TC)", link: "/dashboard/students/tc" },
       { label: "Student ID Cards", link: "/dashboard/students/id-cards" },
       { label: "Alumni Students", link: "/dashboard/students/alumni" },
