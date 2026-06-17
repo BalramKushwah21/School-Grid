@@ -51,10 +51,10 @@ export const menuConfig = [
       { label: "Sections", link: "/admin/pages/academics/sections" },
       { label: "Subjects", link: "/admin/pages/academics/subjects" },
       { label: "Timetable", link: "/admin/pages/academics/timetable" },
-      { label: "Assignments", link: "/dashboard/academics/assignments" },
-      { label: "Lesson Plans", link: "/dashboard/academics/lessons" },
-      { label: "Academic Calendar", link: "/dashboard/academics/calendar" },
-      { label: "Syllabus Management", link: "/dashboard/academics/syllabus" }
+      { label: "Assignments", link: "/admin/pages/academics/assignments" },
+      { label: "Lesson Plans", link: "/admin/pages/academics/lessons" },
+      { label: "Academic Calendar", link: "/admin/pages/academics/calendar" },
+      { label: "Syllabus Management", link: "/admin/pages/academics/syllabus" }
     ]
   },
   {
@@ -62,10 +62,10 @@ export const menuConfig = [
     icon: ClipboardCheck,
     isDropdown: true,
     subItems: [
-      { label: "Daily Attendance", link: "/dashboard/attendance/daily" },
-      { label: "Monthly Attendance", link: "/dashboard/attendance/monthly" },
-      { label: "Biometric Attendance", link: "/dashboard/attendance/biometric" },
-      { label: "Attendance Reports", link: "/dashboard/attendance/reports" }
+      { label: "Daily Attendance", link: "/admin/pages/attendance/daily" },
+      { label: "Monthly Attendance", link: "/admin/pages/attendance/monthly" },
+      { label: "Biometric Attendance", link: "/admin/pages/attendance/biometric" },
+      { label: "Attendance Reports", link: "/admin/pages/attendance/reports" }
     ]
   },
   {
