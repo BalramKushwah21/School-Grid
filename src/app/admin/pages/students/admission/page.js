@@ -16,7 +16,7 @@ export default function StudentAdmissionForm() {
     nationality: 'Indian',
     isStaffChild: 'No',
     identificationMark: '',
-    idCardNumber: '', // Generic label for national identity cards
+    aadhar: '', // Generic label for national identity cards
     
     // 2. Academic Info
     classApplyingFor: '',
@@ -179,8 +179,8 @@ export default function StudentAdmissionForm() {
                 <input type="text" placeholder="e.g., Birthmark on left arm" name="identificationMark" value={formData.identificationMark} onChange={handleInputChange} className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2.5 border" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Student ID Document Number</label>
-                <input type="text" placeholder="National Document ID" name="idCardNumber" value={formData.idCardNumber} onChange={handleInputChange} className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2.5 border" />
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Student Aadhar Number</label>
+                <input type="text" placeholder="Adhar Number" name="aadhar" value={formData.aadhar} onChange={handleInputChange} className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2.5 border" />
               </div>
             </div>
           </section>

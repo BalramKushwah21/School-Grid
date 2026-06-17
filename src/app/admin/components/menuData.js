@@ -37,9 +37,9 @@ export const menuConfig = [
       { label: "Add Teacher", link: "/admin/pages/teachers/add" },
       { label: "Attendance", link: "/admin/pages/teachers/attendance" },
       { label: "Leave Requests", link: "/admin/pages/teachers/leaves" },
-      { label: "Payroll", link: "/dashboard/teachers/payroll" },
-      { label: "Performance Evaluation", link: "/dashboard/teachers/performance" },
-      { label: "Teacher Documents", link: "/dashboard/teachers/documents" }
+      { label: "Payroll", link: "/admin/pages/teachers/payroll" },
+      { label: "Performance Evaluation", link: "/admin/pages/teachers/performance" },
+      { label: "Teacher Documents", link: "/admin/pages/teachers/documents" }
     ]
   },
   {
@@ -47,10 +47,10 @@ export const menuConfig = [
     icon: BookOpen,
     isDropdown: true,
     subItems: [
-      { label: "Classes", link: "/dashboard/academics/classes" },
-      { label: "Sections", link: "/dashboard/academics/sections" },
-      { label: "Subjects", link: "/dashboard/academics/subjects" },
-      { label: "Timetable", link: "/dashboard/academics/timetable" },
+      { label: "Classes", link: "/admin/pages/academics/classes" },
+      { label: "Sections", link: "/admin/pages/academics/sections" },
+      { label: "Subjects", link: "/admin/pages/academics/subjects" },
+      { label: "Timetable", link: "/admin/pages/academics/timetable" },
       { label: "Assignments", link: "/dashboard/academics/assignments" },
       { label: "Lesson Plans", link: "/dashboard/academics/lessons" },
       { label: "Academic Calendar", link: "/dashboard/academics/calendar" },
