@@ -1,11 +1,24 @@
 "use client"
 
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function App() {
   // 1. Core State for Alumni Student Record
+
+  const [aluminiId, setAluminiId] = useState("");
+
+  useEffect(() => {
+		setAluminiId(
+			`ALU-${new Date().getFullYear()}-${Math.floor(
+				1000 + Math.random() * 9000,
+			)}`,
+		);
+  }, []);
+
+
   const [alumniData, setAlumniData] = useState({
-    alumniId: 'ALM-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
+    alumniId: aluminiId,
     fullName: '',
     enrollmentNo: '',
     graduationYear: '2026',

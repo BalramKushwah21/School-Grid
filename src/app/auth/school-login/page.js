@@ -43,8 +43,18 @@ export default function LoginPage() {
 	  if(res.ok){
 		alert(data.message);
 		router.push("/admin/dashboard")
+		return
 	  }
-	
+	  if(res.status===404){
+		alert(data.error);
+		return
+	  }
+
+	  if(res.status===401){
+		alert(data.error);
+		return
+	  }
+	  
 
 }
 

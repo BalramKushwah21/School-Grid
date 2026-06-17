@@ -1,9 +1,21 @@
 "use client"
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 const IssueTransferCertificate = () => {
+
+  const [tcNumber, setTcNumber] = useState("");
+
+  useEffect(() => {
+		setTcNumber(
+			`TC-${new Date().getFullYear()}-${Math.floor(
+				1000 + Math.random() * 9000,
+			)}`,
+		);
+  }, []);
+
   const [studentInfo, setStudentInfo] = useState({
-    tcNumber: 'TC-2026-' + Math.floor(1000 + Math.random() * 9000),
+    tcNumber: tcNumber,
     studentName: '',
     admissionNumber: '',
     dateOfBirth: '',

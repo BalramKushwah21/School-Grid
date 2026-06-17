@@ -7,81 +7,280 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==========================================
+// 1. SYSTEM & MULTI-TENANCY (SAAS CORE)
+// ==========================================
 
 model User {
-
-  id       String @id @default(cuid())
+  id       String   @id @default(cuid())
+  schoolId String @unique
   name     String
-  userRole String
-  email    String @unique
+  userRole UserRole 
+  email    String   @unique
   password String
 
-  school   Schooldata?
+  school School?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Schooldata {
-  id               String @id @default(cuid())
+model School {
+  id               String  @id @default(cuid())
   schoolName       String
-  subdomain        String @unique
-  schoolType       String
+  subdomain        String  @unique
+  schoolType       String // e.g., Primary, Secondary, K-12
   adminName        String?
-  udiseCode        String @unique
+  udiseCode        String  @unique
   phone            String
-  email            String @unique
+  email            String  @unique
   city             String
   district         String
   state            String
   address          String
   pincode          String
   logo             String?
-  subscriptionPlan String
+  subscriptionPlan String  @default("BASIC")
 
-  userId           String @unique
-  user             User @relation(fields: [userId], references: [id])
+  // Relation to the User who registered the school
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  teachers         Teacher[]
-  students         Student[]
+  // School Entities
+  teachers Teacher[]
+  students Student[]
+  families Family[] // Groups parents and siblings together
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Teacher {
-  id              String @id @default(cuid())
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  schoolId        String
-  school          Schooldata @relation(fields: [schoolId], references: [id])
+  // Add teacher-specific fields here later
+  firstName String
+  lastName  String
+  email     String @unique
+  phone     String
 }
+
+// ==========================================
+// 2. FAMILY & PARENT DYNAMICS
+// ==========================================
+// Replaces the Many-to-Many Parent structure. 
+// 1 Family -> Many Students (Handles Siblings seamlessly)
+
+model Family {
+  id       String @id @default(cuid())
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Parent Details
+  parentsMaritalStatus MaritalStatus @default(MARRIED)
+  legalCustodyHolder   Custody       @default(BOTH)
+
+  fatherName       String
+  fatherContactNo  String
+  fatherOccupation String?
+  fatherIncome     String?
+  fatherEmail      String?
+
+  motherName       String
+  motherContactNo  String
+  motherOccupation String?
+  motherEmail      String?
+
+  // Relations
+  address  Address?
+  students Student[] // Siblings in this family
+
+  createdAt DateTime @default(now())
+}
+
+model Address {
+  id       String @id @default(cuid())
+  familyId String @unique
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  locality String
+  city     String
+  district String
+  state    String
+  pincode  String
+}
+
+// ==========================================
+// 3. STUDENT CORE
+// ==========================================
 
 model Student {
-  id              String @id @default(cuid())
-  fisrt_name      String
-  middle_name     String?
-  last_name       String
-  admission_date  String
-  gender          String
-  date_of_birth   String
-  blood_group     String?
-  category        String
-  nationality     String?
-  staff_child     String?
-  visible_identification_mark String?
-  aadhar_number   String?
-  class           String
-  section         String
-  academic_session String
-  previous_school String?
-  previous_school_median String?
+  id String @id @default(cuid())
 
-
-
-
+  // Tenancy & Family Links
   schoolId String
-  school   Schooldata @relation(fields: [schoolId], references: [id])
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  parents  Parent[]
+  // Core Identity
+  rollNumber         String?
+  firstName          String
+  middleName         String?
+  lastName           String
+  admissionDate      DateTime
+  gender             Gender
+  dateOfBirth        DateTime
+  bloodGroup         String?
+  category           Category
+  nationality        String   @default("Indian")
+  isStaffChild       Boolean  @default(false)
+  identificationMark String?
+  aadharNumber       String?  @unique
+
+  // 1-to-1 Extension Profiles
+  academicProfile  AcademicProfile?
+  medicalProfile   MedicalProfile?
+  feeRecord        FeeRecord?
+  transportProfile TransportProfile?
+  documents        DocumentArchive?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensures roll numbers are unique PER SCHOOL, not globally
+  @@unique([schoolId, rollNumber])
 }
 
-model Parent {
-  id       String @id @default(cuid())
-  
+// ==========================================
+// 4. STUDENT SUB-PROFILES (1-to-1)
+// ==========================================
 
-  students Student[]
+model AcademicProfile {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  currentClass    String
+  section         String
+  academicSession String
+
+  previousSchool       String?
+  previousSchoolMedium String?
+  tcNumber             String?
+  boardRegistrationNo  String?
+}
+
+model MedicalProfile {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  emergencyContactName   String
+  emergencyContactNumber String
+  relationWithStudent    String
+
+  familyDoctorName           String?
+  familyDoctorContactNumber  String?
+  preferredHospital          String?
+  medicalConditionsAllergies String? @db.Text
+}
+
+model FeeRecord {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  feeCategory       FeeCategory @default(GENERAL)
+  scholarship       Boolean     @default(false)
+  concessionDetails String?     @db.Text
+
+  admissionFeePaid    Decimal  @default(0.00) @db.Decimal(10, 2)
+  securityDepositPaid Decimal? @default(0.00) @db.Decimal(10, 2)
+
+  tuitionFeeCycle TuitionCycle @default(QUARTERLY)
+  paymentMode     PaymentMode  @default(CASH)
+}
+
+model TransportProfile {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  needTransport Boolean @default(false)
+  pickupPoint   String?
+  route         String?
+}
+
+model DocumentArchive {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  studentPhotoUrl      String?
+  birthCertificateUrl  String?
+  aadharCopyUrl        String?
+  previousMarksheetUrl String?
+}
+
+// ==========================================
+// 5. ENUMS
+// ==========================================
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Category {
+  GENERAL
+  OBC
+  SC
+  ST
+}
+
+enum MaritalStatus {
+  MARRIED
+  SINGLE
+  DIVORCED
+  WIDOWED
+}
+
+enum Custody {
+  BOTH
+  FATHER
+  MOTHER
+  GUARDIAN
+}
+
+enum FeeCategory {
+  GENERAL
+  STAFF_DISCOUNT
+  SIBLING_DISCOUNT
+  EWS
+  MERIT
+}
+
+enum TuitionCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum PaymentMode {
+  CASH
+  BANK_TRANSFER
+  CARD
+  CHEQUE
 }
