@@ -1,4 +1,7 @@
 import Image from "next/image";
+import {prisma} from "@/lib/prisma";
+import Link from "next/link";
+
 
 import {
 	Home,
@@ -15,6 +18,11 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+
+	async function HomeData({params}) {
+		
+	}
+
 	return (
 		<div className="min-h-screen bg-[#F8FAFC] font-sans overflow-x-hidden relative">
 			{/* Background Gradient/Curve effect (Simplified with CSS) */}
@@ -38,35 +46,38 @@ export default function LandingPage() {
 
 				{/* Desktop Nav Links */}
 				<div className="hidden md:flex space-x-10 text-gray-600 font-medium">
-					<a
+					<Link
 						href="#"
 						className="flex items-center gap-2 text-blue-600 border-b-2 border-blue-600 pb-1"
 					>
 						<Home className="w-4 h-4" /> Home
-					</a>
-					<a
+					</Link>
+					<Link
 						href="#"
 						className="flex items-center gap-2 hover:text-blue-600 transition-colors pb-1"
 					>
 						<Info className="w-4 h-4" /> About
-					</a>
-					<a
+					</Link>
+					<Link
 						href="#"
 						className="flex items-center gap-2 hover:text-blue-600 transition-colors pb-1"
 					>
 						<Phone className="w-4 h-4" /> Contact
-					</a>
-					<a
+					</Link>
+					<Link
 						href="#"
 						className="flex items-center gap-2 hover:text-blue-600 transition-colors pb-1"
 					>
 						<UserPlus className="w-4 h-4" /> Admission
-					</a>
+					</Link>
 				</div>
 
-				<button className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
+				<Link 
+				
+				href="/auth/school-login"
+				className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
 					<LogIn className="w-4 h-4" /> Login
-				</button>
+				</Link>
 			</nav>
 
 			{/* --- Hero Section --- */}
@@ -153,9 +164,10 @@ export default function LandingPage() {
 					<div className="relative w-full max-w-2xl aspect-[4/3] rounded-tl-[80px] rounded-br-[80px] rounded-tr-3xl rounded-bl-3xl overflow-hidden shadow-2xl border-8 border-white">
 						{/* NOTE: Add your image to the public folder and update the src */}
 						<Image
-							src="/api/placeholder/800/600"
+							src="/images/School Grid.png"
 							alt="Students walking to school building"
-							fill
+							width={1000}
+							height={200}
 							className="object-cover"
 							priority
 						/>
@@ -216,7 +228,7 @@ export default function LandingPage() {
 
 					<div className="flex items-center gap-4 w-full md:w-auto justify-center md:justify-start">
 						<div className="bg-blue-50 p-4 rounded-2xl text-blue-600">
-							<Award className="w-7 h-7" />
+							{/* <Linkward className="w-7 h-7" /> */}
 						</div>
 						<div>
 							<h4 className="text-2xl font-extrabold text-blue-900">
