@@ -1,4 +1,4 @@
-
+'use client'
 
 import React, { useState } from "react";
 import { GraduationCap, Settings, X } from "lucide-react";
@@ -7,7 +7,7 @@ import NavItem from "./NavItem";
 import { prisma } from "@/lib/prisma";
 
 export default function Sidebar({ isOpen, onClose }) {
-	
+	  const [activeTab, setActiveTab] = useState("daily");
 
 	const getData = async () => {
 		const data =  await prisma.schooldata.findUniue({
@@ -54,6 +54,7 @@ export default function Sidebar({ isOpen, onClose }) {
 					<nav className="mt-4 px-3 space-y-1 overflow-y-auto max-h-[calc(100vh-11rem)] scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
 						{menuConfig.map((menu, index) => (
 							<NavItem
+							   onClick={() => setActiveTab(`{menu.title}`)}
 								key={index}
 								menu={menu}
 								isOpen={openDropdown === menu.name}

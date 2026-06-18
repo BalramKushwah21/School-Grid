@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/header';
 // Make sure this path correctly points to where you saved the array
-import { studentMenuData } from './components/menuData'; 
+import { parentMenuData } from './components/menuData'; 
 
-export default function StudentLayout({ children }) {
+export default function ParentLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ export default function StudentLayout({ children }) {
       <Sidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
-        menuData={studentMenuData} 
+        menuData={parentMenuData} 
       />
       
       <div className="flex-1 flex flex-col h-full overflow-x-hidden overflow-y-auto">

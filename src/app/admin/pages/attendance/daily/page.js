@@ -1,5 +1,13 @@
 "use client"
-import React, { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+
+export function useIsMounted() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  return isMounted;
+}
 
 const INITIAL_STUDENTS = [
   { id: "STU-2026-001", name: "Alex Smith", rollNo: "01", class: "Grade 9-A", gender: "Male" },
@@ -21,7 +29,7 @@ const INITIAL_STUDENTS = [
 const CLASSES = ["Grade 9-A", "Grade 10-A", "Grade 11-A"];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("daily"); // daily, monthly, biometric, reports
+  const [activeTab, setActiveTab] = useState("daily"); // Defaulting focus on monthly for quick check-out
   const [selectedClass, setSelectedClass] = useState("Grade 9-A");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,11 +47,24 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   
-  // Monthly calendar context
+  // Monthly calendar contexts
   const [selectedMonth, setSelectedMonth] = useState("2026-06");
 
+  const [monthlyRecords, setMonthlyRecords] = useState(() => {
+    const records = {};
+    // Seed initial records across 31 possible calendar days to prevent empty initial states
+    INITIAL_STUDENTS.forEach(student => {
+      for (let day = 1; day <= 31; day++) {
+        const rand = Math.random();
+        // Weekends present a lower default rate or are marked differently, standardizing weekday presets:
+        records[`${student.id}-${day}`] = rand > 0.9 ? "absent" : rand > 0.82 ? "late" : "present";
+      }
+    });
+    return records;
+  });
+
   // Biometric Terminal states
-  const [terminalStatus, setTerminalStatus] = useState("Online"); // Online, Offline, Error
+  const [terminalStatus, setTerminalStatus] = useState("Online"); 
   const [biometricLogs, setBiometricLogs] = useState([
     { id: "BIO-1092", time: "08:15 AM", studentId: "STU-2026-001", name: "Alex Smith", device: "Front Gate Terminal 1", match: "99.4%" },
     { id: "BIO-1093", time: "08:17 AM", studentId: "STU-2026-002", name: "Sophia Martinez", device: "Front Gate Terminal 1", match: "98.7%" },
@@ -74,6 +95,60 @@ export default function App() {
       student.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [classStudents, searchTerm]);
+
+  const daysInMonth = useMemo(() => {
+    if (!selectedMonth) return 30;
+    const [year, month] = selectedMonth.split('-').map(Number);
+    // Month parameter is 1-based index (e.g. 6 for June), passing 0 fetches the last day of the previous index month
+    return new Date(year, month, 0).getDate();
+  }, [selectedMonth]);
+
+  const getWeekdayLabel = (day) => {
+    if (!selectedMonth) return "";
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const weekdays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    return weekdays[date.getDay()];
+  };
+
+  const checkIsWeekend = (day) => {
+    if (!selectedMonth) return false;
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const dayOfWeek = date.getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  };
+
+  const cycleMonthlyStatus = (studentId, day, studentName) => {
+    const key = `${studentId}-${day}`;
+    const current = monthlyRecords[key] || "present";
+    let next = "present";
+    
+    if (current === "present") next = "absent";
+    else if (current === "absent") next = "late";
+    else if (current === "late") next = "excused";
+    
+    setMonthlyRecords(prev => ({ ...prev, [key]: next }));
+    setIsSaved(false);
+    triggerNotification(`Updated ${studentName} (Day ${day}) status to ${next.toUpperCase()}`, "info");
+  };
+
+  const getStudentMonthlyRate = (studentId) => {
+    let compliantCount = 0;
+    let countedDays = 0;
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      // Exclude weekends from overall compliance stats to avoid skewing school metrics
+      if (!checkIsWeekend(day)) {
+        countedDays++;
+        const status = monthlyRecords[`${studentId}-${day}`] || "present";
+        if (status === "present" || status === "late" || status === "excused") {
+          compliantCount++;
+        }
+      }
+    }
+    return countedDays > 0 ? Math.round((compliantCount / countedDays) * 100) : 100;
+  };
 
   const stats = useMemo(() => {
     const total = classStudents.length;
@@ -246,9 +321,9 @@ export default function App() {
       {/* ================= PRIMARY LAYOUT DECKS ================= */}
       <main className="max-w-7xl mx-auto p-4 md:p-8">
 
-        {/* 1. DAILY REGISTRY TAB (Fully Built-Out & Core Focus) */}
+        {/* 1. DAILY REGISTRY TAB */}
         {activeTab === "daily" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-200">
             
             {/* Left Workspace Column: Filters & Main Student Table */}
             <div className="lg:col-span-8 space-y-6 print:col-span-12 print:w-full">
@@ -535,6 +610,7 @@ export default function App() {
           </div>
         )}
 
+        {/* ================= STREAMING_CHUNK:Building the interactive monthly calendar heatmap grid... ================= */}
         {/* 2. MONTHLY CALENDAR GRID VIEW SUBSECTION */}
         {activeTab === "monthly" && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
@@ -543,7 +619,9 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-slate-950">Cohort Monthly Attendance Matrix</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Visualize attendance ratios as structured monthly heatmap percentages.</p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Analyze cohort-wide calendars. <strong className="text-indigo-600">Click any individual cell</strong> to cycle attendance status.
+                </p>
               </div>
               <div className="flex gap-3">
                 <select
@@ -564,42 +642,77 @@ export default function App() {
               </div>
             </div>
 
-            {/* Matrix Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            {/* Matrix Table container with clean horizontal scroll overflow */}
+            <div className="overflow-x-auto max-w-full border border-slate-200 rounded-xl shadow-sm">
+              <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
                 <thead>
                   <tr className="bg-slate-900 text-white font-extrabold uppercase tracking-wider text-[10px]">
-                    <th className="p-3 pl-5 rounded-tl-xl">Student Details</th>
-                    {Array.from({ length: 15 }, (_, i) => (
-                      <th key={i} className="p-3 text-center border-r border-slate-800">Day {i + 1}</th>
-                    ))}
-                    <th className="p-3 text-center rounded-tr-xl">Total Ratio</th>
+                    <th className="p-3 pl-5 sticky left-0 bg-slate-900 z-10 border-r border-slate-800">Student Details</th>
+                    {Array.from({ length: daysInMonth }, (_, i) => {
+                      const dayNumber = i + 1;
+                      const weekday = getWeekdayLabel(dayNumber);
+                      const isWeekend = checkIsWeekend(dayNumber);
+                      return (
+                        <th 
+                          key={i} 
+                          className={`p-2 text-center border-r border-slate-800 min-w-[36px] ${
+                            isWeekend ? 'bg-slate-800 text-slate-400' : 'bg-slate-900 text-white'
+                          }`}
+                        >
+                          <span className="block text-[8px] opacity-75 font-mono">{weekday}</span>
+                          <span className="block text-xs font-bold font-mono">{dayNumber}</span>
+                        </th>
+                      );
+                    })}
+                    <th className="p-3 text-center bg-slate-900 text-indigo-300 font-black min-w-[80px]">Compliance</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {classStudents.map((st, sIdx) => {
-                    // Seed synthetic status variations for display aesthetics
-                    const randomAttendanceRate = st.gender === 'Female' ? 95 : 82;
+                <tbody className="divide-y divide-slate-150">
+                  {classStudents.map((st) => {
+                    const studentMonthlyRate = getStudentMonthlyRate(st.id);
                     return (
-                      <tr key={st.id} className="hover:bg-slate-50/50">
-                        <td className="p-3 pl-5 font-bold text-slate-900 border-r border-slate-100">
-                          {st.name} <span className="block text-[9px] text-slate-400 font-mono font-bold mt-0.5">{st.id}</span>
+                      <tr key={st.id} className="hover:bg-slate-50/50 transition">
+                        <td className="p-3 pl-5 font-bold text-slate-900 sticky left-0 bg-white z-10 border-r border-slate-200 shadow-[2px_0_5px_rgba(0,0,0,0.03)]">
+                          {st.name} 
+                          <span className="block text-[9px] text-slate-400 font-mono font-bold mt-0.5">{st.id}</span>
                         </td>
-                        {Array.from({ length: 15 }, (_, i) => {
-                          const isPresent = (sIdx + i) % 7 !== 0; // Simulated calendar presence variation
+                        {Array.from({ length: daysInMonth }, (_, i) => {
+                          const dayNumber = i + 1;
+                          const key = `${st.id}-${dayNumber}`;
+                          const status = monthlyRecords[key] || "present";
+                          const isWeekend = checkIsWeekend(dayNumber);
+
+                          // Style color assignment matching the targeted state
+                          let styleClasses = "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200";
+                          let label = "P";
+                          if (status === "absent") {
+                            styleClasses = "bg-rose-100 text-rose-800 border-rose-200 hover:bg-rose-200";
+                            label = "A";
+                          } else if (status === "late") {
+                            styleClasses = "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200";
+                            label = "L";
+                          } else if (status === "excused") {
+                            styleClasses = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-250";
+                            label = "E";
+                          }
+
                           return (
-                            <td key={i} className="p-3 text-center border-r border-slate-100">
-                              <span className={`inline-block w-4 h-4 rounded-full font-bold text-[9px] flex items-center justify-center ${
-                                isPresent ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                              }`}>
-                                {isPresent ? 'P' : 'A'}
+                            <td 
+                              key={i} 
+                              onClick={() => cycleMonthlyStatus(st.id, dayNumber, st.name)}
+                              className={`p-2 text-center border-r border-slate-150 cursor-pointer select-none transition-all ${
+                                isWeekend ? 'bg-slate-50/60' : 'bg-white'
+                              }`}
+                            >
+                              <span className={`inline-flex w-7 h-7 rounded-lg border text-xs font-black items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-sm ${styleClasses}`}>
+                                {label}
                               </span>
                             </td>
                           );
                         })}
-                        <td className="p-3 text-center font-extrabold font-mono text-slate-950">
-                          <span className={randomAttendanceRate < 90 ? 'text-rose-600 font-black' : 'text-emerald-700'}>
-                            {randomAttendanceRate}%
+                        <td className="p-3 text-center font-extrabold font-mono text-slate-950 bg-slate-50 border-l border-slate-200">
+                          <span className={studentMonthlyRate < 80 ? 'text-rose-600 font-black' : studentMonthlyRate < 90 ? 'text-amber-600' : 'text-emerald-700'}>
+                            {studentMonthlyRate}%
                           </span>
                         </td>
                       </tr>
@@ -610,19 +723,36 @@ export default function App() {
             </div>
 
             {/* Helper Keys */}
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-150 flex flex-wrap gap-4 text-xs font-semibold text-slate-500">
-              <span className="text-slate-950 font-black">Performance Indicators:</span>
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-150 flex flex-wrap gap-6 text-xs font-semibold text-slate-500">
+              <span className="text-slate-950 font-black flex items-center">Grid Toggles:</span>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+                <span className="w-5 h-5 rounded-md bg-emerald-100 border border-emerald-200 text-emerald-800 font-black flex items-center justify-center text-[10px]">P</span>
+                <span>Present</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-rose-100 border border-rose-200 text-rose-800 font-black flex items-center justify-center text-[10px]">A</span>
+                <span>Absent</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-amber-100 border border-amber-200 text-amber-800 font-black flex items-center justify-center text-[10px]">L</span>
+                <span>Late</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-black flex items-center justify-center text-[10px]">E</span>
+                <span>Excused</span>
+              </div>
+              <div className="border-l border-slate-300 h-5 self-center mx-1"></div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3.5 h-3.5 rounded-full bg-emerald-500"></span>
                 <span>Highly Compliant (&gt;90%)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-                <span>Adequate Compliance (80% - 90%)</span>
+                <span className="w-3.5 h-3.5 rounded-full bg-amber-500"></span>
+                <span>Adequate (80% - 90%)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-rose-500"></span>
-                <span>Chronic Absentees (&lt;80%)</span>
+                <span className="w-3.5 h-3.5 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>Critical Absentees (&lt;80%)</span>
               </div>
             </div>
 
