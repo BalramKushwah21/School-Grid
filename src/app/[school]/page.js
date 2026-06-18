@@ -1,6 +1,7 @@
 import Image from "next/image";
 import {prisma} from "@/lib/prisma";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 
 import {
@@ -15,13 +16,27 @@ import {
 	FileText,
 	Building,
 	Award,
+	Link2,
 } from "lucide-react";
 
-export default function LandingPage() {
+export default async function LandingPage({params}) {
 
-	async function HomeData({params}) {
-		
+	
+	
+	const param = await params;
+    //  console.log(param.school);
+	
+	
+	const school = await prisma.school.findUnique({
+		where :{
+			subdomain : param.school
+		}
+	})
+	
+	if(!school){
+		return notFound();
 	}
+
 
 	return (
 		<div className="min-h-screen bg-[#F8FAFC] font-sans overflow-x-hidden relative">
@@ -36,7 +51,7 @@ export default function LandingPage() {
 					</div>
 					<div>
 						<h1 className="text-2xl font-bold text-blue-900 leading-none">
-							SchoolGrid
+							{school.schoolName}
 						</h1>
 						<p className="text-xs text-gray-500 font-medium mt-1">
 							School Management System
@@ -74,9 +89,9 @@ export default function LandingPage() {
 
 				<Link 
 				
-				href="/auth/school-login"
+				href="/auth/login"
 				className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
-					<LogIn className="w-4 h-4" /> Login
+					<LogIn className="w-4 h-4"/> Login
 				</Link>
 			</nav>
 
@@ -146,9 +161,12 @@ export default function LandingPage() {
 
 					{/* CTA Area */}
 					<div className="flex flex-col items-start gap-4">
-						<button className="bg-blue-600 text-white px-8 py-3.5 rounded-full font-semibold text-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
+						<Link 
+						href="/auth/
+						login"
+						className="bg-blue-600 text-white px-8 py-3.5 rounded-full font-semibold text-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
 							<LogIn className="w-5 h-5" /> Login to Your Account
-						</button>
+						</Link>
 						<div className="text-slate-500 text-sm flex gap-3 items-center font-medium">
 							<span>Secure Access</span>
 							<span className="w-1 h-1 bg-slate-300 rounded-full" />

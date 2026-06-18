@@ -2,10 +2,29 @@
 
 import React, { useState } from 'react';
 import { Users, UserCheck, CalendarCheck, DollarSign, PlusCircle } from 'lucide-react';
-
+import { useSession } from "next-auth/react";
 import MetricCard from '../components/MetricCard';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+
+  useEffect(() => {
+		// Effect logic here
+    if (!session) {
+      router.push('/auth/login');
+      router.refresh();
+      return;
+    }
+  }, []);
+
+
+
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const metricsData = [

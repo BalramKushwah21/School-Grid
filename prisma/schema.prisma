@@ -11,93 +11,95 @@ datasource db {
 // 1. SYSTEM & MULTI-TENANCY (SAAS CORE)
 // ==========================================
 
-model User {
-  id       String   @id @default(cuid())
-  schoolId String @unique
-  name     String
-  userRole UserRole 
-  email    String   @unique
-  password String
-
-  school School?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model School {
-  id               String  @id @default(cuid())
+  id               String   @id @default(cuid())
   schoolName       String
-  subdomain        String  @unique
-  schoolType       String // e.g., Primary, Secondary, K-12
+  subdomain        String   @unique
+  schoolType       String   // e.g., Primary, Secondary, K-12
   adminName        String?
-  udiseCode        String  @unique
+  udiseCode        String   @unique
   phone            String
-  email            String  @unique
+  email            String   @unique
   city             String
   district         String
   state            String
   address          String
   pincode          String
   logo             String?
-  subscriptionPlan String  @default("BASIC")
+  subscriptionPlan String   @default("BASIC")
 
-  // Relation to the User who registered the school
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relationships (One School -> Many Users/Teachers/Students)
+  users            User[]
+  teachers         Teacher[]
+  students         Student[]
+  families         Family[] 
 
-  // School Entities
-  teachers Teacher[]
-  students Student[]
-  families Family[] // Groups parents and siblings together
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  userRole  UserRole 
+  email     String   @unique
+  password  String
+
+  // Tenant ID (Removed @unique because many users belong to one school)
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Performance Optimization
+  @@index([schoolId])
 }
 
 model Teacher {
-  id       String @id @default(cuid())
-  schoolId String
-  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  id        String @id @default(cuid())
+  
+  // Tenant ID (Removed @unique)
+  schoolId  String 
+  school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  // Add teacher-specific fields here later
   firstName String
   lastName  String
   email     String @unique
   phone     String
+
+  @@index([schoolId])
 }
 
 // ==========================================
 // 2. FAMILY & PARENT DYNAMICS
 // ==========================================
-// Replaces the Many-to-Many Parent structure. 
-// 1 Family -> Many Students (Handles Siblings seamlessly)
 
 model Family {
-  id       String @id @default(cuid())
-  schoolId String
-  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  id                   String @id @default(cuid())
+  schoolId             String
+  school               School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  // Parent Details
   parentsMaritalStatus MaritalStatus @default(MARRIED)
   legalCustodyHolder   Custody       @default(BOTH)
 
-  fatherName       String
-  fatherContactNo  String
-  fatherOccupation String?
-  fatherIncome     String?
-  fatherEmail      String?
+  fatherName           String
+  fatherContactNo      String
+  fatherOccupation     String?
+  fatherIncome         String?
+  fatherEmail          String?
 
-  motherName       String
-  motherContactNo  String
-  motherOccupation String?
-  motherEmail      String?
+  motherName           String
+  motherContactNo      String
+  motherOccupation     String?
+  motherEmail          String?
 
-  // Relations
-  address  Address?
-  students Student[] // Siblings in this family
+  address              Address?
+  students             Student[] 
 
-  createdAt DateTime @default(now())
+  createdAt            DateTime @default(now())
+
+  @@index([schoolId])
 }
 
 model Address {
@@ -117,15 +119,14 @@ model Address {
 // ==========================================
 
 model Student {
-  id String @id @default(cuid())
+  id                 String @id @default(cuid())
 
-  // Tenancy & Family Links
-  schoolId String
-  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  familyId String
-  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  // Tenancy & Family Links (Removed @unique from schoolId)
+  schoolId           String
+  school             School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  familyId           String
+  family             Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  // Core Identity
   rollNumber         String?
   firstName          String
   middleName         String?
@@ -140,18 +141,18 @@ model Student {
   identificationMark String?
   aadharNumber       String?  @unique
 
-  // 1-to-1 Extension Profiles
-  academicProfile  AcademicProfile?
-  medicalProfile   MedicalProfile?
-  feeRecord        FeeRecord?
-  transportProfile TransportProfile?
-  documents        DocumentArchive?
+  // Profiles
+  academicProfile    AcademicProfile?
+  medicalProfile     MedicalProfile?
+  feeRecord          FeeRecord?
+  transportProfile   TransportProfile?
+  documents          DocumentArchive?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  // Ensures roll numbers are unique PER SCHOOL, not globally
   @@unique([schoolId, rollNumber])
+  @@index([schoolId])
 }
 
 // ==========================================
@@ -159,14 +160,13 @@ model Student {
 // ==========================================
 
 model AcademicProfile {
-  id        String  @id @default(cuid())
-  studentId String  @unique
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                   String  @id @default(cuid())
+  studentId            String  @unique
+  student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  currentClass    String
-  section         String
-  academicSession String
-
+  currentClass         String
+  section              String
+  academicSession      String
   previousSchool       String?
   previousSchoolMedium String?
   tcNumber             String?
@@ -174,14 +174,13 @@ model AcademicProfile {
 }
 
 model MedicalProfile {
-  id        String  @id @default(cuid())
-  studentId String  @unique
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                         String  @id @default(cuid())
+  studentId                  String  @unique
+  student                    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  emergencyContactName   String
-  emergencyContactNumber String
-  relationWithStudent    String
-
+  emergencyContactName       String
+  emergencyContactNumber     String
+  relationWithStudent        String
   familyDoctorName           String?
   familyDoctorContactNumber  String?
   preferredHospital          String?
@@ -189,25 +188,24 @@ model MedicalProfile {
 }
 
 model FeeRecord {
-  id        String  @id @default(cuid())
-  studentId String  @unique
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                  String       @id @default(cuid())
+  studentId           String       @unique
+  student             Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  feeCategory       FeeCategory @default(GENERAL)
-  scholarship       Boolean     @default(false)
-  concessionDetails String?     @db.Text
+  feeCategory         FeeCategory  @default(GENERAL)
+  scholarship         Boolean      @default(false)
+  concessionDetails   String?      @db.Text
 
-  admissionFeePaid    Decimal  @default(0.00) @db.Decimal(10, 2)
-  securityDepositPaid Decimal? @default(0.00) @db.Decimal(10, 2)
-
-  tuitionFeeCycle TuitionCycle @default(QUARTERLY)
-  paymentMode     PaymentMode  @default(CASH)
+  admissionFeePaid    Decimal      @default(0.00) @db.Decimal(10, 2)
+  securityDepositPaid Decimal?     @default(0.00) @db.Decimal(10, 2)
+  tuitionFeeCycle     TuitionCycle @default(QUARTERLY)
+  paymentMode         PaymentMode  @default(CASH)
 }
 
 model TransportProfile {
-  id        String  @id @default(cuid())
-  studentId String  @unique
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id          String  @id @default(cuid())
+  studentId   String  @unique
+  student     Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   needTransport Boolean @default(false)
   pickupPoint   String?
@@ -215,9 +213,9 @@ model TransportProfile {
 }
 
 model DocumentArchive {
-  id        String  @id @default(cuid())
-  studentId String  @unique
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                   String  @id @default(cuid())
+  studentId            String  @unique
+  student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   studentPhotoUrl      String?
   birthCertificateUrl  String?

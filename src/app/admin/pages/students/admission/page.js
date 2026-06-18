@@ -112,7 +112,7 @@ export default function StudentAdmissionForm() {
 		setSuccessMessage("");
 
 		try {
-			const response = await fetch("/api/school/studentData", {
+			const response = await fetch("/api/school/register", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -125,15 +125,17 @@ export default function StudentAdmissionForm() {
 			if (!response.ok) {
 				if (response.status === 401) {
 					setErrorMessage("You are not authorized. Please log in again.");
+					alert("You are not authorized. Please log in again.");
 					return;
 				}
 				throw new Error(result.error || "Failed to submit admission form.");
 			}
 
-			if (result.success) {
+			if (response.ok) {
 				setSuccessMessage(`Successfully registered student: ${result.data.firstName}!`);
 				setFormData(initialFormData); // Reset the form
 				window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top to show the success message
+				alert("Successfully registered student");
 			}
 		} catch (error) {
 			console.error("Submission error:", error);
