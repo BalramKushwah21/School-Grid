@@ -10,48 +10,51 @@ export default function Header({ onMenuOpen }) {
   };
 
   return (
-    <header className=" bg-white border-b border-gray-200 flex items-center justify-between p-3 sticky top-0 z-30">
+    <header className="bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-6 py-4 sticky top-0 z-30">
       <div className="flex items-center gap-4">
         {/* मोबाइल मेनू बटन - अब पूरी तरह टच फ्रेंडली है */}
         <button 
           onClick={handleMobileMenuClick} 
-          onTouchStart={handleMobileMenuClick} // 👈 असली मोबाइल के लिए सबसे ज़रूरी लाइन
-          className="lg:hidden text-gray-600 hover:text-gray-900 focus:outline-none p-2 relative z-40 cursor-pointer touch-manipulation"
+          onTouchStart={handleMobileMenuClick} 
+          className="lg:hidden text-gray-500 hover:text-indigo-600 focus:outline-none mr-2 relative z-40 cursor-pointer touch-manipulation transition-colors"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-7 h-7" />
         </button>
-        <h1 className="text-xl font-semibold text-gray-800 hidden sm:block">Dashboard Overview</h1>
+        <h1 className="text-xl font-bold text-gray-800 hidden sm:block tracking-wide">
+          Dashboard Overview
+        </h1>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Search */}
-        <div className="relative hidden md:block w-64">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-            <Search className="w-4 h-4" />
-          </span>
+      <div className="flex items-center gap-4 md:gap-6">
+        {/* Search - Upgraded to Premium Pill shape */}
+        <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64 lg:w-80 border border-transparent focus-within:border-indigo-500 focus-within:bg-white transition-all duration-300 shadow-inner">
+          <Search className="text-gray-500 w-5 h-5" />
           <input 
             type="text" 
             placeholder="Search anything..." 
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" 
+            className="bg-transparent border-none outline-none ml-3 w-full text-sm text-gray-700 placeholder-gray-400" 
           />
         </div>
 
-        {/* Notifications */}
-        <button className="relative p-2 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        {/* Notifications - Added pulse animation */}
+        <button className="relative p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all focus:outline-none">
+          <Bell className="w-6 h-6" />
+          <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 ring-2 ring-white"></span>
+          </span>
         </button>
 
-        {/* User Profile */}
-        <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+        {/* User Profile - Enhanced hover and spacing */}
+        <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-1.5 rounded-xl transition-colors">
           <img 
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
             alt="Profile" 
-            className="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-100" 
+            className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100 shadow-sm" 
           />
           <div className="hidden xl:block text-left">
-            <p className="text-sm font-semibold text-gray-700 leading-tight">Alex Morgan</p>
-            <p className="text-xs text-gray-400">Principal Admin</p>
+            <p className="text-sm font-bold text-gray-800 leading-tight">Alex Morgan</p>
+            <p className="text-xs text-gray-500 font-medium mt-0.5">Principal Admin</p>
           </div>
         </div>
       </div>

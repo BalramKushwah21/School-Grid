@@ -62,9 +62,7 @@ export const menuConfig = [
     icon: ClipboardCheck,
     isDropdown: true,
     subItems: [
-      { label: "Daily Attendance", link: "/admin/pages/attendance/daily" },
-      { label: "Monthly Attendance", link: "/admin/pages/attendance/monthly" },
-      { label: "Biometric Attendance", link: "/admin/pages/attendance/biometric" },
+      { label: "Attendance", link: "/admin/pages/attendance/daily", title:"daily" },
       { label: "Attendance Reports", link: "/admin/pages/attendance/reports" }
     ]
   },
@@ -73,13 +71,13 @@ export const menuConfig = [
     icon: FileSpreadsheet,
     isDropdown: true,
     subItems: [
-      { label: "Exam Types", link: "/dashboard/exams/types" },
-      { label: "Exam Schedule", link: "/dashboard/exams/schedule" },
-      { label: "Marks Entry", link: "/dashboard/exams/marks" },
-      { label: "Grade System", link: "/dashboard/exams/grades" },
-      { label: "Report Cards", link: "/dashboard/exams/report-cards" },
-      { label: "Result Analysis", link: "/dashboard/exams/analysis" },
-      { label: "Hall Tickets", link: "/dashboard/exams/hall-tickets" }
+      { label: "Exam Types", link: "/admin/pages/exams/types" },
+      { label: "Exam Schedule", link: "/admin/pages/exams/schedule" },
+      { label: "Marks Entry", link: "/admin/pages/exams/marks-entry" },
+      { label: "Grade System", link: "/admin/pages/exams/grade" },
+      { label: "Report Cards", link: "/admin/pages/exams/report-cards" },
+      { label: "Result Analysis", link: "/admin/pages/exams/analysis" },
+      { label: "Hall Tickets", link: "/admin/pages/exams/hall-tickets" }
     ]
   },
   {
@@ -87,14 +85,14 @@ export const menuConfig = [
     icon: CreditCard,
     isDropdown: true,
     subItems: [
-      { label: "Fee Structure", link: "/dashboard/finance/structure" },
-      { label: "Fee Collection", link: "/dashboard/finance/collect" },
-      { label: "Due Fees", link: "/dashboard/finance/due" },
-      { label: "Fee Discounts", link: "/dashboard/finance/discounts" },
-      { label: "Scholarships", link: "/dashboard/finance/scholarships" },
-      { label: "Expenses", link: "/dashboard/finance/expenses" },
-      { label: "Income", link: "/dashboard/finance/income" },
-      { label: "Financial Reports", link: "/dashboard/finance/reports" }
+      { label: "Fee Structure", link: "/admin/pages/finance/structure" },
+      { label: "Fee Collection", link: "/admin/pages/finance/collect" },
+      { label: "Due Fees", link: "/admin/pages/finance/due" },
+      { label: "Fee Discounts", link: "/admin/pages/finance/discounts" },
+      { label: "Scholarships", link: "/admin/pages/finance/discounts" },
+      { label: "Expenses", link: "/admin/pages/finance/expenses" },
+      { label: "Income", link: "/admin/pages/finance/income" },
+      { label: "Financial Reports", link: "/admin/pages/finance/reports" }
     ]
   },
   {
@@ -102,10 +100,10 @@ export const menuConfig = [
     icon: Users2,
     isDropdown: true,
     subItems: [
-      { label: "Parent List", link: "/dashboard/parents/list" },
-      { label: "Parent Accounts", link: "/dashboard/parents/accounts" },
-      { label: "Parent Feedback", link: "/dashboard/parents/feedback" },
-      { label: "Parent Meetings", link: "/dashboard/parents/meetings" }
+      { label: "Parent List", link: "/admin/pages/parents/list" },
+      { label: "Parent Accounts", link: "/admin/pages/parents/accounts" },
+      { label: "Parent Feedback", link: "/admin/pages/parents/feedback" },
+      { label: "Parent Meetings", link: "/admin/pages/parents/meetings" }
     ]
   },
   {
@@ -195,11 +193,11 @@ export const menuConfig = [
     icon: ShieldAlert,
     isDropdown: true,
     subItems: [
-      { label: "Admins", link: "/dashboard/users/admins" },
-      { label: "Teachers", link: "/dashboard/users/teachers" },
-      { label: "Students", link: "/dashboard/users/students" },
-      { label: "Parents", link: "/dashboard/users/parents" },
-      { label: "Roles & Permissions", link: "/dashboard/users/permissions" }
+      { label: "Admins", link: "/admin/pages/users/admins" },
+      { label: "Teachers", link: "/admin/pages/users/teachers" },
+      { label: "Students", link: "/admin/pages/users/students" },
+      { label: "Parents", link: "/admin/pages/users/parents" },
+      { label: "Roles & Permissions", link: "/admin/pages/users/permissions" }
     ]
   },
   {
@@ -207,7 +205,7 @@ export const menuConfig = [
     icon: Settings,
     isDropdown: true,
     subItems: [
-      { label: "School Profile", link: "/dashboard/settings/profile" },
+      { label: "School Profile", link: "/admin/pages/settings/profile" },
       { label: "Academic Sessions", link: "/dashboard/settings/sessions" },
       { label: "User Roles", link: "/dashboard/settings/roles" },
       { label: "Permissions", link: "/dashboard/settings/permissions" },
