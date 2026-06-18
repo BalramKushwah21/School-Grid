@@ -48,7 +48,7 @@ const StudentSidebar = ({ menuData }) => {
                   >
                     <div className="flex items-center space-x-3 text-lg">
                       <span>{menu.icon}</span>
-                      <span className="font-medium">{menu.title}</span>
+                      <span className="font-small">{menu.title}</span>
                     </div>
                     {openDropdown === menu.title ? <FiChevronDown /> : <FiChevronRight />}
                   </button>
