@@ -162,8 +162,7 @@ export default async function LandingPage({params}) {
 					{/* CTA Area */}
 					<div className="flex flex-col items-start gap-4">
 						<Link 
-						href="/auth/
-						login"
+						href="/auth/login"
 						className="bg-blue-600 text-white px-8 py-3.5 rounded-full font-semibold text-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30">
 							<LogIn className="w-5 h-5" /> Login to Your Account
 						</Link>
