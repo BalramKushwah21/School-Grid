@@ -3,25 +3,25 @@ import Link from "next/link";
 export default function HomePage() {
 	const plans = [
 		{
-			students: "Up to 100 Students",
+			students: "Up to 300 Students",
 			monthly: "₹299",
 			yearly: "₹2,999",
 			featured: true,
 		},
 		{
-			students: "101 - 250 Students",
-			monthly: "₹599",
-			yearly: "₹5,999",
+			students: "upto 500 Students",
+			monthly: "₹499",
+			yearly: "₹4,999",
 		},
 		{
-			students: "251 - 500 Students",
+			students: "upto 800 Students",
+			monthly: "₹799",
+			yearly: "₹7,999",
+		},
+		{
+			students: "upto 1000 Students",
 			monthly: "₹999",
 			yearly: "₹9,999",
-		},
-		{
-			students: "501 - 1000 Students",
-			monthly: "₹1,999",
-			yearly: "₹19,999",
 		},
 	];
 
@@ -76,23 +76,29 @@ export default function HomePage() {
 
 						<div className="grid grid-cols-2 gap-4">
 							<div className="bg-slate-800 p-5 rounded-xl">
-								<p className="text-slate-400">Students</p>
-								<h4 className="text-3xl font-bold">1,245</h4>
+								<p className="text-slate-400">
+									Registered Schools
+								</p>
+								<h4 className="text-3xl font-bold">558</h4>
 							</div>
 
 							<div className="bg-slate-800 p-5 rounded-xl">
-								<p className="text-slate-400">Attendance</p>
-								<h4 className="text-3xl font-bold">94%</h4>
+								<p className="text-slate-400">
+									Total Registered Student
+								</p>
+								<h4 className="text-3xl font-bold">25,678</h4>
 							</div>
 
 							<div className="bg-slate-800 p-5 rounded-xl">
-								<p className="text-slate-400">Fee Collected</p>
+								<p className="text-slate-400">Revenue</p>
 								<h4 className="text-3xl font-bold">₹4.8L</h4>
 							</div>
 
 							<div className="bg-slate-800 p-5 rounded-xl">
-								<p className="text-slate-400">Teachers</p>
-								<h4 className="text-3xl font-bold">85</h4>
+								<p className="text-slate-400">
+									Total Registered Teachers
+								</p>
+								<h4 className="text-3xl font-bold">2,200</h4>
 							</div>
 						</div>
 					</div>
@@ -204,7 +210,7 @@ export default function HomePage() {
 				</p>
 
 				<Link
-					href="/auth/school-registration"
+					href="/auth/school/register"
 					className="inline-block mt-8 bg-white text-black px-8 py-4 rounded-xl font-semibold"
 				>
 					Register Your School

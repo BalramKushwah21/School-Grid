@@ -27,12 +27,18 @@ model School {
   pincode          String
   logo             String?
   subscriptionPlan String   @default("BASIC")
+  isActive         Boolean  @default(true)
 
-  // Relationships (One School -> Many Users/Teachers/Students)
+  // Relationships (One School -> Many Entities)
   users            User[]
   teachers         Teacher[]
   students         Student[]
   families         Family[] 
+  academicProfiles AcademicProfile[]
+  medicalProfiles  MedicalProfile[]
+  feeRecords       FeeRecord[]
+  transportProfiles TransportProfile[]
+  documentArchives DocumentArchive[]
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -44,29 +50,37 @@ model User {
   userRole  UserRole 
   email     String   @unique
   password  String
+  isActive  Boolean  @default(true)
 
-  // Tenant ID (Removed @unique because many users belong to one school)
+  // Tenant ID
   schoolId  String
   school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Link to specific roles
+  teacherProfile Teacher?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Performance Optimization
   @@index([schoolId])
+  @@index([email])
 }
 
 model Teacher {
   id        String @id @default(cuid())
   
-  // Tenant ID (Removed @unique)
   schoolId  String 
   school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Optional link to User authentication profile
+  userId    String? @unique
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   firstName String
   lastName  String
   email     String @unique
   phone     String
+  status    String @default("Active") // Active, On Leave
 
   @@index([schoolId])
 }
@@ -107,7 +121,8 @@ model Address {
   familyId String @unique
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  locality String
+  houseNo  String?
+  street   String
   city     String
   district String
   state    String
@@ -121,7 +136,6 @@ model Address {
 model Student {
   id                 String @id @default(cuid())
 
-  // Tenancy & Family Links (Removed @unique from schoolId)
   schoolId           String
   school             School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   familyId           String
@@ -139,9 +153,9 @@ model Student {
   nationality        String   @default("Indian")
   isStaffChild       Boolean  @default(false)
   identificationMark String?
-  aadharNumber       String?  @unique
+  nationalIdNumber   String?  @unique // Mapped to frontend idCardNumber
 
-  // Profiles
+  // Profiles (One-to-One Relationships)
   academicProfile    AcademicProfile?
   medicalProfile     MedicalProfile?
   feeRecord          FeeRecord?
@@ -161,20 +175,27 @@ model Student {
 
 model AcademicProfile {
   id                   String  @id @default(cuid())
+  schoolId             String
+  school               School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   studentId            String  @unique
   student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   currentClass         String
-  section              String
+  section              String?
   academicSession      String
+  udiseNumber          String? // Added from frontend form
   previousSchool       String?
   previousSchoolMedium String?
   tcNumber             String?
   boardRegistrationNo  String?
+
+  @@index([schoolId])
 }
 
 model MedicalProfile {
   id                         String  @id @default(cuid())
+  schoolId                   String
+  school                     School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   studentId                  String  @unique
   student                    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -185,10 +206,14 @@ model MedicalProfile {
   familyDoctorContactNumber  String?
   preferredHospital          String?
   medicalConditionsAllergies String? @db.Text
+
+  @@index([schoolId])
 }
 
 model FeeRecord {
   id                  String       @id @default(cuid())
+  schoolId            String
+  school              School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   studentId           String       @unique
   student             Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -200,27 +225,40 @@ model FeeRecord {
   securityDepositPaid Decimal?     @default(0.00) @db.Decimal(10, 2)
   tuitionFeeCycle     TuitionCycle @default(QUARTERLY)
   paymentMode         PaymentMode  @default(CASH)
+
+  @@index([schoolId])
 }
 
 model TransportProfile {
   id          String  @id @default(cuid())
+  schoolId    String
+  school      School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   studentId   String  @unique
   student     Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   needTransport Boolean @default(false)
   pickupPoint   String?
   route         String?
+
+  @@index([schoolId])
 }
 
 model DocumentArchive {
-  id                   String  @id @default(cuid())
-  studentId            String  @unique
-  student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                     String  @id @default(cuid())
+  schoolId               String
+  school                 School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId              String  @unique
+  student                Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  studentPhotoUrl      String?
-  birthCertificateUrl  String?
-  aadharCopyUrl        String?
-  previousMarksheetUrl String?
+  // Mapped exactly to Frontend Form File Uploads
+  studentPhotoUrl        String?
+  birthCertificateUrl    String?
+  idCardCopyUrl          String? 
+  previousMarksheetUrl   String?
+  transferCertificateUrl String? 
+  parentIdCopyUrl        String? 
+
+  @@index([schoolId])
 }
 
 // ==========================================

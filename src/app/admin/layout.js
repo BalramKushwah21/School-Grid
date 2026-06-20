@@ -18,7 +18,7 @@ export default function adminLayout({children}) {
 				<div className="flex-1 flex flex-col h-full overflow-x-hidden overflow-y-auto">
 					<Header onMenuOpen={() => setIsSidebarOpen(true)} />
 
-					<main className="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
+					<main className="p-2 w-full">
 						{children}
 					</main>
 				</div>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { GraduationCap, Settings, X, ChevronDown, ChevronRight } from "lucide-react";
 import { menuConfig } from "./menuData"; // Assuming your menuConfig array is saved here
-import { prisma } from "@/lib/prisma";
+import { prisma }  from "@/lib/prisma";
 
 // ==========================================
 // 1. NAV ITEM COMPONENT (Combined internally)
@@ -105,19 +105,19 @@ export default function Sidebar({ isOpen, onClose }) {
     const [activeTab, setActiveTab] = useState("Dashboard");
 
     const getData = async () => {
-        const data =  await prisma.schooldata.findUniue({
-            where:{ 
-                subdomain:subdomain,
-            }
-        })
+      const data = await prisma.schooldata.findUnique({
+			where: {
+				subdomain: subdomain,
+			},
+		});
+   
     };
-
     const [openDropdown, setOpenDropdown] = useState(null);
 
     const handleToggle = (menuName) => {
         setOpenDropdown(openDropdown === menuName ? null : menuName);
     };
-
+   
     return (
         <>
             <aside
