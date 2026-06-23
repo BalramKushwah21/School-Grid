@@ -101,7 +101,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
 // ==========================================
 // 2. MAIN SIDEBAR COMPONENT
 // ==========================================
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({ isOpen, onClose, schoolData }) {
     const [activeTab, setActiveTab] = useState("Dashboard");
 
     const getData = async () => {
@@ -121,18 +121,25 @@ export default function Sidebar({ isOpen, onClose }) {
     return (
         <>
             <aside
-                className={`fixed lg:static inset-y-0 left-0 z-40 w-[280px] bg-[#0f1524] text-white h-screen flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-2xl ${
+                className={` top-20 fixed lg:static inset-y-0 left-0 z-40 w-[280px] bg-[#0f1524] text-white h-screen flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-2xl ${
                     isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                 }`}
             >
                 {/* Header / Logo Area */}
-                <div className="h-[88px] flex items-center justify-between px-6 border-b border-white/10 sticky top-0 z-10 shrink-0">
-                    <div className="flex items-center gap-3">
-                        <GraduationCap className="text-[#3b82f6] w-8 h-8" />
-                        <span className="text-[24px] font-extrabold tracking-wide text-white">
-                            School<span className="text-[#3b82f6]">Grid</span>
-                        </span>
-                    </div>
+              <div className="h-[88px] flex items-center justify-between px-6 border-b border-white/10 sticky top-0 z-10 shrink-0">
+                        <div className="flex items-center gap-3">
+                          <GraduationCap className="text-[#3b82f6] w-8 h-8" />
+                          <span className="text-[24px] font-extrabold tracking-wide text-white">
+                            {schoolData?.name ? (
+                              schoolData.name
+                            ) : (
+                              <>
+                                User
+                                <span className="text-[#3b82f6]">Account</span>
+                              </>
+                            )}
+                          </span>
+                        </div>
                     <button
                         onClick={onClose}
                         className="lg:hidden text-2xl text-slate-400 hover:text-white focus:outline-none transition-colors"
