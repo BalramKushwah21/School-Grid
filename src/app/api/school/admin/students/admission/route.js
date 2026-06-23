@@ -23,7 +23,7 @@ export async function POST(request) {
 	try {
 		// 1. SECURITY: Check if user is logged in
 		const session = await getServerSession(authOptions);
-		console.log("Session:", session);
+		
 		if (!session || !session.user) {
 			return NextResponse.json(
 				{ error: "Unauthorized access. Please login." },

@@ -3,7 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-// GET: Fetch EVERY single admission detail for the view modal
+// =================================================================
+// 1. GET METHOD: Fetch EVERY single admission detail for the modal
+// =================================================================
 export async function GET(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -49,7 +51,9 @@ export async function GET(request, { params }) {
 	}
 }
 
-// PUT: Save and update all fields simultaneously
+// =================================================================
+// 2. PUT METHOD: Save and update all fields simultaneously
+// =================================================================
 export async function PUT(request, { params }) {
 	try {
 		const session = await getServerSession(authOptions);
@@ -158,10 +162,18 @@ export async function PUT(request, { params }) {
 					},
 				},
 				transportProfile: {
-					update: {
-						needTransport: data.needTransport === "Yes",
-						pickupPoint: data.pickupPoint,
-						route: data.route,
+					upsert: {
+						create: {
+							schoolId: session.user.schoolId, // Required to create a new profile
+							needTransport: data.needTransport === "Yes",
+							pickupPoint: data.pickupPoint,
+							route: data.route,
+						},
+						update: {
+							needTransport: data.needTransport === "Yes",
+							pickupPoint: data.pickupPoint,
+							route: data.route,
+						},
 					},
 				},
 			},
