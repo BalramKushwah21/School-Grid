@@ -115,7 +115,7 @@ export default function StudentAdmissionForm() {
         setSuccessMessage("");
 
         try {
-            const response = await fetch("/api/school/admin/student/admission", {
+            const response = await fetch("/api/school/admin/students/admission", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
