@@ -1,167 +1,219 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
+// Sample Mock Data (Database se fetch hone wala data)
+const mockStudents = [
+  { id: 'STU-2026-001', rollNo: '101', studentName: 'Aarav Sharma', fatherName: 'Rajesh Sharma', session: '2026-27', className: 'Grade 10', section: 'A', dob: '14-Oct-2010', phone: '+91 9876543210', schoolName: 'Patliputra Central School', udiseCode: '1029384756', photoUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop' },
+  { id: 'STU-2026-002', rollNo: '102', studentName: 'Ananya Iyer', fatherName: 'Venkat Iyer', session: '2026-27', className: 'Grade 10', section: 'A', dob: '05-May-2010', phone: '+91 9876543211', schoolName: 'Patliputra Central School', udiseCode: '1029384756', photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop' },
+  { id: 'STU-2026-003', rollNo: '103', studentName: 'Kabir Mehta', fatherName: 'Sanjay Mehta', session: '2026-27', className: 'Grade 9', section: 'B', dob: '22-Aug-2011', phone: '+91 9876543212', schoolName: 'Patliputra Central School', udiseCode: '1029384756', photoUrl: null },
+  { id: 'STU-2026-004', rollNo: '104', studentName: 'Diya Patel', fatherName: 'Ramesh Patel', session: '2026-27', className: 'Grade 10', section: 'A', dob: '11-Jan-2010', phone: '+91 9876543213', schoolName: 'Patliputra Central School', udiseCode: '1029384756', photoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop' },
+];
+
 export default function BulkIDCardGenerator() {
-  const [searchParams, setSearchParams] = useState({ class: '', rollNo: '' });
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [filters, setFilters] = useState({ class: '', section: '', rollNo: '' });
+  const [allStudents, setAllStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 1. Initial Load: Fetch all students
+  useEffect(() => {
+    // API Call simulation (Replace with your actual backend fetch)
+    const fetchAllStudents = async () => {
+      try {
+        // const res = await fetch(`/api/admin/students/id-card`);
+        // const result = await res.json();
+        // setAllStudents(result.data);
+        
+        setTimeout(() => {
+          setAllStudents(mockStudents);
+          setLoading(false);
+        }, 500);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    };
+    fetchAllStudents();
+  }, []);
 
   const handleInputChange = (e) => {
-    setSearchParams({ ...searchParams, [e.target.name]: e.target.value });
+    setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  const handleFetchStudents = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      // Build query string
-      const query = new URLSearchParams();
-      if (searchParams.class) query.append('class', searchParams.class);
-      if (searchParams.rollNo) query.append('rollNo', searchParams.rollNo);
-
-      const response = await fetch(`/app/api/school/admin/students/id-card?${query.toString()}`);
-      const result = await response.json();
-
-      if (result.success) {
-        setStudents(result.data);
-      } else {
-        setError(result.message || "Something went wrong");
-        setStudents([]);
-      }
-    } catch (err) {
-      setError("Failed to connect to the server.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 2. Real-Time Filtering Logic
+  const filteredStudents = useMemo(() => {
+    return allStudents.filter(student => {
+      const matchClass = !filters.class || (student.className && student.className.toLowerCase().includes(filters.class.toLowerCase()));
+      const matchSection = !filters.section || (student.section && student.section.toLowerCase().includes(filters.section.toLowerCase()));
+      const matchRollNo = !filters.rollNo || (student.rollNo && student.rollNo.toString().includes(filters.rollNo));
+      return matchClass && matchSection && matchRollNo;
+    });
+  }, [allStudents, filters]);
 
   const handlePrint = () => {
     window.print();
   };
 
+  // 3. BLANK TEMPLATE (Jab data na ho)
+  const blankStudent = {
+    id: 'XXXX-XXXX-XXXX',
+    rollNo: '____',
+    studentName: '________________',
+    fatherName: '________________',
+    session: '20__ - 20__',
+    className: '_______',
+    section: '___',
+    dob: '__ / __ / ____',
+    phone: '________________',
+    schoolName: 'Patliputra Central School',
+    udiseCode: '65399',
+    photoUrl: null
+  };
+
+  const displayData = filteredStudents.length > 0 ? filteredStudents : [blankStudent];
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6 font-sans">
+    <div className="min-h-screen bg-slate-100 font-sans p-4 sm:p-8">
       
-      {/* =======================================================
-          CONTROL PANEL (Hidden on Print)
-      ======================================================= */}
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 print:hidden">
-        <div className="flex justify-between items-center mb-6">
+      {/* =========================================
+          ADMIN CONTROLS (Hidden during Print)
+      ========================================= */}
+      <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow-sm border border-slate-200 mb-8 print:hidden">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-900">ID Card Generator</h2>
-            <p className="text-sm text-slate-500">Fetch students by Class or Roll Number to print QR-enabled ID cards.</p>
+            <h2 className="text-2xl font-extrabold text-slate-800">Bulk ID Card Generator</h2>
+            <p className="text-sm text-slate-500">Live filter students to generate smart QR ID cards, or print a blank template.</p>
           </div>
           <button 
             onClick={handlePrint}
-            disabled={students.length === 0}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white text-sm font-bold rounded-xl shadow transition"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2"
           >
-            🖨️ Print ID Cards
+            🖨️ Print {filteredStudents.length > 0 ? `${filteredStudents.length} ID Cards` : 'Blank Format'}
           </button>
         </div>
 
-        <form onSubmit={handleFetchStudents} className="flex gap-4 items-end">
-          <div className="flex-1">
-            <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Filter by Class</label>
+        {/* Real-time Filter Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Filter by Class</label>
             <input 
-              type="text" name="class" value={searchParams.class} onChange={handleInputChange}
-              className="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
-              placeholder="e.g. Grade 5"
+              type="text" 
+              name="class" 
+              value={filters.class} 
+              onChange={handleInputChange} 
+              placeholder="e.g. Grade 10" 
+              className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" 
             />
           </div>
-          <div className="flex-1">
-            <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">Search by Roll No</label>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Filter by Section</label>
             <input 
-              type="text" name="rollNo" value={searchParams.rollNo} onChange={handleInputChange}
-              className="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
-              placeholder="e.g. 101"
+              type="text" 
+              name="section" 
+              value={filters.section} 
+              onChange={handleInputChange} 
+              placeholder="e.g. A" 
+              className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" 
             />
           </div>
-          <button type="submit" disabled={loading} className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-lg transition">
-            {loading ? 'Fetching...' : 'Generate Cards'}
-          </button>
-        </form>
-
-        {error && <p className="mt-4 text-sm text-rose-600 font-semibold">{error}</p>}
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Search Roll No</label>
+            <input 
+              type="text" 
+              name="rollNo" 
+              value={filters.rollNo} 
+              onChange={handleInputChange} 
+              placeholder="e.g. 101" 
+              className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" 
+            />
+          </div>
+        </div>
+        
+        {loading && <p className="text-indigo-600 mt-4 font-bold text-sm animate-pulse">Loading all student records...</p>}
+        {!loading && filteredStudents.length === 0 && (
+          <p className="text-amber-600 mt-4 font-bold text-sm">No students match your filter. Showing blank template below.</p>
+        )}
       </div>
 
-      {/* =======================================================
-          ID CARDS RENDER GRID (Visible on Print)
-      ======================================================= */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 print:grid-cols-2 print:gap-4 print:max-w-full">
-        
-        {students.map((student) => (
-          <div key={student.id} className="w-full aspect-[1/1.58] bg-white shadow-xl rounded-2xl border border-slate-200 relative overflow-hidden flex flex-col print:shadow-none print:border-2 print:border-slate-300 print:break-inside-avoid">
+      {/* =========================================
+          PRINTABLE ID CARD GRID
+      ========================================= */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 print:grid-cols-4 print:gap-4 print:w-full print:max-w-none">
+        {displayData.map((student, idx) => (
+          <div 
+            key={`${student.id}-${idx}`} 
+            className="w-[54mm] h-[86mm] mx-auto bg-white rounded-xl shadow-xl border border-slate-300 overflow-hidden flex flex-col relative print:shadow-none print:border-slate-400 print:break-inside-avoid box-border"
+            style={{ width: '210px', height: '330px' }} // Standard CR80 ID Card dimensions scaled for web
+          >
             
-            {/* Header / School Branding */}
-            <div className="h-1/4 bg-indigo-950 p-4 flex flex-col items-center justify-center text-center relative print:h-[25%]">
-              <h1 className="text-xl font-extrabold text-white uppercase tracking-wider">{student.schoolName}</h1>
-              <div className="absolute -bottom-1 left-0 right-0 h-3 bg-indigo-500"></div>
+            {/* Header (School Branding) */}
+            <div className="bg-indigo-900 text-white text-center p-2 pb-6 relative">
+              <h1 className="text-[11px] font-black uppercase leading-tight tracking-wide">{student.schoolName}</h1>
+              <p className="text-[7px] text-indigo-200 mt-0.5 font-medium tracking-widest">UDISE: {student.udiseCode}</p>
+              
+              {/* Curved bottom edge via CSS clip-path or absolute div */}
+              <div className="absolute -bottom-4 left-0 right-0 h-8 bg-indigo-900 rounded-b-[50%]"></div>
             </div>
 
-            {/* Profile Picture */}
-            <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-24 h-24 rounded-full border-4 border-white shadow-md bg-slate-100 overflow-hidden flex items-center justify-center z-10 print:w-20 print:h-20">
+            {/* Profile Photo */}
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full border-2 border-white shadow-md bg-slate-100 overflow-hidden flex items-center justify-center z-10">
               {student.photoUrl ? (
-                <img src={student.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                <img src={student.photoUrl} alt={student.studentName} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-3xl text-slate-300">👤</span>
+                <span className="text-2xl text-slate-300">👤</span>
               )}
             </div>
 
-            {/* Student Info */}
-            <div className="flex-grow pt-16 px-5 text-center flex flex-col items-center print:pt-14">
-              <h2 className="text-lg font-bold text-slate-900 uppercase mb-1">
-                {student.name}
+            {/* Body (Student Details) */}
+            <div className="flex-grow pt-10 px-3 flex flex-col items-center">
+              <h2 className="text-sm font-extrabold text-slate-900 uppercase text-center w-full truncate leading-tight">
+                {student.studentName}
               </h2>
-              <p className="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full mb-4">
-                {student.className}
-              </p>
+              <span className="text-[9px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full mt-1 mb-2 border border-indigo-100">
+                {student.className} - {student.section}
+              </span>
+
+              <div className="w-full text-[9px] text-slate-700 space-y-1 mt-1 font-semibold leading-tight">
+                <div className="flex justify-between border-b border-slate-100 pb-0.5">
+                  <span className="text-slate-500">F. Name:</span> 
+                  <span className="text-right truncate max-w-[100px]">{student.fatherName}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-100 pb-0.5">
+                  <span className="text-slate-500">Roll No:</span> 
+                  <span className="text-right">{student.rollNo}</span>
+                </div>
+                <div className="flex justify-between border-b border-slate-100 pb-0.5">
+                  <span className="text-slate-500">D.O.B:</span> 
+                  <span className="text-right">{student.dob}</span>
+                </div>
+                <div className="flex justify-between pb-0.5">
+                  <span className="text-slate-500">Phone:</span> 
+                  <span className="text-right">{student.phone}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer with QR Code and Signatures */}
+            <div className="bg-slate-50 p-2 flex items-end justify-between border-t border-slate-200 mt-auto">
+              {/* QR Code Container */}
+              <div className="bg-white p-0.5 rounded border border-slate-200 shadow-sm">
+                <QRCodeSVG value={student.id} size={36} level="H" />
+              </div>
               
-              {/* QR Code Section */}
-              <div className="mb-4 p-1.5 bg-white border border-slate-200 rounded-lg shadow-sm">
-                <QRCodeSVG value={student.id} size={70} level="H" />
-              </div>
-
-              {/* Data Grid */}
-              <div className="grid grid-cols-2 w-full gap-x-2 gap-y-2 text-left text-[11px] leading-tight">
-                <div>
-                  <span className="block text-slate-500">Roll No.</span>
-                  <span className="block font-bold text-slate-900">{student.rollNo || 'N/A'}</span>
-                </div>
-                <div>
-                  <span className="block text-slate-500">Blood Grp.</span>
-                  <span className="block font-bold text-rose-700">{student.bloodGroup}</span>
-                </div>
-                <div>
-                  <span className="block text-slate-500">DOB</span>
-                  <span className="block font-bold text-slate-900">{student.dob}</span>
-                </div>
-                <div>
-                  <span className="block text-slate-500">Emergency</span>
-                  <span className="block font-bold text-slate-900">{student.schoolPhone || 'N/A'}</span>
+              <div className="flex flex-col items-end gap-2">
+                <p className="text-[7px] font-bold text-slate-500">Session: {student.session}</p>
+                <div className="text-center mt-2">
+                  <div className="w-16 border-t border-slate-800 mb-0.5"></div>
+                  <p className="text-[6px] font-bold text-slate-700 uppercase">Principal Sign</p>
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="h-8 bg-slate-100 border-t border-slate-200 px-4 flex items-center justify-between text-[10px] font-bold text-slate-600">
-              <span>Valid: {student.validUntil}</span>
-              <span className="font-mono text-indigo-800 tracking-tighter">ID:{student.id.substring(0,8).toUpperCase()}</span>
-            </div>
           </div>
         ))}
-
-        {students.length === 0 && !loading && !error && (
-          <div className="col-span-full text-center py-20 text-slate-400 print:hidden">
-            Enter search criteria to generate ID cards.
-          </div>
-        )}
-
       </div>
+
     </div>
   );
 }
