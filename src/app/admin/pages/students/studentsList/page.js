@@ -3,18 +3,20 @@
 import React, { useState } from 'react';
 
 // Sample mock data representing students fetched from your database
+// Added "route" property to match the new filter requirement
 const initialStudents = [
-  { id: 'std_101', admissionNo: 'ADM2026001', name: 'Aarav Sharma', class: 'Grade 5', section: 'A', rollNo: '01', status: 'Active', feeStatus: 'Paid', contact: '+91 98765 43210' },
-  { id: 'std_102', admissionNo: 'ADM2026002', name: 'Ananya Iyer', class: 'Grade 5', section: 'A', rollNo: '02', status: 'Active', feeStatus: 'Pending', contact: '+91 98765 43211' },
-  { id: 'std_103', admissionNo: 'ADM2026003', name: 'Kabir Mehta', class: 'Grade 6', section: 'B', rollNo: '14', status: 'Inactive', feeStatus: 'Paid', contact: '+91 98765 43212' },
-  { id: 'std_104', admissionNo: 'ADM2026004', name: 'Diya Patel', class: 'Grade 4', section: 'C', rollNo: '09', status: 'Active', feeStatus: 'Paid', contact: '+91 98765 43213' },
-  { id: 'std_105', admissionNo: 'ADM2026005', name: 'Vivaan Joshi', class: 'Grade 5', section: 'B', rollNo: '05', status: 'Active', feeStatus: 'Overdue', contact: '+91 98765 43214' },
+  { id: 'std_101', admissionNo: 'ADM2026001', name: 'Aarav Sharma', class: 'Grade 5', section: 'A', rollNo: '01', status: 'Active', feeStatus: 'Paid', contact: '+91 98765 43210', route: 'Route 1' },
+  { id: 'std_102', admissionNo: 'ADM2026002', name: 'Ananya Iyer', class: 'Grade 5', section: 'A', rollNo: '02', status: 'Active', feeStatus: 'Pending', contact: '+91 98765 43211', route: 'Route 2' },
+  { id: 'std_103', admissionNo: 'ADM2026003', name: 'Kabir Mehta', class: 'Grade 6', section: 'B', rollNo: '14', status: 'Inactive', feeStatus: 'Paid', contact: '+91 98765 43212', route: 'Self' },
+  { id: 'std_104', admissionNo: 'ADM2026004', name: 'Diya Patel', class: 'Grade 4', section: 'C', rollNo: '09', status: 'Active', feeStatus: 'Paid', contact: '+91 98765 43213', route: 'Route 1' },
+  { id: 'std_105', admissionNo: 'ADM2026005', name: 'Vivaan Joshi', class: 'Grade 5', section: 'B', rollNo: '05', status: 'Active', feeStatus: 'Overdue', contact: '+91 98765 43214', route: 'Route 3' },
 ];
 
 export default function StudentList() {
   const [students] = useState(initialStudents);
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('All');
+  const [routeFilter, setRouteFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
 
   // Filter Logic based on Search Input and Dropdowns
@@ -22,9 +24,10 @@ export default function StudentList() {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           student.admissionNo.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesClass = classFilter === 'All' || student.class === classFilter;
+    const matchesRoute = routeFilter === 'All' || student.route === routeFilter;
     const matchesStatus = statusFilter === 'All' || student.status === statusFilter;
     
-    return matchesSearch && matchesClass && matchesStatus;
+    return matchesSearch && matchesClass && matchesRoute && matchesStatus;
   });
 
   return (
@@ -43,12 +46,12 @@ export default function StudentList() {
         </div>
 
         {/* Filter and Search Utility Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
           <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Search Records</label>
             <input 
               type="text" 
-              placeholder="Search by name or admission no..." 
+              placeholder="Search by name or ID..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full text-sm p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
@@ -59,7 +62,7 @@ export default function StudentList() {
             <select 
               value={classFilter} 
               onChange={(e) => setClassFilter(e.target.value)}
-              className="w-full text-sm p-2 rounded-lg border border-slate-200 bg-white"
+              className="w-full text-sm p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="All">All Grades</option>
               <option value="Grade 4">Grade 4</option>
@@ -68,11 +71,25 @@ export default function StudentList() {
             </select>
           </div>
           <div>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter by Route</label>
+            <select 
+              value={routeFilter} 
+              onChange={(e) => setRouteFilter(e.target.value)}
+              className="w-full text-sm p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            >
+              <option value="All">All Routes</option>
+              <option value="Route 1">Route 1</option>
+              <option value="Route 2">Route 2</option>
+              <option value="Route 3">Route 3</option>
+              <option value="Self">Self / Private</option>
+            </select>
+          </div>
+          <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status Type</label>
             <select 
               value={statusFilter} 
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full text-sm p-2 rounded-lg border border-slate-200 bg-white"
+              className="w-full text-sm p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
               <option value="All">All Statuses</option>
               <option value="Active">Active Only</option>
@@ -86,10 +103,10 @@ export default function StudentList() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-100">
-                <th className="p-4">Admission No</th>
+                <th className="p-4 whitespace-nowrap">Admission No</th>
                 <th className="p-4">Student Profile</th>
                 <th className="p-4">Class / Roll</th>
-                <th className="p-4">Parent Contact</th>
+                <th className="p-4">Contact & Route</th>
                 <th className="p-4 text-center">Fees</th>
                 <th className="p-4 text-center">Status</th>
                 <th className="p-4 text-right">Actions</th>
@@ -103,7 +120,7 @@ export default function StudentList() {
                     <td className="p-4 font-mono text-xs font-semibold text-slate-600">{student.admissionNo}</td>
                     
                     {/* Student Avatar + Name */}
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm uppercase">
                           {student.name.charAt(0)}
@@ -116,16 +133,19 @@ export default function StudentList() {
                     </td>
 
                     {/* Class and Roll */}
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       <p className="font-medium">{student.class} - {student.section}</p>
                       <p className="text-xs text-slate-400">Roll No: {student.rollNo}</p>
                     </td>
 
-                    {/* Contact details */}
-                    <td className="p-4 text-slate-600 font-mono text-xs">{student.contact}</td>
+                    {/* Contact & Route details */}
+                    <td className="p-4 whitespace-nowrap">
+                      <p className="text-slate-600 font-mono text-xs">{student.contact}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">🚌 {student.route}</p>
+                    </td>
 
                     {/* Fee Badge Indicators */}
-                    <td className="p-4 text-center">
+                    <td className="p-4 text-center whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                         student.feeStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700' :
                         student.feeStatus === 'Pending' ? 'bg-amber-50 text-amber-700' :
@@ -136,7 +156,7 @@ export default function StudentList() {
                     </td>
 
                     {/* Status Toggle Badges */}
-                    <td className="p-4 text-center">
+                    <td className="p-4 text-center whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
                         student.status === 'Active' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-slate-100 text-slate-600'
                       }`}>
@@ -145,7 +165,7 @@ export default function StudentList() {
                     </td>
 
                     {/* Operational Action Buttons */}
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right whitespace-nowrap">
                       <div className="flex justify-end gap-2">
                         <button className="text-xs font-medium text-indigo-600 hover:text-indigo-900 border border-indigo-100 rounded-md px-2.5 py-1 hover:bg-indigo-50 transition-colors">
                           View
