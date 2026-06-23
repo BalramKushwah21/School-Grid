@@ -28,6 +28,7 @@ export const authOptions = {
 				if (!user) {
 					throw new Error("No user found with this email");
 				}
+				console.log(user.userRole);
 
 				// 2. Verify Password
 				const passwordMatch = await bcrypt.compare(
@@ -43,12 +44,13 @@ export const authOptions = {
 			},
 		}),
 	],
+	
 	callbacks: {
 		// JWT Callback: Yahan hum token ke andar user ka data daalte hain
 		async jwt({ token, user }) {
 			if (user) {
 				token.id = user.id;
-				token.role = user.role;
+				token.role = user.userRole;
 				token.schoolId = user.schoolId; // Embedding Tenant ID
 			}
 			return token;

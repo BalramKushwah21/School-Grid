@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { GraduationCap, X, ChevronDown, ChevronRight } from "lucide-react";
+import SearchBar from "@/components/SearchBar";
 import {
 	FiSearch,
 	FiBell,
@@ -12,7 +13,12 @@ import {
 import LogOut from "@/components/LogoutButton";
 import { div, span } from "framer-motion/client";
 
-const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
+const GlobalHeader = ({
+	toggleSidebar,
+	isSidebarOpen,
+	schoolData,
+	isLoading,
+}) => {
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 
 	// Default system state fallback
@@ -31,7 +37,7 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 
 				if (session && session.user) {
 					// Dynamic color matching based on role category
-					const isTeacher = session.user.userRole === "TEACHER";
+					const isTeacher = session.user.role === "TEACHER";
 					const avatarBg = isTeacher ? "0D9488" : "0D8ABC"; // Teal for Teacher, Blue for Admin
 
 					const dynamicAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -40,7 +46,7 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 
 					setUserData({
 						name: session.user.name || "School Member",
-						role: session.user.userRole || "Member",
+						role: session.user.role || "Member",
 						avatar: dynamicAvatar,
 					});
 				}
@@ -60,7 +66,21 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 			<div className="flex items-center justify-between px-4 sm:px-6 py-4">
 				{/* Left Block: Hamburger Button Extreme Left + Search Input Group */}
 				<div className="flex items-center flex-1 gap-2 sm:gap-4">
-					{/* ☰ / ✕ Core Toggle: Shifts directly between layout structures on mobile/tablet */}
+					{/* School Data Display */}
+					<div className="hidden lg:flex">
+						{isLoading ? (
+							<div className="h-5 w-32 bg-gray-200 animate-pulse rounded"></div> // Loading effect
+						) : schoolData ? (
+							<h1 className="text-xl font-bold text-blue-900 truncate max-w-xs">
+								{schoolData.schoolName || "My School Dashboard"}
+								{/* Note: 'schoolName' ko apne Prisma schema ke field name se replace karein */}
+							</h1>
+						) : (
+							<h1 className="text-xl font-bold text-gray-800">
+								Dashboard
+							</h1>
+						)}
+					</div>
 					<button
 						onClick={toggleSidebar}
 						className="text-gray-500 hover:text-blue-600 focus:outline-none lg:hidden transition-all duration-300 transform active:scale-95 p-1 rounded-lg hover:bg-gray-100 shrink-0"
@@ -69,16 +89,20 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 						{isSidebarOpen ? (
 							<div className="flex items-center gap-3">
 								<GraduationCap className="text-[#3b82f6] w-8 h-8" />
+
 								<span className="text-[24px] font-extrabold tracking-wide text-black">
-									{schoolData?.name ? (
-										schoolData.name
+									{isLoading? (
+										<div className="h-5 w-32 bg-gray-200 animate-pulse rounded"></div> // Loading effect
+									) : schoolData? (
+										<h1 className="text-xl font-bold text-blue-900 truncate max-w-xs">
+											{schoolData.schoolName ||
+												"My School Dashboard"}
+											{/* Note: 'schoolName' ko apne Prisma schema ke field name se replace karein */}
+										</h1>
 									) : (
-										<>
-											School
-											<span className="text-[#3b82f6]">
-												Grid
-											</span>
-										</>
+										<h1 className="text-xl font-bold text-gray-800">
+											Dashboard
+										</h1>
 									)}
 								</span>
 							</div>
@@ -87,14 +111,9 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 						)}
 					</button>
 
-					{/* Search Field Group */}
-					<div className="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2 w-full max-w-sm border border-transparent focus-within:border-blue-500 focus-within:bg-white transition-all duration-300 shadow-inner">
-						<FiSearch className="text-gray-500 text-lg shrink-0" />
-						<input
-							type="text"
-							placeholder="Search records, notices, or files..."
-							className="bg-transparent border-none outline-none ml-3 w-full text-sm text-gray-700 placeholder-gray-400"
-						/>
+					{/* Middle: Yahan aayega aapka Dynamic Search Bar */}
+					<div className="flex-1 px-4 flex justify-center sm:justify-end md:justify-center">
+						<SearchBar />
 					</div>
 				</div>
 
@@ -131,7 +150,7 @@ const GlobalHeader = ({ toggleSidebar, isSidebarOpen, schoolData}) => {
 								<p className="text-sm font-bold text-gray-800 leading-tight">
 									{userData.name}
 								</p>
-								<p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+								<p className="text-[10px] font-bold text-blue-800 uppercase tracking-widest mt-0.5">
 									{userData.role.replace("_", " ")}
 								</p>
 							</div>
