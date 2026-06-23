@@ -58,7 +58,7 @@ model User {
 
   // Link to specific roles
   teacherProfile Teacher?
-
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -72,7 +72,6 @@ model Teacher {
   schoolId  String 
   school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  // Optional link to User authentication profile
   userId    String? @unique
   user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -80,7 +79,7 @@ model Teacher {
   lastName  String
   email     String @unique
   phone     String
-  status    String @default("Active") // Active, On Leave
+  status    String @default("Active")
 
   @@index([schoolId])
 }
@@ -98,15 +97,18 @@ model Family {
   legalCustodyHolder   Custody       @default(BOTH)
 
   fatherName           String
-  fatherContactNo      String
+  fatherMobile         String
   fatherOccupation     String?
   fatherIncome         String?
   fatherEmail          String?
-
+  
   motherName           String
-  motherContactNo      String
+  motherMobile         String
   motherOccupation     String?
   motherEmail          String?
+
+  siblingStudyingHere  Boolean @default(false)
+  siblingDetails       String?
 
   address              Address?
   students             Student[] 
@@ -149,11 +151,14 @@ model Student {
   gender             Gender
   dateOfBirth        DateTime
   bloodGroup         String?
+  religion           String?
   category           Category
   nationality        String   @default("Indian")
   isStaffChild       Boolean  @default(false)
   identificationMark String?
-  nationalIdNumber   String?  @unique // Mapped to frontend idCardNumber
+  nationalIdNumber   String?  @unique // Aadhar mapped here
+  abcId              String?
+  panNumber          String?
 
   // Profiles (One-to-One Relationships)
   academicProfile    AcademicProfile?
@@ -183,8 +188,11 @@ model AcademicProfile {
   currentClass         String
   section              String?
   academicSession      String
-  udiseNumber          String? // Added from frontend form
+  udiseNumber          String?
+  
   previousSchool       String?
+  previousClass        String?
+  previousUdiseCode    String?
   previousSchoolMedium String?
   tcNumber             String?
   boardRegistrationNo  String?
@@ -205,7 +213,8 @@ model MedicalProfile {
   familyDoctorName           String?
   familyDoctorContactNumber  String?
   preferredHospital          String?
-  medicalConditionsAllergies String? @db.Text
+  medicalConditions          String? @db.Text
+  allergies                  String?
 
   @@index([schoolId])
 }
@@ -222,9 +231,17 @@ model FeeRecord {
   concessionDetails   String?      @db.Text
 
   admissionFeePaid    Decimal      @default(0.00) @db.Decimal(10, 2)
+  transportFeePaid    Decimal?     @default(0.00) @db.Decimal(10, 2)
   securityDepositPaid Decimal?     @default(0.00) @db.Decimal(10, 2)
+  
   tuitionFeeCycle     TuitionCycle @default(QUARTERLY)
   paymentMode         PaymentMode  @default(CASH)
+
+  // Bank Details
+  bankName            String?
+  accountNumber       String?
+  ifscCode            String?
+  branchNameAndCode   String?
 
   @@index([schoolId])
 }
@@ -250,13 +267,12 @@ model DocumentArchive {
   studentId              String  @unique
   student                Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  // Mapped exactly to Frontend Form File Uploads
   studentPhotoUrl        String?
   birthCertificateUrl    String?
   idCardCopyUrl          String? 
   previousMarksheetUrl   String?
   transferCertificateUrl String? 
-  parentIdCopyUrl        String? 
+  parentIdCopyUrl        String?
 
   @@index([schoolId])
 }
@@ -319,4 +335,4 @@ enum PaymentMode {
   BANK_TRANSFER
   CARD
   CHEQUE
-}
+}   

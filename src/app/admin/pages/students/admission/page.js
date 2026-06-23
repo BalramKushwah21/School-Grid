@@ -110,12 +110,12 @@ export default function StudentAdmissionForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setIsLoading(true);     
         setErrorMessage("");
         setSuccessMessage("");
 
         try {
-            const response = await fetch("/api/school/student/admission", {
+            const response = await fetch("/api/school/admin/student/admission", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
