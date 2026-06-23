@@ -1,6 +1,8 @@
 import React from 'react';
+import { defaultTooltipProps } from 'recharts/types/component/Tooltip';
 
-const ReportDashboard = () => {
+export default function ReportDashboard() {
+  
   return (
     <div className="min-h-screen bg-slate-50 p-8 font-sans">
       {/* Page Header */}
@@ -71,4 +73,3 @@ const ReportDashboard = () => {
   );
 };
 
-export default ReportDashboard;
