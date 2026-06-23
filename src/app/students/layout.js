@@ -1,33 +1,37 @@
 "use client";
 
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import Header from './components/header';
-// Make sure this path correctly points to where you saved the array
-import { studentMenuData } from './components/menuData'; 
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar"; // Custom Student Sidebar
+import Header from "@/components/GlobalHeader"; // Unified Global Header
+import { studentMenuData } from "./components/menuData";
 
 export default function StudentLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	// Desktop mode mein by default open rahega Admin ki tarah
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-gray-100 font-sans antialiased text-gray-800">
-      
-      {/* Sidebar now receives the open/close state from the layout 
-        AND the required menuData to build the links 
-      */}
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
-        menuData={studentMenuData} 
-      />
-      
-      <div className="flex-1 flex flex-col h-full overflow-x-hidden overflow-y-auto">
-        <Header onMenuOpen={() => setIsSidebarOpen(true)} />
+	return (
+		<div className="flex h-screen overflow-hidden bg-gray-100 font-sans antialiased text-gray-800">
+			{/* SIDEBAR: Z-40 par set hoga Sidebar component ke andar */}
+			<Sidebar
+				isOpen={isSidebarOpen}
+				onClose={() => setIsSidebarOpen(false)}
+				menuData={studentMenuData} // Using generic menu mapping
+			/>
 
-        <main className="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+			<div className="flex-1 flex flex-col h-full overflow-x-hidden overflow-y-auto">
+				{/* HEADER CONTAINER: z-50 taaki ye sidebar ke UPAR rahe */}
+				<div className="relative z-50 shadow-sm">
+					<Header
+						isSidebarOpen={isSidebarOpen}
+						toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+					/>
+				</div>
+
+				{/* MAIN CONTENT AREA */}
+				<main className="p-4 sm:p-6 space-y-6 max-w-[1600px] w-full mx-auto relative z-0">
+					{children}
+				</main>
+			</div>
+		</div>
+	);
 }

@@ -1,127 +1,167 @@
-// "use client"
+import {
+	LayoutDashboard,
+	Users,
+	BookOpen,
+	FileText,
+	CheckSquare,
+	UserCheck,
+	MessageSquare,
+	BarChart3,
+	Library,
+	CalendarDays,
+	User,
+} from "lucide-react";
+
 export const teacherMenuData = [
-  {
-    title: "Dashboard",
-    icon: "🏠",
-    path: "/teachers/dashboard",
-  },
-  {
-    title: "My Classes",
-    icon: "👨‍🎓",
-    subMenus: [
-      { title: "Class List", path: "/teachers/classes/list" },
-      { title: "Class Students", path: "/teachers/classes/students" },
-      { title: "Class Performance", path: "/teachers/classes/performance" },
-    ],
-  },
-  {
-    title: "Academics",
-    icon: "📚",
-    subMenus: [
-      { title: "Subjects", path: "/teachers/academics/subjects" },
-      { title: "Lesson Plans", path: "/teachers/academics/lesson-plans" },
-      { title: "Syllabus Progress", path: "/teachers/academics/syllabus-progress" },
-      { title: "Study Materials", path: "/teachers/academics/study-materials" },
-      { title: "Question Bank", path: "/teachers/academics/question-bank" },
-    ],
-  },
-  {
-    title: "Homework & Assignments",
-    icon: "📝",
-    subMenus: [
-      { title: "Create Homework", path: "/teachers/assignments/create-homework" },
-      { title: "Create Assignment", path: "/teachers/assignments/create-assignment" },
-      { title: "Submissions", path: "/teachers/assignments/submissions" },
-      { title: "Evaluation", path: "/teachers/assignments/evaluation" },
-    ],
-  },
-  {
-    title: "Attendance",
-    icon: "📅",
-    subMenus: [
-      { title: "Mark Attendance", path: "/teachers/attendance/mark" },
-      { title: "Attendance Reports", path: "/teachers/attendance/reports" },
-      { title: "Student Leave Requests", path: "/teachers/attendance/leave-requests" },
-    ],
-  },
-  {
-    title: "Timetable",
-    icon: "⏰",
-    subMenus: [
-      { title: "My Timetable", path: "/teachers/timetable/view" },
-      { title: "Substitute Classes", path: "/teachers/timetable/substitute" },
-      { title: "Extra Classes", path: "/teachers/timetable/extra" },
-    ],
-  },
-  {
-    title: "Examinations",
-    icon: "🎯",
-    subMenus: [
-      { title: "Exam Schedule", path: "/teachers/exams/schedule" },
-      { title: "Marks Entry", path: "/teachers/exams/marks-entry" },
-      { title: "Grade Book", path: "/teachers/exams/grade-book" },
-      { title: "Result Analysis", path: "/teachers/exams/result-analysis" },
-      { title: "Report Cards", path: "/teachers/exams/report-cards" },
-    ],
-  },
-  {
-    title: "Communication",
-    icon: "💬",
-    subMenus: [
-      { title: "Announcements", path: "/teachers/communication/announcements" },
-      { title: "Parent Messages", path: "/teachers/communication/parents" },
-      { title: "Student Messages", path: "/teachers/communication/students" },
-      { title: "Circulars", path: "/teachers/communication/circulars" },
-    ],
-  },
-  {
-    title: "Activities",
-    icon: "🏆",
-    subMenus: [
-      { title: "Events", path: "/teachers/activities/events" },
-      { title: "Competitions", path: "/teachers/activities/competitions" },
-      { title: "Sports Records", path: "/teachers/activities/sports" },
-      { title: "Student Achievements", path: "/teachers/activities/achievements" },
-    ],
-  },
-  {
-    title: "Reports & Analytics",
-    icon: "📊",
-    subMenus: [
-      { title: "Class Performance", path: "/teachers/reports/class-performance" },
-      { title: "Subject Performance", path: "/teachers/reports/subject-performance" },
-      { title: "Attendance Analytics", path: "/teachers/reports/attendance" },
-      { title: "Student Progress Reports", path: "/teachers/reports/student-progress" },
-    ],
-  },
-  {
-    title: "Services",
-    icon: "📖",
-    subMenus: [
-      { title: "Library", path: "/teachers/services/library" },
-      { title: "Transport", path: "/teachers/services/transport" },
-      { title: "Inventory Requests", path: "/teachers/services/inventory" },
-    ],
-  },
-  {
-    title: "Leave & HR",
-    icon: "🗓️",
-    subMenus: [
-      { title: "Apply Leave", path: "/teachers/hr/apply-leave" },
-      { title: "Leave History", path: "/teachers/hr/leave-history" },
-      { title: "Attendance Log", path: "/teachers/hr/attendance-log" },
-      { title: "Salary Slips", path: "/teachers/hr/salary-slips" },
-    ],
-  },
-  {
-    title: "My Account",
-    icon: "👤",
-    subMenus: [
-      { title: "Profile", path: "/teachers/account/profile" },
-      { title: "Documents", path: "/teachers/account/documents" },
-      { title: "Settings", path: "/teachers/account/settings" },
-      { title: "Change Password", path: "/teachers/account/change-password" },
-      { title: "Logout", path: "/logout" },
-    ],
-  }
+	{
+		name: "Dashboard",
+		icon: LayoutDashboard,
+		isDropdown: false,
+		link: "/teachers/dashboard",
+	},
+	{
+		name: "My Classes",
+		icon: Users,
+		isDropdown: true,
+		subItems: [
+			{ label: "Class List", link: "/teachers/classes/list" },
+			{ label: "Class Students", link: "/teachers/classes/students" },
+			{
+				label: "Class Performance",
+				link: "/teachers/classes/performance",
+			},
+		],
+	},
+	{
+		name: "Academics",
+		icon: BookOpen,
+		isDropdown: true,
+		subItems: [
+			{ label: "Subjects", link: "/teachers/academics/subjects" },
+			{ label: "Lesson Plans", link: "/teachers/academics/lesson-plans" },
+			{
+				label: "Syllabus Progress",
+				link: "/teachers/academics/syllabus-progress",
+			},
+			{
+				label: "Study Materials",
+				link: "/teachers/academics/study-materials",
+			},
+			{
+				label: "Question Bank",
+				link: "/teachers/academics/question-bank",
+			},
+		],
+	},
+	{
+		name: "Homework & Assignments",
+		icon: FileText,
+		isDropdown: true,
+		subItems: [
+			{
+				label: "Create Homework",
+				link: "/teachers/assignments/create-homework",
+			},
+			{
+				label: "Create Assignment",
+				link: "/teachers/assignments/create-assignment",
+			},
+			{
+				label: "Evaluate Submissions",
+				link: "/teachers/assignments/evaluate",
+			},
+		],
+	},
+	{
+		name: "Examinations",
+		icon: CheckSquare,
+		isDropdown: true,
+		subItems: [
+			{ label: "Exam Schedule", link: "/teachers/exams/schedule" },
+			{ label: "Enter Marks", link: "/teachers/exams/enter-marks" },
+			{ label: "Result Generation", link: "/teachers/exams/results" },
+		],
+	},
+	{
+		name: "Attendance",
+		icon: UserCheck,
+		isDropdown: true,
+		subItems: [
+			{ label: "Mark Attendance", link: "/teachers/attendance/mark" },
+			{ label: "View Reports", link: "/teachers/attendance/reports" },
+			{
+				label: "Leave Requests",
+				link: "/teachers/attendance/leave-requests",
+			},
+		],
+	},
+	{
+		name: "Communication",
+		icon: MessageSquare,
+		isDropdown: true,
+		subItems: [
+			{ label: "Messages", link: "/teachers/communication/messages" },
+			{ label: "Notice Board", link: "/teachers/communication/notices" },
+			{
+				label: "Parent Connect",
+				link: "/teachers/communication/parents",
+			},
+		],
+	},
+	{
+		name: "Reports & Analytics",
+		icon: BarChart3,
+		isDropdown: true,
+		subItems: [
+			{
+				label: "Class Performance",
+				link: "/teachers/reports/class-performance",
+			},
+			{
+				label: "Subject Performance",
+				link: "/teachers/reports/subject-performance",
+			},
+			{
+				label: "Attendance Analytics",
+				link: "/teachers/reports/attendance",
+			},
+			{
+				label: "Student Progress Reports",
+				link: "/teachers/reports/student-progress",
+			},
+		],
+	},
+	{
+		name: "Services",
+		icon: Library,
+		isDropdown: true,
+		subItems: [
+			{ label: "Library", link: "/teachers/services/library" },
+			{ label: "Transport", link: "/teachers/services/transport" },
+			{
+				label: "Inventory Requests",
+				link: "/teachers/services/inventory",
+			},
+		],
+	},
+	{
+		name: "Leave & HR",
+		icon: CalendarDays,
+		isDropdown: true,
+		subItems: [
+			{ label: "Apply Leave", link: "/teachers/hr/apply-leave" },
+			{ label: "Leave History", link: "/teachers/hr/leave-history" },
+			{ label: "Attendance Log", link: "/teachers/hr/attendance-log" },
+			{ label: "Salary Slips", link: "/teachers/hr/salary-slips" },
+		],
+	},
+	{
+		name: "My Account",
+		icon: User,
+		isDropdown: true,
+		subItems: [
+			{ label: "Profile", link: "/teachers/account/profile" },
+			{ label: "Settings", link: "/teachers/account/settings" },
+		],
+	},
 ];

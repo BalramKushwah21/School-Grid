@@ -1,118 +1,105 @@
+import {
+	LayoutDashboard,
+	User,
+	BookOpen,
+	CalendarDays,
+	Trophy,
+	Library,
+	Download,
+	UserCircle,
+} from "lucide-react";
+
 export const parentMenuData = [
-  {
-    title: "Dashboard",
-    icon: "🏠",
-    path: "/parents/dashboard",
-  },
-  {
-    title: "My Child",
-    icon: "👨‍🎓",
-    subMenus: [
-      { title: "Student Profile", path: "/parents/child/profile" },
-      { title: "Academic Information", path: "/parents/child/academic-info" },
-      { title: "Class & Section", path: "/parents/child/class-section" },
-      { title: "Student Documents", path: "/parents/child/documents" },
-    ],
-  },
-  {
-    title: "Academics",
-    icon: "📚",
-    subMenus: [
-      { title: "Subjects", path: "/parents/academics/subjects" },
-      { title: "Syllabus", path: "/parents/academics/syllabus" },
-      { title: "Homework", path: "/parents/academics/homework" },
-      { title: "Assignments", path: "/parents/academics/assignments" },
-      { title: "Study Materials", path: "/parents/academics/study-materials" },
-    ],
-  },
-  {
-    title: "Attendance",
-    icon: "📅",
-    subMenus: [
-      { title: "Attendance Summary", path: "/parents/attendance/summary" },
-      { title: "Monthly Attendance", path: "/parents/attendance/monthly" },
-      { title: "Leave Requests", path: "/parents/attendance/leave-requests" },
-    ],
-  },
-  {
-    title: "Exams & Results",
-    icon: "📝",
-    subMenus: [
-      { title: "Exam Schedule", path: "/parents/exams/schedule" },
-      { title: "Results", path: "/parents/exams/results" },
-      { title: "Report Card", path: "/parents/exams/report-card" },
-      { title: "Performance Analysis", path: "/parents/exams/performance" },
-    ],
-  },
-  {
-    title: "Fees & Payments",
-    icon: "💰",
-    subMenus: [
-      { title: "Fee Details", path: "/parents/fees/details" },
-      { title: "Pending Fees", path: "/parents/fees/pending" },
-      { title: "Online Payment", path: "/parents/fees/pay" },
-      { title: "Payment History", path: "/parents/fees/history" },
-      { title: "Receipts", path: "/parents/fees/receipts" },
-    ],
-  },
-  {
-    title: "Communication",
-    icon: "💬",
-    subMenus: [
-      { title: "Messages", path: "/parents/communication/messages" },
-      { title: "Teacher Communication", path: "/parents/communication/teachers" },
-      { title: "School Notices", path: "/parents/communication/notices" },
-      { title: "PTM Schedule", path: "/parents/communication/ptm" },
-    ],
-  },
-  {
-    title: "Transport",
-    icon: "🚌",
-    subMenus: [
-      { title: "Route Details", path: "/parents/transport/route" },
-      { title: "Driver Information", path: "/parents/transport/driver" },
-      { title: "Bus Tracking", path: "/parents/transport/tracking" },
-    ],
-  },
-  {
-    title: "Activities",
-    icon: "🏆",
-    subMenus: [
-      { title: "Events", path: "/parents/activities/events" },
-      { title: "Competitions", path: "/parents/activities/competitions" },
-      { title: "Sports", path: "/parents/activities/sports" },
-      { title: "Achievements", path: "/parents/activities/achievements" },
-    ],
-  },
-  {
-    title: "Services",
-    icon: "📖",
-    subMenus: [
-      { title: "Library Status", path: "/parents/services/library" },
-      { title: "Issued Books", path: "/parents/services/issued-books" },
-      { title: "Fine Details", path: "/parents/services/fines" },
-    ],
-  },
-  {
-    title: "Downloads",
-    icon: "📂",
-    subMenus: [
-      { title: "Report Cards", path: "/parents/downloads/report-cards" },
-      { title: "Certificates", path: "/parents/downloads/certificates" },
-      { title: "Fee Receipts", path: "/parents/downloads/receipts" },
-      { title: "ID Card", path: "/parents/downloads/id-card" },
-      { title: "School Documents", path: "/parents/downloads/documents" },
-    ],
-  },
-  {
-    title: "Account",
-    icon: "👤",
-    subMenus: [
-      { title: "Parent Profile", path: "/parents/account/profile" },
-      { title: "Linked Students", path: "/parents/account/linked-students" },
-      { title: "Settings", path: "/parents/account/settings" },
-      { title: "Change Password", path: "/parents/account/change-password" },
-      { title: "Logout", path: "/logout" },
-    ],
-  }
+	{
+		name: "Dashboard",
+		icon: LayoutDashboard,
+		isDropdown: false,
+		link: "/parents/dashboard",
+	},
+	{
+		name: "My Child",
+		icon: User,
+		isDropdown: true,
+		subItems: [
+			{ label: "Student Profile", link: "/parents/child/profile" },
+			{
+				label: "Academic Information",
+				link: "/parents/child/academic-info",
+			},
+			{ label: "Class & Section", link: "/parents/child/class-section" },
+			{ label: "Student Documents", link: "/parents/child/documents" },
+		],
+	},
+	{
+		name: "Academics",
+		icon: BookOpen,
+		isDropdown: true,
+		subItems: [
+			{ label: "Subjects", link: "/parents/academics/subjects" },
+			{ label: "Syllabus", link: "/parents/academics/syllabus" },
+			{ label: "Homework", link: "/parents/academics/homework" },
+			{ label: "Assignments", link: "/parents/academics/assignments" },
+			{
+				label: "Study Materials",
+				link: "/parents/academics/study-materials",
+			},
+		],
+	},
+	{
+		name: "Attendance",
+		icon: CalendarDays,
+		isDropdown: true,
+		subItems: [
+			{
+				label: "Attendance Summary",
+				link: "/parents/attendance/summary",
+			},
+			{
+				label: "Monthly Attendance",
+				link: "/parents/attendance/monthly",
+			},
+		],
+	},
+	{
+		name: "Activities",
+		icon: Trophy,
+		isDropdown: true,
+		subItems: [
+			{ label: "Events", link: "/parents/activities/events" },
+			{ label: "Competitions", link: "/parents/activities/competitions" },
+			{ label: "Sports", link: "/parents/activities/sports" },
+			{ label: "Achievements", link: "/parents/activities/achievements" },
+		],
+	},
+	{
+		name: "Services",
+		icon: Library,
+		isDropdown: true,
+		subItems: [
+			{ label: "Library Status", link: "/parents/services/library" },
+			{ label: "Issued Books", link: "/parents/services/issued-books" },
+			{ label: "Fine Details", link: "/parents/services/fines" },
+		],
+	},
+	{
+		name: "Downloads",
+		icon: Download,
+		isDropdown: true,
+		subItems: [
+			{ label: "Report Cards", link: "/parents/downloads/report-cards" },
+			{ label: "Certificates", link: "/parents/downloads/certificates" },
+			{ label: "Fee Receipts", link: "/parents/downloads/receipts" },
+			{ label: "ID Card", link: "/parents/downloads/id-card" },
+			{ label: "School Documents", link: "/parents/downloads/documents" },
+		],
+	},
+	{
+		name: "Account",
+		icon: UserCircle,
+		isDropdown: true,
+		subItems: [
+			{ label: "Profile", link: "/parents/account/profile" },
+			{ label: "Settings", link: "/parents/account/settings" },
+		],
+	},
 ];

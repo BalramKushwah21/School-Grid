@@ -1,101 +1,109 @@
-"use client"
-
-// students/components/menuData.js
+import {
+	LayoutDashboard,
+	BookOpen,
+	CalendarDays,
+	FileSignature,
+	Trophy,
+	CreditCard,
+	Library,
+	Download,
+} from "lucide-react";
 
 export const studentMenuData = [
-  {
-    title: "Dashboard",
-    icon: "🏠",
-    path: "/student/dashboard",
-  },
-  {
-    title: "Learning",
-    icon: "📚",
-    subMenus: [
-      { title: "My Subjects", path: "/students/learning/subjects" },
-      { title: "Study Material", path: "/students/learning/study-material" },
-      { title: "Homework", path: "/students/learning/homework" },
-      { title: "Assignments", path: "/students/learning/assignments" },
-      { title: "Online Classes", path: "/students/learning/online-classes" },
-    ],
-  },
-  {
-    title: "Academics",
-    icon: "📅",
-    subMenus: [
-      { title: "Timetable", path: "/students/academics/timetable" },
-      { title: "Attendance", path: "/students/academics/attendance" },
-      { title: "Syllabus", path: "/students/academics/syllabus" },
-      // Note: Kept Lesson Plans per your layout, though typically a teacher-side feature
-      { title: "Lesson Plans", path: "/students/academics/lesson-plans" }, 
-    ],
-  },
-  {
-    title: "Exams & Results",
-    icon: "📝",
-    subMenus: [
-      { title: "Exam Schedule", path: "/students/exams/schedule" },
-      { title: "Admit Card", path: "/students/exams/admit-card" },
-      { title: "Results", path: "/students/exams/results" },
-      { title: "Report Card", path: "/students/exams/report-card" },
-    ],
-  },
-  {
-    title: "Communication",
-    icon: "💬",
-    subMenus: [
-      { title: "Announcements", path: "/students/communication/announcements" },
-      { title: "Messages", path: "/students/communication/messages" },
-      { title: "Teacher Chat", path: "/students/communication/teacher-chat" },
-    ],
-  },
-  {
-    title: "Activities",
-    icon: "🏆",
-    subMenus: [
-      { title: "Events", path: "/students/activities/events" },
-      { title: "Competitions", path: "/students/activities/competitions" },
-      { title: "Sports", path: "/students/activities/sports" },
-      { title: "Achievements", path: "/students/activities/achievements" },
-    ],
-  },
-  {
-    title: "Fees",
-    icon: "💰",
-    subMenus: [
-      { title: "Fee Status", path: "/students/fees/status" },
-      { title: "Payment History", path: "/students/fees/history" },
-      { title: "Receipts", path: "/students/fees/receipts" },
-    ],
-  },
-  {
-    title: "Services",
-    icon: "📖",
-    subMenus: [
-      { title: "Library", path: "/students/services/library" },
-      { title: "Transport", path: "/students/services/transport" },
-      { title: "Hostel", path: "/students/services/hostel" },
-      { title: "Medical Records", path: "/students/services/medical" },
-    ],
-  },
-  {
-    title: "Downloads",
-    icon: "📂",
-    subMenus: [
-      { title: "Study Materials", path: "/students/downloads/study-materials" },
-      { title: "Certificates", path: "/students/downloads/certificates" },
-      { title: "ID Card", path: "/students/downloads/id-card" },
-      { title: "Documents", path: "/students/downloads/documents" },
-    ],
-  },
-  {
-    title: "My Account",
-    icon: "👤",
-    subMenus: [
-      { title: "Profile", path: "/students/account/profile" },
-      { title: "Settings", path: "/students/account/settings" },
-      { title: "Change Password", path: "/students/account/change-password" },
-      { title: "Logout", path: "/logout" },
-    ],
-  }
+	{
+		name: "Dashboard",
+		icon: LayoutDashboard,
+		isDropdown: false,
+		link: "/students/dashboard",
+	},
+	{
+		name: "Learning",
+		icon: BookOpen,
+		isDropdown: true,
+		subItems: [
+			{ label: "My Subjects", link: "/students/learning/subjects" },
+			{
+				label: "Study Material",
+				link: "/students/learning/study-material",
+			},
+			{ label: "Homework", link: "/students/learning/homework" },
+			{ label: "Assignments", link: "/students/learning/assignments" },
+			{
+				label: "Online Classes",
+				link: "/students/learning/online-classes",
+			},
+		],
+	},
+	{
+		name: "Academics",
+		icon: CalendarDays,
+		isDropdown: true,
+		subItems: [
+			{ label: "Timetable", link: "/students/academics/timetable" },
+			{ label: "Attendance", link: "/students/academics/attendance" },
+			{ label: "Syllabus", link: "/students/academics/syllabus" },
+			{ label: "Lesson Plans", link: "/students/academics/lesson-plans" },
+		],
+	},
+	{
+		name: "Exams & Results",
+		icon: FileSignature,
+		isDropdown: true,
+		subItems: [
+			{ label: "Exam Schedule", link: "/students/exams/schedule" },
+			{ label: "Results", link: "/students/exams/results" },
+		],
+	},
+	{
+		name: "Activities",
+		icon: Trophy,
+		isDropdown: true,
+		subItems: [
+			{ label: "Events", link: "/students/activities/events" },
+			{
+				label: "Competitions",
+				link: "/students/activities/competitions",
+			},
+			{ label: "Sports", link: "/students/activities/sports" },
+			{
+				label: "Achievements",
+				link: "/students/activities/achievements",
+			},
+		],
+	},
+	{
+		name: "Fees",
+		icon: CreditCard,
+		isDropdown: true,
+		subItems: [
+			{ label: "Fee Status", link: "/students/fees/status" },
+			{ label: "Payment History", link: "/students/fees/history" },
+			{ label: "Receipts", link: "/students/fees/receipts" },
+		],
+	},
+	{
+		name: "Services",
+		icon: Library,
+		isDropdown: true,
+		subItems: [
+			{ label: "Library", link: "/students/services/library" },
+			{ label: "Transport", link: "/students/services/transport" },
+			{ label: "Hostel", link: "/students/services/hostel" },
+			{ label: "Medical Records", link: "/students/services/medical" },
+		],
+	},
+	{
+		name: "Downloads",
+		icon: Download,
+		isDropdown: true,
+		subItems: [
+			{
+				label: "Study Materials",
+				link: "/students/downloads/study-materials",
+			},
+			{ label: "Certificates", link: "/students/downloads/certificates" },
+			{ label: "ID Card", link: "/students/downloads/id-card" },
+			{ label: "Documents", link: "/students/downloads/documents" },
+		],
+	},
 ];
