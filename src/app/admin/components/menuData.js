@@ -49,7 +49,7 @@ export const menuConfig = [
     isDropdown: true,
     subItems: [
       { label: "Classes", link: "/admin/pages/academics/classes" },
-      { label: "Sections", link: "/admin/pages/academics/sections" },
+      // { label: "Sections", link: "/admin/pages/academics/sections" },
       { label: "Subjects", link: "/admin/pages/academics/subjects" },
       { label: "Timetable", link: "/admin/pages/academics/timetable" },
       { label: "Assignments", link: "/admin/pages/academics/assignments" },
