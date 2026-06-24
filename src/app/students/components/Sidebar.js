@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { GraduationCap, X, ChevronDown, ChevronRight } from "lucide-react";
-
+import Link from "next/link";
 // ==========================================
 // 1. NAV ITEM COMPONENT (Admin Style)
 // ==========================================
@@ -26,7 +26,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
 
 	if (!menu.isDropdown) {
 		return (
-			<a
+			<Link
 				href={menu.link}
 				onClick={onClick}
 				className={`w-full flex items-center gap-4 px-4 py-3.5 mb-1 rounded-xl transition-all duration-200 ${
@@ -41,7 +41,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
 				<span className="tracking-wide text-[15px] whitespace-nowrap">
 					{menu.name}
 				</span>
-			</a>
+			</Link>
 		);
 	}
 
@@ -81,15 +81,15 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
 			{isOpen && (
 				<div className="ml-[2.75rem] mt-1 mb-2 space-y-3 border-l border-white/10 pl-4 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
 					{menu.subItems.map((subItem, index) => (
-						<a
+						<Link
 							key={index}
 							href={subItem.link}
 							className="block text-[14px] text-slate-400 hover:text-white transition-colors whitespace-nowrap"
 						>
 							{subItem.label}
-						</a>
+						</Link>
 					))}
-				</div>
+ 			</div>
 			)}
 		</div>
 	);

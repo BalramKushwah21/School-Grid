@@ -2,10 +2,10 @@
 
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma"
+
 
 export const authOptions = {
 	providers: [
@@ -32,11 +32,12 @@ export const authOptions = {
 				});
 
 				if (!user) {
+					console.log("User Not Found");
 					throw new Error(
 						"No user found with this email or username",
 					);
 				}
-				console.log("User Role:", user.userRole);
+				
 
 				// 2. Verify Password
 				const passwordMatch = await bcrypt.compare(
@@ -48,11 +49,12 @@ export const authOptions = {
 				}
 
 				// 3. Return user object (this gets passed to the JWT callback)
+				
 				return user;
 			},
 		}),
 	],
-
+    
 	callbacks: {
 		// JWT Callback: Yahan hum token ke andar user ka data daalte hain
 		async jwt({ token, user }) {

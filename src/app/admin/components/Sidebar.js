@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { GraduationCap, Settings, X, ChevronDown, ChevronRight } from "lucide-react";
 import { menuConfig } from "./menuData"; // Assuming your menuConfig array is saved here
 import { prisma }  from "@/lib/prisma";
+import Link from "next/link";
+
 
 // ==========================================
 // 1. NAV ITEM COMPONENT (Combined internally)
@@ -39,7 +41,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
   // If no dropdown (e.g., Dashboard)
   if (!menu.isDropdown) {
     return (
-      <a 
+      <Link 
         href={menu.link} 
         onClick={onClick}
         className={`w-full flex items-center gap-4 px-4 py-3.5 mb-1 rounded-xl transition-all duration-200 ${
@@ -50,7 +52,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
       >
         <Icon className={`w-[22px] h-[22px] transition-colors ${iconClass}`} />
         <span className="tracking-wide text-[15px]">{menu.name}</span>
-      </a>
+      </Link>
     );
   }
 
@@ -84,13 +86,13 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
       {isOpen && (
         <div className="ml-[2.75rem] mt-1 mb-2 space-y-3 border-l border-white/10 pl-4 py-2">
           {menu.subItems.map((subItem, index) => (
-            <a 
+            <Link
               key={index} 
               href={subItem.link} 
               className="block text-[14px] text-slate-400 hover:text-white transition-colors"
             >
               {subItem.label}
-            </a>
+            </Link>
           ))}
         </div>
       )}
@@ -166,7 +168,7 @@ export default function Sidebar({ isOpen, onClose, schoolData }) {
                 {/* Bottom Profile Avatar ("N" Bubble) */}
                 <div className="p-6 shrink-0 border-t border-white/5">
                     <div className="w-11 h-11 rounded-full bg-[#0a0a0a] border border-white/10 shadow-inner flex items-center justify-center text-white text-lg font-medium cursor-pointer hover:bg-black transition-colors">
-                        N
+                        <Settings className="w-4 h-4"/>
                     </div>
                 </div>
             </aside>

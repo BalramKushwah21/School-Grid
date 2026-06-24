@@ -8,6 +8,8 @@ import Link from "next/link";
 import { User, Lock, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react"; // Changed Mail to User
 
 export default function LoginPage() {
+ 
+ 
   const router = useRouter();
   // Email ki jagah generic 'identifier' use kar rahe hain
   const [identifier, setIdentifier] = useState("");
@@ -27,12 +29,28 @@ export default function LoginPage() {
       password: password,
     });
 
+    
     if (result?.error) {
       setError("Invalid credentials. Please try again.");
       setLoading(false);
-    } else {
+    }
+    
+    else if(result.role === "ADMIN"){
+      
       router.push("/admin/dashboard");
     }
+    else if (result.role === "TEACHER") {
+      router.push("/teachers/dashboard");
+    } else if (result.role === "PARENT") {
+      router.push("/parents/dashboard");
+    } else if (result.role === "STUDENT") {
+      router.push("/students/dashboard");
+    } else {
+      alert("User Role:", session.user.role);
+    
+    
+  }
+
   };
 
   return (
@@ -184,3 +202,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
