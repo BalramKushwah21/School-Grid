@@ -32,6 +32,20 @@ export const teacherMenuData = [
 			},
 		],
 	},
+
+	{
+		name: "Attendance",
+		icon: UserCheck,
+		isDropdown: true,
+		subItems: [
+			{ label: "Mark Attendance", link: "/teachers/pages/attendance/markAttendance" },
+			{ label: "View Reports", link: "/teachers/attendance/reports" },
+			{
+				label: "Leave Requests",
+				link: "/teachers/attendance/leave-requests",
+			},
+		],
+	},
 	{
 		name: "Academics",
 		icon: BookOpen,
@@ -82,19 +96,7 @@ export const teacherMenuData = [
 			{ label: "Result Generation", link: "/teachers/exams/results" },
 		],
 	},
-	{
-		name: "Attendance",
-		icon: UserCheck,
-		isDropdown: true,
-		subItems: [
-			{ label: "Mark Attendance", link: "/teachers/attendance/mark" },
-			{ label: "View Reports", link: "/teachers/attendance/reports" },
-			{
-				label: "Leave Requests",
-				link: "/teachers/attendance/leave-requests",
-			},
-		],
-	},
+	
 	{
 		name: "Communication",
 		icon: MessageSquare,
