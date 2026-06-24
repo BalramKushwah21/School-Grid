@@ -67,7 +67,7 @@ export const menuConfig = [
       {label: "Generate Marksheet", link:"/admin/pages/marksheetManagement/generateMarksheet"},
       {label: "Bulk Generate", link:"/admin/pages/marksheetManagement/bulkGenerate"},
       {label: "My Templates", link:"/admin/pages/marksheetManagement/generateMarksheet"},
-      {label: "Templates", link:"/admin/pages/marksheetManagements/templates"},
+      {label: "Templates", link:"/admin/pages/marksheetManagement/templates"},
     ]
   },
   {
