@@ -16,6 +16,7 @@ const NavItem = ({ menu, isOpen, onToggle, isActive, onClick }) => {
     "Dashboard": "text-orange-400",
     "Students": "text-blue-400",
     "Teachers": "text-emerald-400",
+    "Students": "text-blue-400",
     "Academics": "text-purple-400",
     "Attendance": "text-pink-400",
     "Examination": "text-rose-400",

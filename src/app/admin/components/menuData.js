@@ -1,5 +1,6 @@
 // "use client"
 
+import { label, line } from 'framer-motion/client';
 import { 
   Users, UserCheck, BookOpen, ClipboardCheck, FileSpreadsheet, 
   CreditCard, Users2, Bookmark, Bus, MessageSquare, HeartPulse, 
@@ -55,6 +56,18 @@ export const menuConfig = [
       { label: "Lesson Plans", link: "/admin/pages/academics/lessons" },
       { label: "Academic Calendar", link: "/admin/pages/academics/calendar" },
       { label: "Syllabus Management", link: "/admin/pages/academics/syllabus" }
+    ]
+  },
+
+  {
+    name:"Marksheet Managements",
+    icon:BookOpen,
+    isDropdown:true,
+    subItems:[
+      {label: "Generate Marksheet", link:"/admin/pages/marksheetManagement/generateMarksheet"},
+      {label: "Bulk Generate", link:"/admin/pages/marksheetManagement/bulkGenerate"},
+      {label: "My Templates", link:"/admin/pages/marksheetManagement/generateMarksheet"},
+      {label: "Templates", link:"/admin/pages/marksheetManagements/templates"},
     ]
   },
   {
