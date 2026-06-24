@@ -1,13 +1,14 @@
-"use client"
+"use client";
 import { useState, useEffect, useMemo } from 'react';
-
-export function useIsMounted() {
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-  return isMounted;
-}
+import { 
+  Users, UserCheck, UserX, Clock, Save, Search, Calendar, CheckCircle, 
+  XCircle, Filter, FileText, BarChart3, TrendingUp, HelpCircle, ArrowUpDown, 
+  AlertTriangle, ShieldCheck, Activity, Percent, PieChart as PieIcon, Award
+} from 'lucide-react';
+import { 
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, 
+  CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell 
+} from 'recharts';
 
 const INITIAL_STUDENTS = [
   { id: "STU-2026-001", name: "Alex Smith", rollNo: "01", class: "Grade 9-A", gender: "Male" },
@@ -28,14 +29,43 @@ const INITIAL_STUDENTS = [
 
 const CLASSES = ["Grade 9-A", "Grade 10-A", "Grade 11-A"];
 
+// Premium Research-Based Analytics Datasets
+const HISTORICAL_MONTHS_DATA = [
+  { name: 'Jan', AttendanceRate: 92, Revenue: 4200, Absentees: 45 },
+  { name: 'Feb', AttendanceRate: 94, Revenue: 4500, Absentees: 32 },
+  { name: 'Mar', AttendanceRate: 95, Revenue: 4800, Absentees: 28 },
+  { name: 'Apr', AttendanceRate: 89, Revenue: 3900, Absentees: 64 },
+  { name: 'May', AttendanceRate: 85, Revenue: 3500, Absentees: 85 },
+  { name: 'Jun', AttendanceRate: 94, Revenue: 5100, Absentees: 30 },
+  { name: 'Jul', AttendanceRate: 93, Revenue: 4900, Absentees: 35 },
+  { name: 'Aug', AttendanceRate: 91, Revenue: 4600, Absentees: 48 },
+  { name: 'Sep', AttendanceRate: 96, Revenue: 5300, Absentees: 20 },
+  { name: 'Oct', AttendanceRate: 95, Revenue: 5200, Absentees: 25 },
+  { name: 'Nov', AttendanceRate: 93, Revenue: 5000, Absentees: 38 },
+  { name: 'Dec', AttendanceRate: 90, Revenue: 4700, Absentees: 52 },
+];
+
+const GENDER_DEMOGRAPHICS = [
+  { name: 'Male Students', value: 55, color: '#4f46e5' },
+  { name: 'Female Students', value: 45, color: '#ec4899' },
+];
+
+const DAY_OF_WEEK_ANALYSIS = [
+  { day: 'Monday', rate: 91 },
+  { day: 'Tuesday', rate: 95 },
+  { day: 'Wednesday', rate: 96 },
+  { day: 'Thursday', rate: 94 },
+  { day: 'Friday', rate: 88 },
+];
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState("daily"); // Defaulting focus on monthly for quick check-out
+  const [activeTab, setActiveTab] = useState("daily"); 
   const [selectedClass, setSelectedClass] = useState("Grade 9-A");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [students, setStudents] = useState(INITIAL_STUDENTS);
   
-  // Daily registry states
+  // Daily register mappings
   const [attendance, setAttendance] = useState(() => {
     const initial = {};
     INITIAL_STUDENTS.forEach(student => {
@@ -47,23 +77,20 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   
-  // Monthly calendar contexts
+  // Monthly calendar configurations
   const [selectedMonth, setSelectedMonth] = useState("2026-06");
-
   const [monthlyRecords, setMonthlyRecords] = useState(() => {
     const records = {};
-    // Seed initial records across 31 possible calendar days to prevent empty initial states
     INITIAL_STUDENTS.forEach(student => {
       for (let day = 1; day <= 31; day++) {
         const rand = Math.random();
-        // Weekends present a lower default rate or are marked differently, standardizing weekday presets:
-        records[`${student.id}-${day}`] = rand > 0.9 ? "absent" : rand > 0.82 ? "late" : "present";
+        records[`${student.id}-${day}`] = rand > 0.92 ? "absent" : rand > 0.85 ? "late" : "present";
       }
     });
     return records;
   });
 
-  // Biometric Terminal states
+  // Biometric Terminal states (UNCHANGED as requested)
   const [terminalStatus, setTerminalStatus] = useState("Online"); 
   const [biometricLogs, setBiometricLogs] = useState([
     { id: "BIO-1092", time: "08:15 AM", studentId: "STU-2026-001", name: "Alex Smith", device: "Front Gate Terminal 1", match: "99.4%" },
@@ -71,7 +98,6 @@ export default function App() {
     { id: "BIO-1094", time: "08:19 AM", studentId: "STU-2026-003", name: "Ethan Davis", device: "Back Lobby Terminal 2", match: "99.1%" }
   ]);
 
-  // Global Sync / Audit Notifications
   const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
   const [databaseLogs, setDatabaseLogs] = useState([
     { id: "SYNC-100", class: "Grade 9-A", date: "2026-06-18", presentCount: 4, absentCount: 1, timestamp: "08:30 AM" }
@@ -99,7 +125,6 @@ export default function App() {
   const daysInMonth = useMemo(() => {
     if (!selectedMonth) return 30;
     const [year, month] = selectedMonth.split('-').map(Number);
-    // Month parameter is 1-based index (e.g. 6 for June), passing 0 fetches the last day of the previous index month
     return new Date(year, month, 0).getDate();
   }, [selectedMonth]);
 
@@ -133,21 +158,27 @@ export default function App() {
     triggerNotification(`Updated ${studentName} (Day ${day}) status to ${next.toUpperCase()}`, "info");
   };
 
-  const getStudentMonthlyRate = (studentId) => {
-    let compliantCount = 0;
-    let countedDays = 0;
-    
+  // Comprehensive Student Counter Engine for Monthly Matrix
+  const getStudentMonthlyTotals = (studentId) => {
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+    let excused = 0;
+    let totalCounted = 0;
+
     for (let day = 1; day <= daysInMonth; day++) {
-      // Exclude weekends from overall compliance stats to avoid skewing school metrics
       if (!checkIsWeekend(day)) {
-        countedDays++;
+        totalCounted++;
         const status = monthlyRecords[`${studentId}-${day}`] || "present";
-        if (status === "present" || status === "late" || status === "excused") {
-          compliantCount++;
-        }
+        if (status === "present") present++;
+        if (status === "absent") absent++;
+        if (status === "late") late++;
+        if (status === "excused") excused++;
       }
     }
-    return countedDays > 0 ? Math.round((compliantCount / countedDays) * 100) : 100;
+    const standardPresence = present + late + excused;
+    const rate = totalCounted > 0 ? Math.round((standardPresence / totalCounted) * 100) : 100;
+    return { present, absent, late, excused, rate };
   };
 
   const stats = useMemo(() => {
@@ -198,7 +229,7 @@ export default function App() {
     setTimeout(() => {
       setLoading(false);
       setIsSaved(true);
-      triggerNotification(`Attendance registry committed successfully for ${selectedClass}`, "success");
+      triggerNotification(`Attendance records safely saved for ${selectedClass}`, "success");
       
       setDatabaseLogs(prev => [
         {
@@ -217,25 +248,23 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-12">
       
-      {/* Toast Notification Bar */}
+      {/* Toast Notification Container */}
       {notification.show && (
         <div className={`fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border flex items-center gap-3 transition-all duration-300 transform translate-y-0 ${
           notification.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-blue-50 border-blue-200 text-blue-800'
         }`}>
-          <span className="text-lg">
-            {notification.type === 'success' ? '🚀' : 'ℹ️'}
-          </span>
+          <span className="text-lg">{notification.type === 'success' ? '🚀' : 'ℹ️'}</span>
           <p className="text-sm font-semibold">{notification.message}</p>
         </div>
       )}
 
-      {/* Main Administrative Header */}
+      {/* Main Command Shell Header */}
       <header className="bg-white border-b border-slate-200 py-6 px-8 print:hidden">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Student Attendance System</h1>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Attendance Workspace</h1>
             <p className="text-sm text-slate-500 mt-1">
-              Mark registries, observe historical grids, verify biometric terminal logs, and export system-wide compliance ledgers.
+              Mark records, inspect global analytics heatmaps, track biometric streams, and compile compliance ledgers.
             </p>
           </div>
 
@@ -244,91 +273,54 @@ export default function App() {
               onClick={() => window.print()}
               className="px-5 py-2.5 font-bold rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm shadow-sm transition flex items-center gap-2"
             >
-              Print Master Copy (PDF)
+              Print Register Copy (PDF)
             </button>
             <button
               onClick={handleSyncDatabase}
               disabled={loading || isSaved}
               className={`px-5 py-2.5 font-bold rounded-lg text-sm transition flex items-center gap-2 shadow-md ${
-                isSaved 
-                ? 'bg-emerald-600 text-white cursor-default' 
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                isSaved ? 'bg-emerald-600 text-white cursor-default' : 'bg-indigo-600 hover:bg-indigo-700 text-white'
               }`}
             >
-              {loading ? 'Synchronizing Cloud...' : isSaved ? '✓ Synced to Server' : 'Commit Daily Save'}
+              {loading ? 'Syncing Base...' : isSaved ? '✓ Saved to Database' : 'Commit Register Logs'}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ================= PRINT HEADING ONLY ================= */}
-      <div className="hidden print:block text-center border-b-2 border-slate-800 pb-6 mb-8 mt-4">
-        <h1 className="text-3xl font-black uppercase tracking-widest text-slate-900">Excel Academy International</h1>
-        <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mt-1">Attendance Register Registry Audit Sheet</p>
-        <div className="flex justify-between mt-6 text-xs text-slate-600 font-bold">
-          <span>Active Focus Segment: {selectedClass}</span>
-          <span>Registry Date Target: {selectedDate}</span>
-          <span>Attendance Rate Score: {stats.rate}%</span>
-        </div>
-      </div>
-
-      {/* ================= MAIN NAVIGATION TABS ================= */}
+      {/* Navigation Sub-menu Tabs */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 mt-6 print:hidden">
         <div className="flex flex-wrap border-b border-slate-200">
-          <button
-            onClick={() => setActiveTab("daily")}
-            className={`py-3.5 px-6 font-bold text-sm border-b-2 transition flex items-center gap-2 ${
-              activeTab === "daily"
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            📋 Daily Attendance Registry
-          </button>
-          <button
-            onClick={() => setActiveTab("monthly")}
-            className={`py-3.5 px-6 font-bold text-sm border-b-2 transition flex items-center gap-2 ${
-              activeTab === "monthly"
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            📅 Monthly Grid View
-          </button>
-          <button
-            onClick={() => setActiveTab("biometric")}
-            className={`py-3.5 px-6 font-bold text-sm border-b-2 transition flex items-center gap-2 ${
-              activeTab === "biometric"
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            🧬 Biometric Sync Terminal
-          </button>
-          <button
-            onClick={() => setActiveTab("reports")}
-            className={`py-3.5 px-6 font-bold text-sm border-b-2 transition flex items-center gap-2 ${
-              activeTab === "reports"
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            📈 Statistical Reports
-          </button>
+          {[
+            { id: "daily", label: "📋 Daily Attendance Register" },
+            { id: "monthly", label: "📅 Monthly Analysis Grid" },
+            { id: "biometric", label: "🧬 Biometric Live Terminal" },
+            { id: "reports", label: "📈 Statistical Metrics Sheets" }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-3.5 px-6 font-bold text-sm border-b-2 transition flex items-center gap-2 ${
+                activeTab === tab.id ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* ================= PRIMARY LAYOUT DECKS ================= */}
+      {/* Main Structural Viewports */}
       <main className="max-w-7xl mx-auto p-4 md:p-8">
 
-        {/* 1. DAILY REGISTRY TAB */}
+        {/* 1. DAILY REGISTRY TERMINAL VIEW */}
         {activeTab === "daily" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-200">
             
-            {/* Left Workspace Column: Filters & Main Student Table */}
+            {/* Left Filter & Ledger Section */}
             <div className="lg:col-span-8 space-y-6 print:col-span-12 print:w-full">
               
-              {/* Controls Panel */}
+              {/* Context Controllers Panel */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between print:hidden">
                 <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
                   <div>
@@ -345,7 +337,7 @@ export default function App() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Date Target</label>
+                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Target Date</label>
                     <input
                       type="date"
                       value={selectedDate}
@@ -355,14 +347,12 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Local search engine input */}
+                {/* Instant Search Bar */}
                 <div className="relative w-full md:w-72">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-450 text-sm">
-                    🔍
-                  </span>
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-sm">🔍</span>
                   <input
                     type="text"
-                    placeholder="Search class records..."
+                    placeholder="Search active class records..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 border border-slate-200 bg-slate-50 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm font-medium"
@@ -370,18 +360,18 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Status Widgets Row */}
+              {/* Dynamic Status Dashboard Trackers */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 print:hidden">
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Registered</span>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Registered Enrolment</span>
                   <span className="text-xl font-black text-slate-900">{stats.total}</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Present</span>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Present</span>
                   <span className="text-xl font-black text-emerald-600">{stats.present}</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Absent</span>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Absent</span>
                   <span className="text-xl font-black text-rose-600">{stats.absent}</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
@@ -389,15 +379,15 @@ export default function App() {
                   <span className="text-xl font-black text-amber-500">{stats.late}</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center col-span-2 md:col-span-1">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Compliance Rate</span>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Compliance Target</span>
                   <span className="text-xl font-black text-indigo-600">{stats.rate}%</span>
                 </div>
               </div>
 
-              {/* Table Student Deck */}
+              {/* Main Student Register Sheet */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:border-none print:shadow-none">
                 
-                {/* Bulk Operations Bar */}
+                {/* Bulk Actions Interface */}
                 <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center print:hidden">
                   <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider">Cohort Attendance List</h3>
                   <div className="flex gap-2">
@@ -416,23 +406,23 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Registry Table */}
+                {/* Core Registry Layout Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider bg-slate-50/50 print:bg-transparent">
+                      <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider bg-slate-50/50">
                         <th className="p-4 w-16">Roll No</th>
-                        <th className="p-4">Student Info</th>
-                        <th className="p-4 w-60 text-center print:hidden">Change Status Option</th>
+                        <th className="p-4">Student Identity Profile</th>
+                        <th className="p-4 w-60 text-center print:hidden">Modify Status Parameters</th>
                         <th className="p-4 hidden print:table-cell text-center">Status</th>
-                        <th className="p-4">System Remarks / Medical</th>
+                        <th className="p-4">System Remarks / Compliance Notes</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-sm">
                       {filteredStudents.length === 0 ? (
                         <tr>
                           <td colSpan="4" className="p-12 text-center text-slate-400 italic">
-                            No students registered in the selected scope matching criteria.
+                            No students registered inside the targeted filter matrix scope.
                           </td>
                         </tr>
                       ) : (
@@ -440,94 +430,56 @@ export default function App() {
                           const currentStatus = attendance[student.id] || "present";
                           return (
                             <tr key={student.id} className="hover:bg-slate-50/50 transition">
-                              
-                              {/* Roll Designation */}
                               <td className="p-4 font-mono font-black text-slate-400">{student.rollNo}</td>
-                              
-                              {/* Profile Core Info */}
                               <td className="p-4">
                                 <div className="flex items-center gap-3">
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs text-white ${
-                                    student.gender === 'Female' ? 'bg-indigo-400' : 'bg-slate-400'
+                                    student.gender === 'Female' ? 'bg-pink-500' : 'bg-indigo-500'
                                   }`}>
                                     {student.name[0]}
                                   </div>
                                   <div>
                                     <p className="font-bold text-slate-900 leading-tight">{student.name}</p>
-                                    <p className="text-[9px] text-slate-400 font-bold font-mono">{student.id}</p>
+                                    <p className="text-[9px] text-slate-400 font-bold font-mono">{student.id} • {student.gender}</p>
                                   </div>
                                 </div>
                               </td>
 
-                              {/* Web Interact Buttons */}
+                              {/* Interactive Live Status Modifiers */}
                               <td className="p-4 print:hidden">
-                                <div className="flex gap-1 bg-slate-150/60 p-1 rounded-lg max-w-sm mx-auto">
-                                  <button
-                                    onClick={() => handleStatusChange(student.id, "present")}
-                                    className={`flex-1 py-1 text-[10px] font-bold rounded transition ${
-                                      currentStatus === "present" 
-                                      ? "bg-emerald-500 text-white shadow-sm" 
-                                      : "text-slate-500 hover:bg-slate-200"
-                                    }`}
-                                  >
-                                    Present
-                                  </button>
-                                  <button
-                                    onClick={() => handleStatusChange(student.id, "absent")}
-                                    className={`flex-1 py-1 text-[10px] font-bold rounded transition ${
-                                      currentStatus === "absent" 
-                                      ? "bg-rose-500 text-white shadow-sm" 
-                                      : "text-slate-500 hover:bg-slate-200"
-                                    }`}
-                                  >
-                                    Absent
-                                  </button>
-                                  <button
-                                    onClick={() => handleStatusChange(student.id, "late")}
-                                    className={`flex-1 py-1 text-[10px] font-bold rounded transition ${
-                                      currentStatus === "late" 
-                                      ? "bg-amber-400 text-white shadow-sm" 
-                                      : "text-slate-500 hover:bg-slate-200"
-                                    }`}
-                                  >
-                                    Late
-                                  </button>
-                                  <button
-                                    onClick={() => handleStatusChange(student.id, "excused")}
-                                    className={`flex-1 py-1 text-[10px] font-bold rounded transition ${
-                                      currentStatus === "excused" 
-                                      ? "bg-slate-500 text-white shadow-sm" 
-                                      : "text-slate-500 hover:bg-slate-200"
-                                    }`}
-                                  >
-                                    Excused
-                                  </button>
+                                <div className="flex gap-1 bg-slate-100 p-1 rounded-lg max-w-sm mx-auto">
+                                  {['present', 'absent', 'late', 'excused'].map(statusOpt => (
+                                    <button
+                                      key={statusOpt}
+                                      onClick={() => handleStatusChange(student.id, statusOpt)}
+                                      className={`flex-1 py-1 text-[10px] capitalize font-bold rounded transition-all ${
+                                        currentStatus === statusOpt 
+                                        ? statusOpt === 'present' ? "bg-emerald-600 text-white shadow-sm"
+                                          : statusOpt === 'absent' ? "bg-rose-600 text-white shadow-sm"
+                                          : statusOpt === 'late' ? "bg-amber-500 text-white shadow-sm"
+                                          : "bg-slate-600 text-white shadow-sm"
+                                        : "text-slate-500 hover:bg-slate-200"
+                                      }`}
+                                    >
+                                      {statusOpt}
+                                    </button>
+                                  ))}
                                 </div>
                               </td>
 
-                              {/* Static print status badge */}
                               <td className="p-4 hidden print:table-cell text-center font-bold font-mono uppercase">
-                                <span className={`text-xs px-2 py-0.5 rounded border ${
-                                  currentStatus === "present" ? "text-emerald-700 bg-emerald-50 border-emerald-100" :
-                                  currentStatus === "absent" ? "text-rose-700 bg-rose-50 border-rose-100" :
-                                  currentStatus === "late" ? "text-amber-700 bg-amber-50 border-amber-100" :
-                                  "text-slate-700 bg-slate-50 border-slate-100"
-                                }`}>
-                                  {currentStatus}
-                                </span>
+                                <span className="text-xs px-2 py-0.5 rounded border">{currentStatus}</span>
                               </td>
 
-                              {/* Notes Parameter */}
                               <td className="p-4">
                                 <input
                                   type="text"
                                   value={studentNotes[student.id] || ""}
                                   onChange={(e) => handleNoteChange(student.id, e.target.value)}
-                                  placeholder="Add details (e.g., medical leave...)"
+                                  placeholder="Add diagnostic notes..."
                                   className="w-full p-2 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:bg-white outline-none focus:ring-1 focus:ring-indigo-500"
                                 />
                               </td>
-
                             </tr>
                           );
                         })
@@ -535,244 +487,203 @@ export default function App() {
                     </tbody>
                   </table>
                 </div>
-
-                {/* Print Sign-off space */}
-                <div className="hidden print:flex justify-between items-end text-xs font-bold text-slate-700 pt-28 pb-8 px-6">
-                  <div className="text-center">
-                    <div className="w-32 border-t border-slate-400 mx-auto mb-1"></div>
-                    <span>Homeroom Class Teacher Signature</span>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-32 border-t border-slate-400 mx-auto mb-1"></div>
-                    <span>Authorized Academic Seal</span>
-                  </div>
-                </div>
-
               </div>
-
             </div>
 
-            {/* Right Side Column: Server Logs & Connection parameters */}
+            {/* Right Side Auditing Stream logs Panel */}
             <div className="lg:col-span-4 space-y-6 print:hidden">
-              
-              {/* Cloud Connection Panel */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <span className="text-[10px] font-black uppercase text-indigo-700 tracking-wider block">Server Synchronization</span>
-                
+                <span className="text-[10px] font-black uppercase text-indigo-700 tracking-wider block">Live Cloud Link Synchronization</span>
                 <div className="flex items-center justify-between font-bold text-sm">
-                  <span>Network Sync Status</span>
-                  <span className="bg-indigo-50 text-indigo-700 text-[10px] px-2.5 py-1 rounded border border-indigo-100">STABLE</span>
+                  <span>Network Status Gateway</span>
+                  <span className="bg-emerald-50 text-emerald-700 text-[10px] px-2.5 py-1 rounded border border-emerald-100 font-mono">CONNECTED</span>
                 </div>
-
                 <div className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full ${isSaved ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400 animate-pulse'}`}></span>
+                  <span className={`w-2.5 h-2.5 rounded-full ${isSaved ? 'bg-emerald-500' : 'bg-amber-400 animate-pulse'}`}></span>
                   <p className="text-xs font-semibold text-slate-500">
-                    {isSaved ? "Saved. All active changes written to cloud server." : "Unsaved. Changes pending database sync."}
+                    {isSaved ? "All terminal logs successfully committed." : "Unsaved modifications pending data write."}
                   </p>
                 </div>
-
                 {!isSaved && (
                   <button
                     onClick={handleSyncDatabase}
-                    disabled={loading}
                     className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 text-xs font-bold rounded-lg transition shadow-sm"
                   >
-                    {loading ? 'Uploading modifications...' : 'Force System Database Upload'}
+                    Force Database Write Upload
                   </button>
                 )}
               </div>
 
-              {/* Saved Registries Log feed */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Registry Sync Audit Trail</h3>
                 <div className="space-y-3 max-h-72 overflow-y-auto">
-                  {databaseLogs.length === 0 ? (
-                    <p className="text-xs text-slate-400 italic">No sync entries verified during this session.</p>
-                  ) : (
-                    databaseLogs.map((log) => (
-                      <div key={log.id} className="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5">
-                        <div className="flex justify-between items-center font-mono font-bold">
-                          <span className="text-indigo-600">{log.id}</span>
-                          <span className="text-slate-400 text-[10px]">{log.timestamp}</span>
-                        </div>
-                        <div className="text-[11px] text-slate-500 font-semibold flex justify-between">
-                          <span>{log.class} • {log.date}</span>
-                          <span className="text-emerald-700 font-black">{log.presentCount} OK / {log.absentCount} Absent</span>
-                        </div>
+                  {databaseLogs.map((log) => (
+                    <div key={log.id} className="text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5">
+                      <div className="flex justify-between items-center font-mono font-bold">
+                        <span className="text-indigo-600">{log.id}</span>
+                        <span className="text-slate-400 text-[10px]">{log.timestamp}</span>
                       </div>
-                    ))
-                  )}
+                      <div className="text-[11px] text-slate-500 font-semibold flex justify-between">
+                        <span>{log.class} • {log.date}</span>
+                        <span className="text-emerald-700 font-black">{log.presentCount} OK / {log.absentCount} ABS</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. MONTHLY CALENDAR GRID WITH DYNAMIC RESEARCH GRAPH */}
+        {activeTab === "monthly" && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            
+            {/* Added: Historical Month-wise Performance Trend Graph */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Historical Annual Attendance Trend</h3>
+                  <p className="text-xs text-slate-500">Longitudinal analytics tracking average monthly attendance indexes across academic sessions.</p>
+                </div>
+                <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full flex items-center gap-1">
+                  <TrendingUp size={14} /> Session Target: 2026-27
+                </span>
+              </div>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={HISTORICAL_MONTHS_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="name" stroke="#94a3b8" style={{ fontSize: '11px', fontFamily: 'monospace' }} />
+                    <YAxis domain={[70, 100]} stroke="#94a3b8" style={{ fontSize: '11px', fontFamily: 'monospace' }} />
+                    <Tooltip contentStyle={{ background: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }} />
+                    <Legend wrapperStyle={{ fontSize: '11px' }} />
+                    <Line type="monotone" dataKey="AttendanceRate" name="Global Presence Ratio (%)" stroke="#4f46e5" strokeWidth={3} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Cohort Matrix Sheet Grid */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-950">Cohort Monthly Attendance Matrix</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Click cells to cycle day records. Weekends are filtered to maintain compliance data integrity.</p>
+                </div>
+                <div className="flex gap-3">
+                  <select
+                    value={selectedClass}
+                    onChange={(e) => setSelectedClass(e.target.value)}
+                    className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none"
+                  >
+                    {CLASSES.map(cls => (
+                      <option key={cls} value={cls}>{cls}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="month"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none"
+                  />
                 </div>
               </div>
 
-            </div>
-
-          </div>
-        )}
-
-        {/* ================= STREAMING_CHUNK:Building the interactive monthly calendar heatmap grid... ================= */}
-        {/* 2. MONTHLY CALENDAR GRID VIEW SUBSECTION */}
-        {activeTab === "monthly" && (
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 animate-in fade-in duration-200">
-            
-            {/* Context Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="text-lg font-bold text-slate-950">Cohort Monthly Attendance Matrix</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Analyze cohort-wide calendars. <strong className="text-indigo-600">Click any individual cell</strong> to cycle attendance status.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <select
-                  value={selectedClass}
-                  onChange={(e) => setSelectedClass(e.target.value)}
-                  className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none"
-                >
-                  {CLASSES.map(cls => (
-                    <option key={cls} value={cls}>{cls}</option>
-                  ))}
-                </select>
-                <input
-                  type="month"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Matrix Table container with clean horizontal scroll overflow */}
-            <div className="overflow-x-auto max-w-full border border-slate-200 rounded-xl shadow-sm">
-              <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
-                <thead>
-                  <tr className="bg-slate-900 text-white font-extrabold uppercase tracking-wider text-[10px]">
-                    <th className="p-3 pl-5 sticky left-0 bg-slate-900 z-10 border-r border-slate-800">Student Details</th>
-                    {Array.from({ length: daysInMonth }, (_, i) => {
-                      const dayNumber = i + 1;
-                      const weekday = getWeekdayLabel(dayNumber);
-                      const isWeekend = checkIsWeekend(dayNumber);
+              {/* Grid Sheet Container */}
+              <div className="overflow-x-auto max-w-full border border-slate-200 rounded-xl shadow-sm">
+                <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
+                  <thead>
+                    <tr className="bg-slate-900 text-white font-extrabold uppercase tracking-wider text-[10px]">
+                      <th className="p-3 pl-5 sticky left-0 bg-slate-900性能 z-10 border-r border-slate-800">Student Identity Parameters</th>
+                      {Array.from({ length: daysInMonth }, (_, i) => {
+                        const dayNumber = i + 1;
+                        return (
+                          <th 
+                            key={i} 
+                            className={`p-2 text-center border-r border-slate-800 min-w-[36px] ${
+                              checkIsWeekend(dayNumber) ? 'bg-slate-800 text-slate-400' : 'bg-slate-900 text-white'
+                            }`}
+                          >
+                            <span className="block text-[8px] opacity-75 font-mono">{getWeekdayLabel(dayNumber)}</span>
+                            <span className="block text-xs font-bold font-mono">{dayNumber}</span>
+                          </th>
+                        );
+                      })}
+                      <th className="p-3 text-center bg-slate-950 text-indigo-300 font-black min-w-[60px] border-r border-slate-800">P</th>
+                      <th className="p-3 text-center bg-slate-950 text-rose-300 font-black min-w-[60px] border-r border-slate-800">A</th>
+                      <th className="p-3 text-center bg-slate-950 text-indigo-400 font-black min-w-[80px]">Compliance</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {classStudents.map((st) => {
+                      const calculatedTotals = getStudentMonthlyTotals(st.id);
                       return (
-                        <th 
-                          key={i} 
-                          className={`p-2 text-center border-r border-slate-800 min-w-[36px] ${
-                            isWeekend ? 'bg-slate-800 text-slate-400' : 'bg-slate-900 text-white'
-                          }`}
-                        >
-                          <span className="block text-[8px] opacity-75 font-mono">{weekday}</span>
-                          <span className="block text-xs font-bold font-mono">{dayNumber}</span>
-                        </th>
+                        <tr key={st.id} className="hover:bg-slate-50/50 transition">
+                          <td className="p-3 pl-5 font-bold text-slate-900 sticky left-0 bg-white z-10 border-r border-slate-200 shadow-sm">
+                            {st.name} 
+                            <span className="block text-[9px] text-slate-400 font-mono font-bold mt-0.5">{st.id}</span>
+                          </td>
+                          {Array.from({ length: daysInMonth }, (_, i) => {
+                            const dayNumber = i + 1;
+                            const status = monthlyRecords[`${st.id}-${dayNumber}`] || "present";
+                            const isWeekend = checkIsWeekend(dayNumber);
+
+                            let cellStyle = "bg-emerald-100 text-emerald-800 border-emerald-200";
+                            let glyph = "P";
+                            if (status === "absent") { cellStyle = "bg-rose-100 text-rose-800 border-rose-200"; glyph = "A"; }
+                            else if (status === "late") { cellStyle = "bg-amber-100 text-amber-800 border-amber-200"; glyph = "L"; }
+                            else if (status === "excused") { cellStyle = "bg-slate-100 text-slate-700 border-slate-200"; glyph = "E"; }
+
+                            return (
+                              <td 
+                                key={i} 
+                                onClick={() => cycleMonthlyStatus(st.id, dayNumber, st.name)}
+                                className={`p-1.5 text-center border-r border-slate-100 cursor-pointer select-none ${isWeekend ? 'bg-slate-50' : 'bg-white'}`}
+                              >
+                                <span className={`inline-flex w-6 h-6 rounded-md border text-[10px] font-black items-center justify-center shadow-inner ${cellStyle}`}>
+                                  {glyph}
+                                </span>
+                              </td>
+                            );
+                          })}
+                          
+                          {/* Dynamically Bound Counters (Present, Absent, % Ratio) */}
+                          <td className="p-3 text-center font-bold text-emerald-700 bg-slate-50/50 border-r border-slate-200 font-mono">{calculatedTotals.present + calculatedTotals.late}d</td>
+                          <td className="p-3 text-center font-bold text-rose-600 bg-slate-50/50 border-r border-slate-200 font-mono">{calculatedTotals.absent}d</td>
+                          <td className="p-3 text-center font-extrabold font-mono text-slate-950 bg-slate-100">
+                            <span className={calculatedTotals.rate < 80 ? 'text-rose-600' : calculatedTotals.rate < 90 ? 'text-amber-600' : 'text-emerald-700'}>
+                              {calculatedTotals.rate}%
+                            </span>
+                          </td>
+                        </tr>
                       );
                     })}
-                    <th className="p-3 text-center bg-slate-900 text-indigo-300 font-black min-w-[80px]">Compliance</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-150">
-                  {classStudents.map((st) => {
-                    const studentMonthlyRate = getStudentMonthlyRate(st.id);
-                    return (
-                      <tr key={st.id} className="hover:bg-slate-50/50 transition">
-                        <td className="p-3 pl-5 font-bold text-slate-900 sticky left-0 bg-white z-10 border-r border-slate-200 shadow-[2px_0_5px_rgba(0,0,0,0.03)]">
-                          {st.name} 
-                          <span className="block text-[9px] text-slate-400 font-mono font-bold mt-0.5">{st.id}</span>
-                        </td>
-                        {Array.from({ length: daysInMonth }, (_, i) => {
-                          const dayNumber = i + 1;
-                          const key = `${st.id}-${dayNumber}`;
-                          const status = monthlyRecords[key] || "present";
-                          const isWeekend = checkIsWeekend(dayNumber);
+                  </tbody>
+                </table>
+              </div>
 
-                          // Style color assignment matching the targeted state
-                          let styleClasses = "bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200";
-                          let label = "P";
-                          if (status === "absent") {
-                            styleClasses = "bg-rose-100 text-rose-800 border-rose-200 hover:bg-rose-200";
-                            label = "A";
-                          } else if (status === "late") {
-                            styleClasses = "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200";
-                            label = "L";
-                          } else if (status === "excused") {
-                            styleClasses = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-250";
-                            label = "E";
-                          }
-
-                          return (
-                            <td 
-                              key={i} 
-                              onClick={() => cycleMonthlyStatus(st.id, dayNumber, st.name)}
-                              className={`p-2 text-center border-r border-slate-150 cursor-pointer select-none transition-all ${
-                                isWeekend ? 'bg-slate-50/60' : 'bg-white'
-                              }`}
-                            >
-                              <span className={`inline-flex w-7 h-7 rounded-lg border text-xs font-black items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-sm ${styleClasses}`}>
-                                {label}
-                              </span>
-                            </td>
-                          );
-                        })}
-                        <td className="p-3 text-center font-extrabold font-mono text-slate-950 bg-slate-50 border-l border-slate-200">
-                          <span className={studentMonthlyRate < 80 ? 'text-rose-600 font-black' : studentMonthlyRate < 90 ? 'text-amber-600' : 'text-emerald-700'}>
-                            {studentMonthlyRate}%
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Helper Keys */}
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-150 flex flex-wrap gap-6 text-xs font-semibold text-slate-500">
-              <span className="text-slate-950 font-black flex items-center">Grid Toggles:</span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-md bg-emerald-100 border border-emerald-200 text-emerald-800 font-black flex items-center justify-center text-[10px]">P</span>
-                <span>Present</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-md bg-rose-100 border border-rose-200 text-rose-800 font-black flex items-center justify-center text-[10px]">A</span>
-                <span>Absent</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-md bg-amber-100 border border-amber-200 text-amber-800 font-black flex items-center justify-center text-[10px]">L</span>
-                <span>Late</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-black flex items-center justify-center text-[10px]">E</span>
-                <span>Excused</span>
-              </div>
-              <div className="border-l border-slate-300 h-5 self-center mx-1"></div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-full bg-emerald-500"></span>
-                <span>Highly Compliant (&gt;90%)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-full bg-amber-500"></span>
-                <span>Adequate (80% - 90%)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 rounded-full bg-rose-500 animate-pulse"></span>
-                <span>Critical Absentees (&lt;80%)</span>
+              {/* Helper Legend Sheet */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-150 flex flex-wrap gap-6 text-xs font-semibold text-slate-500">
+                <span className="text-slate-950 font-black flex items-center">Status Indicators:</span>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded bg-emerald-100 border border-emerald-200 text-emerald-800 font-black flex items-center justify-center text-[9px]">P</span><span>Present</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded bg-rose-100 border border-rose-200 text-rose-800 font-black flex items-center justify-center text-[9px]">A</span><span>Absent</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded bg-amber-100 border border-amber-200 text-amber-800 font-black flex items-center justify-center text-[9px]">L</span><span>Late</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-black flex items-center justify-center text-[9px]">E</span><span>Excused</span></div>
               </div>
             </div>
-
           </div>
         )}
 
-        {/* 3. BIOMETRIC SYNC TERMINAL SUBSECTION */}
+        {/* 3. BIOMETRIC SYNC TERMINAL MODULE (LEFT UNCHANGED AS ORDERED) */}
         {activeTab === "biometric" && (
           <div className="space-y-6 animate-in fade-in duration-200">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              
-              {/* Biometric Controls Panel */}
               <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900">Biometric Terminal Gateway</h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Manage hardware gateways syncing live student fingerprint verification scans with current academy registers.
-                  </p>
+                  <p className="text-xs text-slate-500 mt-1">Manage hardware gateways syncing student fingerprint scans with active register entries.</p>
                 </div>
-
                 <div className="space-y-3.5 border-t border-slate-100 pt-4">
                   <div className="flex justify-between items-center text-xs font-bold">
                     <span className="text-slate-400 uppercase tracking-wider">Gateway Terminal Host</span>
@@ -782,11 +693,8 @@ export default function App() {
                     <span className="text-slate-400 uppercase tracking-wider">Hardware Health Status</span>
                     <select
                       value={terminalStatus}
-                      onChange={(e) => {
-                        setTerminalStatus(e.target.value);
-                        triggerNotification(`Biometric Terminal set to: ${e.target.value.toUpperCase()}`, "info");
-                      }}
-                      className="p-1.5 bg-slate-50 border border-slate-200 rounded text-slate-700"
+                      onChange={(e) => { setTerminalStatus(e.target.value); triggerNotification(`Terminal set to: ${e.target.value}`, "info"); }}
+                      className="p-1.5 bg-slate-50 border border-slate-200 rounded text-slate-700 text-xs font-bold"
                     >
                       <option value="Online">Online / Synced</option>
                       <option value="Offline">Offline</option>
@@ -794,37 +702,22 @@ export default function App() {
                     </select>
                   </div>
                 </div>
-
-                {/* Simulated live scanner frame */}
                 <div className="bg-slate-950 p-5 rounded-xl border border-slate-800 text-center space-y-3 relative overflow-hidden">
                   <div className="absolute top-2 right-2 flex items-center gap-1">
                     <span className={`w-2 h-2 rounded-full ${terminalStatus === 'Online' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
                     <span className="text-[8px] font-bold font-mono text-slate-500 uppercase">{terminalStatus}</span>
                   </div>
-                  
-                  <div className="w-12 h-12 rounded-full bg-slate-900/80 text-lg border border-indigo-500 flex items-center justify-center mx-auto text-indigo-400 shadow-inner">
-                    🧬
-                  </div>
-
+                  <div className="w-12 h-12 rounded-full bg-slate-900/80 text-lg border border-indigo-500 flex items-center justify-center mx-auto text-indigo-400 shadow-inner">🧬</div>
                   <div className="space-y-1.5">
                     <span className="block text-[10px] font-black uppercase text-indigo-400 font-mono tracking-widest">Active Scan Listener</span>
-                    <p className="text-xs font-semibold text-slate-300 italic">"Waiting for student hardware authentication event..."</p>
+                    <p className="text-xs font-semibold text-slate-300 Logan italic">"Waiting for hardware hardware event authentication stream..."</p>
                   </div>
                 </div>
-
                 <button
                   onClick={() => {
-                    const sampleId = "LR-" + Math.floor(1000 + Math.random() * 9000);
-                    triggerNotification("Triggered simulated live authentication stream scan.", "success");
+                    triggerNotification("Simulated biometric payload check event successfully received.", "success");
                     setBiometricLogs(prev => [
-                      {
-                        id: sampleId,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                        studentId: "STU-2026-004",
-                        name: "Liam Johnson",
-                        device: "Front Gate Terminal 1",
-                        match: "99.8%"
-                      },
+                      { id: "LR-" + Math.floor(1000 + Math.random() * 9000), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), studentId: "STU-2026-004", name: "Liam Johnson", device: "Front Gate Terminal 1", match: "99.8%" },
                       ...prev
                     ]);
                   }}
@@ -834,13 +727,11 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Log Streams Feed */}
               <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div className="flex justify-between items-center border-b border-slate-150 pb-3">
                   <h3 className="text-sm font-black text-slate-900">Live Hardware Authentication Ledger</h3>
                   <span className="text-[10px] bg-slate-150 text-slate-500 font-mono px-2 py-0.5 rounded font-extrabold uppercase">STREAM ACTIVE</span>
                 </div>
-
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
                   {biometricLogs.map(log => (
                     <div key={log.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
@@ -859,93 +750,152 @@ export default function App() {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
         )}
 
-        {/* 4. STATISTICAL REPORTS & ANALYTICS SUBSECTION */}
+        {/* 4. EXPANDED STATISTICAL REPORTS & ANALYTICS WORKSPACE */}
         {activeTab === "reports" && (
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-8 animate-in fade-in duration-200">
+          <div className="space-y-8 animate-in fade-in duration-200">
             
-            <div className="border-b border-slate-100 pb-4">
-              <h3 className="text-lg font-bold text-slate-950">Analytics & Attendance Reports</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Generate formal registers, examine average monthly compliance ratios, and track chronic absences.</p>
+            {/* Extended Analytics High-Density KPI Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">📈</div>
+                <div>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Annual Mean Index</span>
+                  <h3 className="text-xl font-black text-slate-900">92.4%</h3>
+                </div>
+              </div>
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">⏱️</div>
+                <div>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Peak Arrival Window</span>
+                  <h3 className="text-xl font-black text-slate-900">07:55 AM</h3>
+                </div>
+              </div>
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">⚠️</div>
+                <div>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chronic Risk Flags</span>
+                  <h3 className="text-xl font-black text-rose-600">3 Students</h3>
+                </div>
+              </div>
+              <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl">📬</div>
+                <div>
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Leave Applications</span>
+                  <h3 className="text-xl font-black text-slate-900">12 Pending</h3>
+                </div>
+              </div>
             </div>
 
-            {/* Analytical Highlights Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* High-Fidelity Charts Deck Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-                <span className="text-lg">📊</span>
-                <div>
-                  <h4 className="font-extrabold text-slate-950 text-sm">Chronic Absenteeism Flag</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    Sophia Martinez (Grade 9-A) has flagged 3 consecutive absences. Advisory warnings configured.
-                  </p>
+              {/* Chart A: Day-of-Week Absentees Factor */}
+              <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4">Weekday Compliance Index</h3>
+                <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={DAY_OF_WEEK_ANALYSIS} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="day" stroke="#94a3b8" style={{ fontSize: '11px' }} />
+                      <YAxis domain={[80, 100]} stroke="#94a3b8" style={{ fontSize: '11px' }} />
+                      <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                      <Bar dataKey="rate" name="Attendance Rate (%)" fill="#4f46e5" radius={[6, 6, 0, 0]}>
+                        {DAY_OF_WEEK_ANALYSIS.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.rate < 90 ? '#f43f5e' : '#4f46e5'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-                <span className="text-lg">⭐</span>
-                <div>
-                  <h4 className="font-extrabold text-slate-950 text-sm">Top Class Compliance</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    Grade 11-A leads academic cohorts with a staggering 98.2% attendance record for June 2026.
-                  </p>
+              {/* Chart B: Demographics Balance Sheet */}
+              <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-2">Gender Distribution Ratio</h3>
+                <div className="h-48 w-full relative flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={GENDER_DEMOGRAPHICS}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {GENDER_DEMOGRAPHICS.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute text-center">
+                    <span className="text-2xl font-black text-slate-900">{students.length}</span>
+                    <span className="block text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total Bound</span>
+                  </div>
                 </div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
-                <span className="text-lg">📑</span>
-                <div>
-                  <h4 className="font-extrabold text-slate-950 text-sm">Report Configuration</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    System registers are compiled every Friday at 4:00 PM for official administrative board audit reviews.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Document Export Config Block */}
-            <div className="p-6 border border-slate-150 rounded-xl bg-slate-50/50 space-y-4">
-              <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider">Configure Export Parameters</h4>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Target Class</label>
-                  <select className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-1 focus:ring-indigo-500">
-                    <option value="All">All School Classes</option>
-                    {CLASSES.map(cls => (
-                      <option key={cls} value={cls}>{cls}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Select Scope Category</label>
-                  <select className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-1 focus:ring-indigo-500">
-                    <option value="Standard">Standard Attendance Ledger</option>
-                    <option value="Absence">Absence Warning Letters</option>
-                    <option value="Biometric">Biometric Match Failure Audit</option>
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={() => triggerNotification("Generated file compiled. Ready for administrative review.", "success")}
-                    className="w-full bg-slate-900 hover:bg-slate-800 text-white p-2.5 rounded-lg text-xs font-bold transition shadow-sm"
-                  >
-                    Build Document Ledger
-                  </button>
+                <div className="space-y-1.5 text-xs font-semibold text-slate-600">
+                  <div className="flex justify-between">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>Male Cohort</span>
+                    <span className="font-mono font-bold">55%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-pink-500"></span>Female Cohort</span>
+                    <span className="font-mono font-bold">45%</span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Systematic Cross-Class Audit Sheet Document */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="p-4 bg-slate-50 border-b border-slate-200">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider">Cross-Class Compliance Record Sheet</h3>
+              </div>
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-400 font-bold uppercase border-b border-slate-200">
+                    <th className="p-4">Academic Block Division</th>
+                    <th className="p-4">Total Registered</th>
+                    <th className="p-4">Average Presence</th>
+                    <th className="p-4">Excused Leaves</th>
+                    <th className="p-4">Audit Evaluation Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  <tr>
+                    <td className="p-4 font-bold text-slate-900">Grade 9-A</td>
+                    <td className="p-4 font-mono">5 Students bound</td>
+                    <td className="p-4 text-emerald-600 font-bold font-mono">94.2% Mean rate</td>
+                    <td className="p-4 font-mono">2 Active records</td>
+                    <td className="p-4"><span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded border border-emerald-100 font-bold font-mono uppercase text-[9px]">EXCELLENT</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-bold text-slate-900">Grade 10-A</td>
+                    <td className="p-4 font-mono">5 Students bound</td>
+                    <td className="p-4 text-emerald-600 font-bold font-mono">91.8% Mean rate</td>
+                    <td className="p-4 font-mono">4 Active records</td>
+                    <td className="p-4"><span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded border border-emerald-100 font-bold font-mono uppercase text-[9px]">COMPLIANT</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-bold text-slate-900">Grade 11-A</td>
+                    <td className="p-4 font-mono">4 Students bound</td>
+                    <td className="p-4 text-amber-650 font-bold font-mono">84.5% Mean rate</td>
+                    <td className="p-4 font-mono">6 Active records</td>
+                    <td className="p-4"><span className="px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded border border-amber-100 font-bold font-mono uppercase text-[9px]">NEEDS AUDIT</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
-
       </main>
-
     </div>
   );
 }

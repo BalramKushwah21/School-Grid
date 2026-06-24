@@ -24,11 +24,11 @@ export const teacherMenuData = [
 		icon: Users,
 		isDropdown: true,
 		subItems: [
-			{ label: "Class List", link: "/teachers/classes/list" },
-			{ label: "Class Students", link: "/teachers/classes/students" },
+			{ label: "Class List", link: "/teachers/pages/students/classes" },
+			{ label: "Students Profile", link: "/teachers/pages/students/studentsList" },
 			{
 				label: "Class Performance",
-				link: "/teachers/classes/performance",
+				link: "/teachers/pages/students/performance",
 			},
 		],
 	},
