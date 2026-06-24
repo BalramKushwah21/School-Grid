@@ -12,23 +12,31 @@ export const authOptions = {
 		CredentialsProvider({
 			name: "Credentials",
 			credentials: {
-				email: {
-					label: "Email",
-					type: "email",
-					placeholder: "admin@school.com",
+				// Email ki jagah ab hum 'identifier' use kar rahe hain
+				identifier: {
+					label: "Email or Username",
+					type: "text",
+					placeholder: "admin@school.com or username123",
 				},
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials) {
-				// 1. Check if user exists in database
-				const user = await prisma.user.findUnique({
-					where: { email: credentials.email },
+				// 1. Check if user exists in database using email OR username
+				const user = await prisma.user.findFirst({
+					where: {
+						OR: [
+							{ email: credentials.identifier },
+							{ username: credentials.identifier }, // DB mein username column hona zaroori hai
+						],
+					},
 				});
 
 				if (!user) {
-					throw new Error("No user found with this email");
+					throw new Error(
+						"No user found with this email or username",
+					);
 				}
-				console.log(user.userRole);
+				console.log("User Role:", user.userRole);
 
 				// 2. Verify Password
 				const passwordMatch = await bcrypt.compare(
@@ -44,7 +52,7 @@ export const authOptions = {
 			},
 		}),
 	],
-	
+
 	callbacks: {
 		// JWT Callback: Yahan hum token ke andar user ka data daalte hain
 		async jwt({ token, user }) {
