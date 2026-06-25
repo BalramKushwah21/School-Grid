@@ -19,18 +19,15 @@ import {
 } from "lucide-react";
 
 export default function FacultyAttendanceManager() {
-	// ================= STATES =================
-	const [selectedClass, setSelectedClass] = useState("All Class");
+	// 1. STATE FIX: Sirf ek state use karein jo DB format se match kare.
+	// Ensure karein ki aapke DB mein classes kis naam se save hain ("10", "Grade 10", ya "Class 10")
+	// Main yahan standard "10" use kar raha hu.
+	const [selectedClass, setSelectedClass] = useState("10");
 	const [selectedSection, setSelectedSection] = useState("A");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [attendanceDate, setAttendanceDate] = useState(
 		new Date().toISOString().split("T")[0],
 	);
-
-	// Dynamic Dropdown States
-	const [masterStudents, setMasterStudents] = useState([]);
-	const [availableClasses, setAvailableClasses] = useState([""]); // Fallback
-	const [availableSections, setAvailableSections] = useState(["A"]); // Fallback
 
 	// Real Database States
 	const [students, setStudents] = useState([]);
@@ -40,7 +37,7 @@ export default function FacultyAttendanceManager() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 
-	// ================= ROLLING 2-DAY EDITABLE BOUNDS =================
+	// ================= ROLLING 2-DAY EDITABLE BOUNDS CALCULATOR =================
 	const editableWindow = useMemo(() => {
 		const todayStr = new Date().toISOString().split("T")[0];
 		const yesterdayObj = new Date();
@@ -58,77 +55,12 @@ export default function FacultyAttendanceManager() {
 		);
 	}, [attendanceDate, editableWindow]);
 
-	// ================= DYNAMIC CLASS & SECTION LOGIC (BEST PRACTICES) =================
-
-	// 1. Fetch Master Data Once for Dropdowns
-	useEffect(() => {
-		const fetchMasterClassesAndSections = async () => {
-			try {
-				const response = await fetch("/api/school/students/get");
-				if (!response.ok)
-					throw new Error("Failed to fetch master data");
-				const result = await response.json();
-				const allStudents = result.data || [];
-
-				setMasterStudents(allStudents);
-
-				// Extract unique classes
-				const uniqueClasses = [
-					...new Set(
-						allStudents
-							.map((s) => s.class)
-							.filter(Boolean)
-							.filter((c) => c !== "N/A"),
-					),
-				].sort();
-
-				if (uniqueClasses.length > 0) {
-					setAvailableClasses(uniqueClasses);
-					// Set default class if current isn't valid
-					if (!uniqueClasses.includes(selectedClass)) {
-						setSelectedClass(uniqueClasses[0]);
-					}
-				}
-			} catch (error) {
-				console.error("Failed to fetch master dropdown data:", error);
-			}
-		};
-
-		fetchMasterClassesAndSections();
-	}, []); // Runs only once on component mount
-
-	// 2. Update Sections dynamically when 'selectedClass' changes
-	useEffect(() => {
-		if (masterStudents.length === 0 || !selectedClass) return;
-
-		// Filter students of the selected class to find their sections
-		// Note: Supports both 'student.section' property or parsing it from 'student.class' (e.g. "10 A")
-		const uniqueSections = [
-			...new Set(
-				masterStudents
-					.filter((s) => s.class?.split(" ")[0] === selectedClass)
-					.map((s) => s.section || s.class?.split(" ")[1])
-					.filter(Boolean)
-					.filter((sec) => sec !== "N/A"),
-			),
-		].sort();
-
-		if (uniqueSections.length > 0) {
-			setAvailableSections(uniqueSections);
-			// Auto-select the first section if the previously selected one is invalid for this class
-			if (!uniqueSections.includes(selectedSection)) {
-				setSelectedSection(uniqueSections[0]);
-			}
-		} else {
-			setAvailableSections(["A"]); // Safe Fallback
-		}
-	}, [selectedClass, masterStudents]);
-
 	// ================= DATABASE FETCHING LOGIC =================
 	useEffect(() => {
 		const fetchAttendanceData = async () => {
 			setIsLoading(true);
 			try {
+				// 2. API PATH FIX: "/api/school/student/attendance"
 				const response = await fetch(
 					`/api/school/students/attendance?className=${selectedClass}&section=${selectedSection}&date=${attendanceDate}`,
 				);
@@ -143,10 +75,9 @@ export default function FacultyAttendanceManager() {
 
 					data.students.forEach((student) => {
 						newAttendance[student.id] =
-							data.attendance?.[student.id] ||
+							data.attendance[student.id] ||
 							(isEditable ? "present" : "absent");
-						newRemarks[student.id] =
-							data.remarks?.[student.id] || "";
+						newRemarks[student.id] = data.remarks[student.id] || "";
 					});
 
 					setAttendance(newAttendance);
@@ -154,16 +85,13 @@ export default function FacultyAttendanceManager() {
 					setIsSaved(true);
 				}
 			} catch (error) {
-				console.error("Failed to fetch attendance data:", error);
+				console.error("Failed to fetch data:", error);
 			} finally {
 				setIsLoading(false);
 			}
 		};
 
-		// Only fetch if we have both Class and Section logically set
-		if (selectedClass && selectedSection) {
-			fetchAttendanceData();
-		}
+		fetchAttendanceData();
 	}, [attendanceDate, selectedClass, selectedSection, isEditable]);
 
 	// ================= DATABASE SAVING LOGIC =================
@@ -172,6 +100,7 @@ export default function FacultyAttendanceManager() {
 		setIsSaving(true);
 
 		try {
+			// 3. API PATH FIX FOR POST REQUEST
 			const response = await fetch("/api/school/students/attendance", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -237,6 +166,24 @@ export default function FacultyAttendanceManager() {
 		);
 	}, [students, searchTerm]);
 
+	// 4. DROPDOWN OPTIONS FIX: Hardcoded based on Standard Indian School Setup
+	// This breaks the circular dependency trap.
+	const availableClasses = [
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"10",
+		"11",
+		"12",
+	];
+	const availableSections = ["A", "B", "C", "D"];
+
 	return (
 		<div className="min-h-screen bg-slate-50 p-4 sm:p-8 text-slate-800 font-sans antialiased">
 			<div className="max-w-7xl mx-auto space-y-6">
@@ -273,7 +220,7 @@ export default function FacultyAttendanceManager() {
 					</div>
 				</div>
 
-				{/* Component Header & Actions */}
+				{/* ================= COMPONENT HEADER & ACTIONS ================= */}
 				<div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-3xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 					<div>
 						<div className="flex items-center gap-2 text-teal-700 bg-teal-50 px-3 py-1 rounded-full text-xs font-bold w-fit mb-2">
@@ -316,11 +263,11 @@ export default function FacultyAttendanceManager() {
 						<select
 							value={selectedClass}
 							onChange={(e) => setSelectedClass(e.target.value)}
-							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
+							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all"
 						>
 							{availableClasses.map((cls) => (
 								<option key={cls} value={cls}>
-									{cls}
+									Class {cls}
 								</option>
 							))}
 						</select>
@@ -332,11 +279,7 @@ export default function FacultyAttendanceManager() {
 						<select
 							value={selectedSection}
 							onChange={(e) => setSelectedSection(e.target.value)}
-							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
-							disabled={
-								availableSections.length <= 1 &&
-								availableSections[0] === "A"
-							} // Optional visual state
+							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all"
 						>
 							{availableSections.map((sec) => (
 								<option key={sec} value={sec}>
@@ -370,7 +313,7 @@ export default function FacultyAttendanceManager() {
 					</div>
 				</div>
 
-				{/* Realtime Live Register KPI Counters */}
+				{/* ================= REALTIME LIVE REGISTER KPI COUNTERS ================= */}
 				<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 					<div className="bg-white p-4 rounded-xl border border-slate-200 text-center shadow-3xs">
 						<span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -406,8 +349,9 @@ export default function FacultyAttendanceManager() {
 					</div>
 				</div>
 
-				{/* Main Master Registry Spreadsheet Card */}
+				{/* MAIN MASTER REGISTRY SPREADSHEET CARD */}
 				<div className="bg-white rounded-2xl border border-slate-200 shadow-3xs overflow-hidden">
+					{/* Table Header Utilities Bar */}
 					<div className="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
 						<span className="text-xs font-black uppercase text-slate-500 tracking-wider">
 							Class {selectedClass} — Section {selectedSection}{" "}
@@ -491,10 +435,7 @@ export default function FacultyAttendanceManager() {
 													</td>
 													<td className="p-4">
 														<div
-															className={`flex gap-1 bg-slate-100 p-1 rounded-xl max-w-xs mx-auto ${
-																!isEditable &&
-																"opacity-60"
-															}`}
+															className={`flex gap-1 bg-slate-100 p-1 rounded-xl max-w-xs mx-auto ${!isEditable && "opacity-60"}`}
 														>
 															{[
 																"present",
@@ -562,11 +503,7 @@ export default function FacultyAttendanceManager() {
 																		.value,
 																)
 															}
-															className={`w-full text-xs p-2 rounded-lg border border-slate-200 bg-slate-50 outline-none font-medium ${
-																isEditable
-																	? "focus:bg-white focus:ring-1 focus:ring-teal-500 text-slate-800"
-																	: "text-slate-400"
-															}`}
+															className={`w-full text-xs p-2 rounded-lg border border-slate-200 bg-slate-50 outline-none font-medium ${isEditable ? "focus:bg-white focus:ring-1 focus:ring-teal-500 text-slate-800" : "text-slate-400"}`}
 														/>
 													</td>
 												</tr>

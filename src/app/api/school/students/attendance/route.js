@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Apne prisma import path ke hisaab se adjust karein
 import { getServerSession } from "next-auth/next";
-
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(request) {
 	try {
-		const session = await getServerSession();
+		const session = await getServerSession(authOptions);
 		if (!session || !session.user || !session.user.schoolId) {
 			return NextResponse.json(
 				{ error: "Unauthorized" },
@@ -21,16 +21,34 @@ export async function GET(request) {
 		const targetDate = new Date(dateStr);
 
 		// 1. Un students ko fetch karein jo is class/section mein hain
-		const students = await prisma.student.findMany({
+		// 1. Un students ko fetch karein jo is class/section mein hain
+		const dbStudents = await prisma.student.findMany({
 			where: {
 				schoolId: schoolId,
-				className: className, // Ensure aapke Student model me ye fields matching hain
-				section: section,
+				academicProfile: {
+					currentClass: className, // 🔴 Yahan 'className' ki jagah 'currentClass' aayega
+					section: section,
+				},
 			},
-			select: { id: true, rollNo: true, name: true, gender: true },
-			orderBy: { rollNo: "asc" },
+			select: {
+				id: true,
+				rollNumber: true,
+				firstName: true,
+				lastName: true,
+				gender: true,
+			},
+			orderBy: {
+				rollNumber: "asc",
+			},
 		});
 
+		// Frontend ko jis format me data chahiye usme map karein
+		const students = dbStudents.map((student) => ({
+			id: student.id,
+			rollNo: student.rollNumber || "N/A",
+			name: `${student.firstName} ${student.lastName || ""}`.trim(),
+			gender: student.gender,
+		}));
 		// 2. Unki is specific date ki attendance fetch karein
 		const studentIds = students.map((s) => s.id);
 		const attendanceRecords = await prisma.attendance.findMany({
@@ -63,7 +81,7 @@ export async function GET(request) {
 
 export async function POST(request) {
 	try {
-		const session = await getServerSession();
+		const session = await getServerSession(authOptions);
 		if (!session || !session.user || !session.user.schoolId) {
 			return NextResponse.json(
 				{ error: "Unauthorized" },
