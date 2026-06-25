@@ -1,402 +1,434 @@
-"use client"
-import React, { useState, useMemo } from 'react';
+"use client";
 
-const INITIAL_TEACHERS = [
-  { id: "TCH-2024-101", name: "Dr. Sarah Jenkins", department: "Science", designation: "Head of Physics", baseSalary: 6200, status: "Paid" },
-  { id: "TCH-2024-102", name: "Marcus Aurelius Vance", department: "Mathematics", designation: "Calculus Lecturer", baseSalary: 5500, status: "Processing" },
-  { id: "TCH-2024-103", name: "Elena Rostova", department: "Languages", designation: "AP Lit Teacher", baseSalary: 4800, status: "Paid" },
-  { id: "TCH-2024-104", name: "Raymond Reddington", department: "Social Studies", designation: "World History Instructor", baseSalary: 5100, status: "Pending" }
+import React, { useState, useMemo } from "react";
+import { 
+  Printer, Search, Building, CheckCircle, ShieldCheck, 
+  ArrowRightLeft, Users, ChevronLeft, Edit3, Database
+} from "lucide-react";
+
+// ================= DYNAMIC TEACHERS DATABASE (MOCK) =================
+const TEACHERS_DB = [
+  {
+    id: "TCH-2026-042", name: "Anjali Sharma", designation: "Senior PGT", department: "Mathematics & Computing",
+    panNumber: "ABCDE1234F", uanNumber: "100987654321", bankName: "HDFC Bank Ltd.", accountNo: "XXXXXXXXX4512",
+    workingDays: 26, presentDays: 26,
+    defaultEarnings: [
+      { id: 1, name: "Basic Salary", amount: 45000 },
+      { id: 2, name: "House Rent Allowance (HRA)", amount: 18000 },
+      { id: 3, name: "Dearness Allowance (DA)", amount: 5400 },
+      { id: 4, name: "Special Allowance", amount: 3500 },
+    ],
+    defaultDeductions: [
+      { id: 1, name: "Provident Fund (EPF)", amount: 5400 },
+      { id: 2, name: "Tax Deducted at Source (TDS)", amount: 2100 },
+      { id: 3, name: "Professional Tax", amount: 200 },
+    ]
+  },
+  {
+    id: "TCH-2026-018", name: "Vikram Rathore", designation: "TGT Teacher", department: "Science (Physics)",
+    panNumber: "VXYZA9876K", uanNumber: "100987659999", bankName: "ICICI Bank", accountNo: "XXXXXXXXX8890",
+    workingDays: 26, presentDays: 24, // 2 days absent
+    defaultEarnings: [
+      { id: 1, name: "Basic Salary", amount: 38000 },
+      { id: 2, name: "House Rent Allowance (HRA)", amount: 15200 },
+      { id: 3, name: "Dearness Allowance (DA)", amount: 4560 },
+      { id: 4, name: "Special Allowance", amount: 2000 },
+    ],
+    defaultDeductions: [
+      { id: 1, name: "Provident Fund (EPF)", amount: 4560 },
+      { id: 2, name: "Tax Deducted at Source (TDS)", amount: 1200 },
+      { id: 3, name: "Professional Tax", amount: 200 },
+      { id: 4, name: "Leave Deduction", amount: 2500 }, // Editable later
+    ]
+  },
+  {
+    id: "TCH-2026-089", name: "Meera Nair", designation: "Primary Teacher", department: "English Literature",
+    panNumber: "MNPQR4567L", uanNumber: "100987651111", bankName: "SBI Bank", accountNo: "XXXXXXXXX3321",
+    workingDays: 26, presentDays: 26,
+    defaultEarnings: [
+      { id: 1, name: "Basic Salary", amount: 32000 },
+      { id: 2, name: "House Rent Allowance (HRA)", amount: 12800 },
+      { id: 3, name: "Dearness Allowance (DA)", amount: 3840 },
+    ],
+    defaultDeductions: [
+      { id: 1, name: "Provident Fund (EPF)", amount: 3840 },
+      { id: 2, name: "Professional Tax", amount: 200 },
+    ]
+  }
 ];
 
-export default function App() {
-  const [teachers, setTeachers] = useState(INITIAL_TEACHERS);
-  const [selectedTeacherId, setSelectedTeacherId] = useState(INITIAL_TEACHERS[0].id);
-  const [theme, setTheme] = useState('indigo'); // indigo, emerald, amber
-  const [isSaved, setIsSaved] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [transactionLogs, setTransactionLogs] = useState([]);
+// Helpers
+const formatINR = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
 
-  // Pay Stub Variables
-  const [payPeriod, setPayPeriod] = useState("June 2026");
-  const [workingDays, setWorkingDays] = useState(22);
-  const [daysPresent, setDaysPresent] = useState(22);
-  const [bonusPay, setBonusPay] = useState(350);
-  const [taxDeductionRate, setTaxDeductionRate] = useState(12); // Percent
-  const [insuranceDeduction, setInsuranceDeduction] = useState(150); // Flat
+const numberToWords = (num) => {
+  const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  if ((num = num.toString()).length > 9) return 'Overflow';
+  let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+  if (!n) return; let str = '';
+  str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+  str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+  str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+  str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+  str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+  return str.trim() + ' Only';
+};
 
-  // Get current selected teacher object
-  const activeTeacher = useMemo(() => {
-    return teachers.find(t => t.id === selectedTeacherId) || teachers[0];
-  }, [teachers, selectedTeacherId]);
+export default function PayrollWorkspace() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  
+  // Editable Form States
+  const [earningsForm, setEarningsForm] = useState([]);
+  const [deductionsForm, setDeductionsForm] = useState([]);
+  const payMonth = "June 2026";
 
-  // Derived Calculations
-  const calculations = useMemo(() => {
-    const proratedBase = Math.round((activeTeacher.baseSalary / workingDays) * daysPresent);
-    const grossPay = proratedBase + Number(bonusPay);
-    const taxAmount = Math.round(grossPay * (taxDeductionRate / 100));
-    const totalDeductions = taxAmount + Number(insuranceDeduction);
-    const netSalary = grossPay - totalDeductions;
+  // Processing States
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, success
 
-    return { proratedBase, grossPay, taxAmount, totalDeductions, netSalary };
-  }, [activeTeacher, workingDays, daysPresent, bonusPay, taxDeductionRate, insuranceDeduction]);
+  // Filter Teachers List
+  const filteredTeachers = useMemo(() => {
+    return TEACHERS_DB.filter(t => 
+      t.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      t.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
 
-  // Overall statistics
-  const stats = useMemo(() => {
-    const totalProcessed = teachers.length;
-    const paid = teachers.filter(t => t.status === "Paid").length;
-    const processing = teachers.filter(t => t.status === "Processing").length;
-    const pending = teachers.filter(t => t.status === "Pending").length;
-    
-    // Total estimated payroll cost (using teachers' basic base pay totals)
-    const totalCost = teachers.reduce((sum, t) => sum + t.baseSalary, 0);
+  // Load Teacher into Editor
+  const handleSelectTeacher = (teacher) => {
+    setSelectedTeacher(teacher);
+    setEarningsForm(JSON.parse(JSON.stringify(teacher.defaultEarnings))); // Deep copy
+    setDeductionsForm(JSON.parse(JSON.stringify(teacher.defaultDeductions)));
+    setPaymentStatus("pending");
+  };
 
-    return { totalProcessed, paid, processing, pending, totalCost };
-  }, [teachers]);
+  // Back to Roster
+  const handleBack = () => {
+    setSelectedTeacher(null);
+    setPaymentStatus("pending");
+  };
 
-  // Handle pay record dispatch
-  const handleProcessPayment = (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // Handle Form Edits
+  const handleEarningChange = (index, value) => {
+    const newEarnings = [...earningsForm];
+    newEarnings[index].amount = Number(value) || 0;
+    setEarningsForm(newEarnings);
+  };
 
-    const generatedTxId = 'TXN-2026-' + Math.floor(100000 + Math.random() * 900000);
+  const handleDeductionChange = (index, value) => {
+    const newDeductions = [...deductionsForm];
+    newDeductions[index].amount = Number(value) || 0;
+    setDeductionsForm(newDeductions);
+  };
 
+  // Live Calculations
+  const totalEarnings = useMemo(() => earningsForm.reduce((sum, item) => sum + item.amount, 0), [earningsForm]);
+  const totalDeductions = useMemo(() => deductionsForm.reduce((sum, item) => sum + item.amount, 0), [deductionsForm]);
+  const netSalary = totalEarnings - totalDeductions;
+  const amountInWords = useMemo(() => numberToWords(netSalary), [netSalary]);
+
+  // Simulate Process & Sync
+  const handleProcessSalary = () => {
+    setIsProcessing(true);
     setTimeout(() => {
-      setLoading(false);
-      setIsSaved(true);
-
-      // Update current status in list
-      setTeachers(prev => prev.map(t => {
-        if (t.id === selectedTeacherId) {
-          return { ...t, status: "Paid" };
-        }
-        return t;
-      }));
-
-      // Append Transaction to Server Sync Log
-      setTransactionLogs(prev => [
-        {
-          txId: generatedTxId,
-          name: activeTeacher.name,
-          payout: calculations.netSalary,
-          period: payPeriod,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        },
-        ...prev
-      ]);
-    }, 1500);
+      setIsProcessing(false);
+      setPaymentStatus("success");
+    }, 2000);
   };
 
-  // Quick select dynamic theme details
-  const themes = {
-    indigo: { accent: 'text-indigo-600', border: 'border-indigo-600', fill: 'bg-indigo-600 hover:bg-indigo-700', badge: 'bg-indigo-50 text-indigo-700 border-indigo-150' },
-    emerald: { accent: 'text-emerald-600', border: 'border-emerald-600', fill: 'bg-emerald-600 hover:bg-emerald-700', badge: 'bg-emerald-50 text-emerald-700 border-emerald-150' },
-    amber: { accent: 'text-amber-600', border: 'border-amber-600', fill: 'bg-amber-600 hover:bg-amber-700', badge: 'bg-amber-50 text-amber-700 border-amber-150' }
-  };
-
-  const currentTheme = themes[theme];
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-16">
-      
-      {/* ================= HEADER PANEL ================= */}
-      <header className="bg-white border-b border-slate-200 py-6 px-8 print:hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Faculty Payroll & Wage Administration</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Verify monthly teaching schedules, calculate allowances, manage tax deductibles, and print verified slips.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Payroll Aesthetic:</span>
-            <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-              <button onClick={() => { setTheme('indigo'); setIsSaved(false); }} className={`w-6 h-6 rounded bg-indigo-600 transition ${theme === 'indigo' ? 'ring-2 ring-indigo-400 scale-110' : 'opacity-60'}`}></button>
-              <button onClick={() => { setTheme('emerald'); setIsSaved(false); }} className={`w-6 h-6 rounded bg-emerald-600 transition ${theme === 'emerald' ? 'ring-2 ring-emerald-400 scale-110' : 'opacity-60'}`}></button>
-              <button onClick={() => { setTheme('amber'); setIsSaved(false); }} className={`w-6 h-6 rounded bg-amber-500 transition ${theme === 'amber' ? 'ring-2 ring-amber-400 scale-110' : 'opacity-60'}`}></button>
+  // ================= VIEW 1: TEACHERS DIRECTORY LISTING =================
+  if (!selectedTeacher) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 sm:p-8 text-slate-800 font-sans">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full text-xs font-bold w-fit mb-2">
+                <Users size={14} /> Staff Payroll Directory
+              </div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Select Teacher for Payroll</h1>
+              <p className="text-xs text-slate-500 mt-0.5">Search and select a faculty member to edit and generate their salary slip.</p>
+            </div>
+            
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Search by Name or ID..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-slate-200 bg-slate-50 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 transition-all font-medium text-sm"
+              />
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* ================= STATISTICS PANEL ================= */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 mt-6 print:hidden">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Estimated Outflow</span>
-            <span className="text-2xl font-black text-slate-900">${stats.totalCost.toLocaleString()}</span>
-          </div>
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Paid Members</span>
-            <span className="text-2xl font-black text-emerald-600">{stats.paid} <span className="text-xs font-medium text-slate-400">/ {stats.totalProcessed}</span></span>
-          </div>
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">In Processing Queue</span>
-            <span className="text-2xl font-black text-amber-500">{stats.processing}</span>
-          </div>
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Unprocessed / Pending</span>
-            <span className="text-2xl font-black text-rose-500">{stats.pending}</span>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-200">
+                  <th className="p-4 w-24">Employee ID</th>
+                  <th className="p-4">Teacher Identity</th>
+                  <th className="p-4">Department & Role</th>
+                  <th className="p-4 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm font-medium">
+                {filteredTeachers.map(teacher => (
+                  <tr key={teacher.id} className="hover:bg-slate-50/60 transition">
+                    <td className="p-4 font-mono font-bold text-slate-500">{teacher.id}</td>
+                    <td className="p-4 font-bold text-slate-900">{teacher.name}</td>
+                    <td className="p-4 text-slate-600">
+                      <span className="block">{teacher.designation}</span>
+                      <span className="text-[10px] uppercase text-slate-400 font-bold">{teacher.department}</span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button 
+                        onClick={() => handleSelectTeacher(teacher)}
+                        className="bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-100 px-4 py-2 rounded-lg text-xs font-bold transition shadow-xs"
+                      >
+                        Generate Slip
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </section>
+      </div>
+    );
+  }
 
-      {/* ================= MAIN INTERACTIVE MATRIX ================= */}
-      <main className="max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  // ================= VIEW 2: EDIT SALARY & GENERATE RECEIPT =================
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-8 text-slate-800 font-sans print:p-0 print:bg-white">
+      
+      {/* Dynamic Success Toast for DB Sync */}
+      {paymentStatus === "success" && (
+        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white px-5 py-4 rounded-xl shadow-2xl border border-slate-700 flex flex-col gap-1 animate-in fade-in slide-in-from-top-4 print:hidden">
+          <div className="flex items-center gap-2">
+            <span className="bg-emerald-500 p-1 rounded-full text-xs text-white"><Database size={12} /></span>
+            <p className="text-sm font-bold text-emerald-400">Synced to Teacher Portal DB!</p>
+          </div>
+          <p className="text-[10px] text-slate-400 font-mono ml-6">{selectedTeacher.id} • Payslip Available in Faculty App</p>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto space-y-6 print:block">
         
-        {/* LEFT COMPONENT: Teacher Select & Interactive Calculator Form */}
-        <section className="lg:col-span-5 space-y-6 print:hidden">
+        {/* Back Button & Header (Hidden on Print) */}
+        <div className="flex items-center justify-between print:hidden">
+          <button onClick={handleBack} className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-indigo-600 transition">
+            <ChevronLeft size={16} /> Back to Directory
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
           
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-pulse"></span>
-              Salary Computation Console
-            </h2>
-
-            <form onSubmit={handleProcessPayment} className="space-y-4">
-              {/* Select Educator */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Select Faculty Member</label>
-                <select 
-                  value={selectedTeacherId} 
-                  onChange={(e) => { setSelectedTeacherId(e.target.value); setIsSaved(false); }}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold outline-none focus:ring-2 focus:ring-slate-400"
-                >
-                  {teachers.map(t => (
-                    <option key={t.id} value={t.id}>{t.name} ({t.id.split('-').pop()})</option>
-                  ))}
-                </select>
+          {/* ================= LEFT PANEL: EDITABLE FORMS (HIDDEN ON PRINT) ================= */}
+          <div className="lg:col-span-4 space-y-6 print:hidden">
+            
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Edit3 size={18} className="text-indigo-600" />
+                <h2 className="text-lg font-black text-slate-900">Edit Salary Details</h2>
               </div>
+              <p className="text-xs text-slate-500 mb-6 font-medium">Modifying details for <span className="text-slate-900 font-bold">{selectedTeacher.name}</span>.</p>
 
-              {/* Pay Period & Workday Details */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Wage Term / Period</label>
-                  <input 
-                    type="text" value={payPeriod} onChange={(e) => { setPayPeriod(e.target.value); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none" placeholder="e.g. June 2026"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Expected Days</label>
-                  <input 
-                    type="number" value={workingDays} onChange={(e) => { setWorkingDays(Math.max(1, e.target.value)); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Days Present & Special Bonuses */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Days Present</label>
-                  <input 
-                    type="number" max={workingDays} value={daysPresent} onChange={(e) => { setDaysPresent(Math.min(workingDays, Math.max(0, e.target.value))); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Bonuses / Extras ($)</label>
-                  <input 
-                    type="number" value={bonusPay} onChange={(e) => { setBonusPay(Math.max(0, e.target.value)); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Deductibles / Taxes */}
-              <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Tax Withholding (%)</label>
-                  <input 
-                    type="number" max="100" value={taxDeductionRate} onChange={(e) => { setTaxDeductionRate(Math.max(0, e.target.value)); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Benefits / Insur. ($)</label>
-                  <input 
-                    type="number" value={insuranceDeduction} onChange={(e) => { setInsuranceDeduction(Math.max(0, e.target.value)); setIsSaved(false); }}
-                    className="w-full p-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Complete Payout Call */}
-              <button 
-                type="submit" 
-                disabled={loading || activeTeacher.status === "Paid" && isSaved}
-                className={`w-full mt-2 text-white p-3 font-semibold rounded-lg transition text-sm shadow flex items-center justify-center gap-2 ${
-                  loading ? 'bg-slate-400' : isSaved && activeTeacher.status === "Paid" ? 'bg-emerald-600 hover:bg-emerald-700' : currentTheme.fill
-                }`}
-              >
-                {loading ? 'Pushing Bank Transfer...' : isSaved ? '✓ Payout Confirmed' : 'Authorize & Disburse Wages'}
-              </button>
-            </form>
-          </div>
-
-          {/* SIMULATED SYSTEM TRANSACTION LOG */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Live Ledger Transmissions</h3>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {transactionLogs.length === 0 ? (
-                <p className="text-xs text-slate-400 italic">No wage payouts dispatched during active operational session.</p>
-              ) : (
-                transactionLogs.map((log) => (
-                  <div key={log.txId} className="text-xs bg-slate-50 p-2.5 rounded border border-slate-100 flex justify-between items-center">
-                    <div>
-                      <p className="font-bold text-slate-800">{log.name}</p>
-                      <p className="text-[9px] text-indigo-600 font-mono font-bold tracking-tight">{log.txId} • {log.period}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-emerald-600">+${log.payout.toLocaleString()}</p>
-                      <p className="text-[8px] text-slate-400 font-mono font-bold">{log.timestamp}</p>
+              {/* Earnings Editor */}
+              <div className="space-y-3 mb-6">
+                <h3 className="text-[10px] font-black text-emerald-600 uppercase tracking-wider border-b pb-1">Earnings Structure</h3>
+                {earningsForm.map((item, idx) => (
+                  <div key={item.id} className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold text-slate-500">{item.name}</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-mono font-bold">₹</span>
+                      <input 
+                        type="number" 
+                        value={item.amount} 
+                        onChange={(e) => handleEarningChange(idx, e.target.value)}
+                        className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 text-sm font-bold font-mono text-slate-900"
+                      />
                     </div>
                   </div>
-                ))
+                ))}
+              </div>
+
+              {/* Deductions Editor */}
+              <div className="space-y-3 mb-8">
+                <h3 className="text-[10px] font-black text-rose-600 uppercase tracking-wider border-b pb-1">Deductions</h3>
+                {deductionsForm.map((item, idx) => (
+                  <div key={item.id} className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold text-slate-500">{item.name}</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-mono font-bold">₹</span>
+                      <input 
+                        type="number" 
+                        value={item.amount} 
+                        onChange={(e) => handleDeductionChange(idx, e.target.value)}
+                        className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 text-sm font-bold font-mono text-slate-900"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Buttons */}
+              {paymentStatus === "pending" ? (
+                <button 
+                  onClick={handleProcessSalary}
+                  disabled={isProcessing}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                >
+                  {isProcessing ? (
+                    <span className="animate-pulse flex items-center gap-2"><ArrowRightLeft size={16} className="animate-spin" /> Processing & Syncing...</span>
+                  ) : (
+                    <>Process & Disburse {formatINR(netSalary)}</>
+                  )}
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-emerald-50 text-emerald-700 border border-emerald-200 p-3 rounded-xl flex flex-col items-center justify-center gap-1 font-bold text-sm text-center">
+                    <span className="flex items-center gap-1"><CheckCircle size={16} /> Salary Disbursed</span>
+                    <span className="text-[10px] font-semibold text-emerald-600">Synced to Teacher Portal</span>
+                  </div>
+                  <button 
+                    onClick={() => window.print()}
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition"
+                  >
+                    <Printer size={16} /> Print Official Payslip
+                  </button>
+                </div>
               )}
             </div>
+
+            <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3">
+              <Database size={18} className="text-indigo-600 shrink-0 mt-0.5" />
+              <p className="text-[10px] font-semibold text-indigo-800 leading-relaxed">
+                Clicking "Process & Disburse" locks the receipt parameters and securely pushes the generated slip to the respective Teacher's independent portal via DB.
+              </p>
+            </div>
           </div>
 
-        </section>
-
-        {/* RIGHT COLUMN: Wage Slip Canvas Preview Sheet */}
-        <section className="lg:col-span-7 flex flex-col items-center print:w-full print:p-0">
-          
-          {/* Action Header Banner */}
-          <div className="w-full max-w-2xl mb-4 bg-slate-900 text-white p-4 rounded-xl shadow-md flex items-center justify-between print:hidden">
-            <div className="flex items-center gap-2">
-              <span className={`w-2.5 h-2.5 rounded-full ${isSaved ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
-              <span className="text-xs font-semibold">
-                {isSaved ? "Verified & Transferred Statement" : "Unverified Temporary Pay Statement"}
-              </span>
-            </div>
+          {/* ================= RIGHT PANEL: LIVE A4 PRINTABLE RECEIPT ================= */}
+          <div className="lg:col-span-8 print:col-span-12">
             
-            <button 
-              onClick={() => window.print()}
-              disabled={!isSaved}
-              className={`px-5 py-2 text-xs font-extrabold rounded-lg shadow-lg transition-all ${
-                isSaved 
-                ? 'bg-emerald-500 hover:bg-emerald-600 text-white active:scale-95' 
-                : 'bg-slate-700 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              Print Official Slip
-            </button>
-          </div>
-
-          {/* Payslip Document Canvas Layout (Strict Golden Ratio Frame) */}
-          <div className="w-full max-w-2xl bg-white p-10 border-[6px] border-double border-slate-800 shadow-2xl rounded-sm aspect-[1/1.41] relative flex flex-col justify-between print:border-none print:shadow-none print:p-0 print:m-0 print:w-full">
-            
-            {/* Top School Branding Header */}
-            <div>
-              <div className="text-center border-b border-slate-800 pb-4 mb-6">
-                <h1 className="text-2xl font-black uppercase tracking-widest text-slate-900">EXCEL ACADEMY INTERNATIONAL</h1>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-extrabold mt-0.5">Faculty & Staff Compensation Disbursement File</p>
-                <span className="inline-block bg-slate-900 text-white font-mono font-bold px-3 py-0.5 text-[10px] uppercase tracking-widest mt-3 rounded-sm">
-                  Official Salary Certificate
-                </span>
-              </div>
-
-              {/* Header Info Rows */}
-              <div className="grid grid-cols-2 gap-4 text-xs mb-6 border-b border-dashed border-slate-200 pb-4">
-                <div className="space-y-1">
-                  <p><span className="font-semibold text-slate-400">Employee Name:</span> <span className="font-extrabold text-slate-900">{activeTeacher.name}</span></p>
-                  <p><span className="font-semibold text-slate-400">Department:</span> <span className="font-bold text-slate-800">{activeTeacher.department}</span></p>
-                  <p><span className="font-semibold text-slate-400">Official Designation:</span> <span className="font-medium text-slate-600">{activeTeacher.designation}</span></p>
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 sm:p-12 relative overflow-hidden print:border-none print:shadow-none print:p-0 transition-all">
+              
+              {/* PAID Watermark */}
+              {paymentStatus === "success" && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-10">
+                  <span className="text-[80px] sm:text-[130px] font-black text-emerald-600 -rotate-45 tracking-widest border-8 border-emerald-600 px-8 py-4 rounded-3xl">
+                    DISBURSED
+                  </span>
                 </div>
-                <div className="text-right space-y-1">
-                  <p><span className="font-semibold text-slate-400">Disbursement Cycle:</span> <span className="font-bold text-slate-800">{payPeriod}</span></p>
-                  <p><span className="font-semibold text-slate-400">Faculty File ID:</span> <span className="font-mono font-bold text-slate-900">{activeTeacher.id}</span></p>
-                  <p><span className="font-semibold text-slate-400">Operational Session:</span> <span className="font-mono text-slate-500 font-bold">2026_DISB_04</span></p>
+              )}
+
+              <div className="relative z-10">
+                {/* Slip Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-center border-b-2 border-slate-900 pb-6 mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-2xl">GW</div>
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight">Greenwood International School</h1>
+                      <p className="text-xs text-slate-500 font-medium mt-0.5">Plot 4B, Knowledge Park, Greater Noida, UP - 201310</p>
+                      <p className="text-xs text-slate-500 font-medium">Affiliation No: CBSE/2130894 | HR Dept: hr@greenwood.edu.in</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Main Financial Wages Table */}
-              <div className="space-y-4">
-                <table className="w-full text-xs text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 uppercase text-[9px] tracking-wider">
-                      <th className="p-2.5">Earnings Description</th>
-                      <th className="p-2.5 text-right">Amount</th>
-                      <th className="p-2.5">Deductions & Offsets</th>
-                      <th className="p-2.5 text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-slate-100 font-medium">
-                      <td className="p-2.5 text-slate-600">Base Salary Scale (Monthly)</td>
-                      <td className="p-2.5 text-right text-slate-800">${activeTeacher.baseSalary.toLocaleString()}</td>
-                      <td className="p-2.5 text-slate-600">Income Tax Witheld ({taxDeductionRate}%)</td>
-                      <td className="p-2.5 text-right text-rose-700">-${calculations.taxAmount.toLocaleString()}</td>
-                    </tr>
-                    <tr className="border-b border-slate-100 font-medium">
-                      <td className="p-2.5 text-slate-600">Prorated Basic Payout ({daysPresent}/{workingDays} days)</td>
-                      <td className="p-2.5 text-right text-slate-800">${calculations.proratedBase.toLocaleString()}</td>
-                      <td className="p-2.5 text-slate-600">Insurance & Pension Premiums</td>
-                      <td className="p-2.5 text-right text-rose-700">-${Number(insuranceDeduction).toLocaleString()}</td>
-                    </tr>
-                    <tr className="border-b border-slate-100 font-medium">
-                      <td className="p-2.5 text-slate-600">Special Administrative Bonus</td>
-                      <td className="p-2.5 text-right text-slate-800">${Number(bonusPay).toLocaleString()}</td>
-                      <td className="p-2.5 text-slate-600">Additional Levy Offsets</td>
-                      <td className="p-2.5 text-right text-rose-700">-$0</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Summaries Blocks */}
-              <div className="grid grid-cols-2 gap-4 mt-8 pt-4 border-t border-slate-200">
-                <div className="bg-slate-50 p-3 rounded border border-slate-100 print:bg-transparent">
-                  <span className="block text-[8px] uppercase font-bold text-slate-400">Gross Monthly Income</span>
-                  <span className="text-sm font-extrabold text-slate-800">${calculations.grossPay.toLocaleString()}</span>
+                {/* Document Title */}
+                <div className="text-center mb-8">
+                  <span className="inline-block bg-slate-100 text-slate-800 font-black text-lg px-6 py-2 rounded-lg border border-slate-300 uppercase tracking-widest">
+                    Payslip for {payMonth}
+                  </span>
                 </div>
-                <div className="bg-slate-50 p-3 rounded border border-slate-100 print:bg-transparent text-right">
-                  <span className="block text-[8px] uppercase font-bold text-slate-400">Total Deductibles Sum</span>
-                  <span className="text-sm font-extrabold text-rose-700">-${calculations.totalDeductions.toLocaleString()}</span>
+
+                {/* Employee Meta Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 mb-8 text-xs font-semibold text-slate-700 bg-slate-50 p-4 border border-slate-200 rounded-xl">
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">Employee Name:</span> <span className="text-slate-900 font-black">{selectedTeacher.name}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">Employee ID:</span> <span className="font-mono text-slate-900">{selectedTeacher.id}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">Designation:</span> <span>{selectedTeacher.designation}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">Department:</span> <span>{selectedTeacher.department}</span></p>
+                  
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5 mt-2"><span className="text-slate-500 font-bold uppercase text-[9px]">Bank Name:</span> <span>{selectedTeacher.bankName}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5 mt-2"><span className="text-slate-500 font-bold uppercase text-[9px]">Account Number:</span> <span className="font-mono">{selectedTeacher.accountNo}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">PAN Number:</span> <span className="font-mono">{selectedTeacher.panNumber}</span></p>
+                  <p className="flex justify-between border-b border-dashed border-slate-200 pb-1.5"><span className="text-slate-500 font-bold uppercase text-[9px]">UAN Number:</span> <span className="font-mono">{selectedTeacher.uanNumber}</span></p>
+
+                  <p className="flex justify-between pt-1"><span className="text-slate-500 font-bold uppercase text-[9px]">Working Days:</span> <span>{selectedTeacher.workingDays}</span></p>
+                  <p className="flex justify-between pt-1"><span className="text-slate-500 font-bold uppercase text-[9px]">Present Days:</span> <span>{selectedTeacher.presentDays}</span></p>
                 </div>
-              </div>
 
-              {/* Net Payout Banner highlight with current theme accent */}
-              <div className={`mt-6 p-4 border rounded-lg flex items-center justify-between ${currentTheme.badge}`}>
-                <div>
-                  <span className="block text-[9px] uppercase font-black tracking-wider opacity-60">Net Disbursed Take-Home Amount</span>
-                  <span className="text-xs font-semibold italic text-slate-500">Credited to Registered Teacher Account</span>
+                {/* Live Salary Breakdown Table */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border-2 border-slate-900 rounded-xl overflow-hidden mb-6">
+                  
+                  {/* Earnings */}
+                  <div className="border-b sm:border-b-0 sm:border-r border-slate-400">
+                    <div className="bg-slate-100 text-slate-800 font-black uppercase text-[10px] tracking-wider p-3 border-b border-slate-300 flex justify-between">
+                      <span>Earnings</span><span>Amount (₹)</span>
+                    </div>
+                    <div className="p-3 space-y-3 min-h-[160px]">
+                      {earningsForm.map(item => (
+                        <div key={item.id} className="flex justify-between text-xs font-semibold text-slate-700">
+                          <span>{item.name}</span><span className="font-mono">{formatINR(item.amount).replace('₹', '')}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-slate-50 p-3 border-t border-slate-300 flex justify-between text-sm">
+                      <span className="font-black text-slate-900">Gross Earnings</span>
+                      <span className="font-black font-mono text-emerald-700">{formatINR(totalEarnings)}</span>
+                    </div>
+                  </div>
+
+                  {/* Deductions */}
+                  <div>
+                    <div className="bg-slate-100 text-slate-800 font-black uppercase text-[10px] tracking-wider p-3 border-b border-slate-300 flex justify-between">
+                      <span>Deductions</span><span>Amount (₹)</span>
+                    </div>
+                    <div className="p-3 space-y-3 min-h-[160px]">
+                      {deductionsForm.map(item => (
+                        <div key={item.id} className="flex justify-between text-xs font-semibold text-slate-700">
+                          <span>{item.name}</span><span className="font-mono">{formatINR(item.amount).replace('₹', '')}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-slate-50 p-3 border-t border-slate-300 flex justify-between text-sm">
+                      <span className="font-black text-slate-900">Total Deductions</span>
+                      <span className="font-black font-mono text-rose-600">{formatINR(totalDeductions)}</span>
+                    </div>
+                  </div>
+
                 </div>
-                <span className="text-2xl font-black">${calculations.netSalary.toLocaleString()}</span>
-              </div>
-            </div>
 
-            {/* Bottom Signature Seals Block */}
-            <div className="flex justify-between items-end border-t border-slate-100 pt-8 text-[9px] font-bold text-slate-500">
-              <div className="text-center">
-                <div className="w-24 border-t border-slate-350 mx-auto mb-1"></div>
-                <span>Faculty Recipient Signature</span>
-              </div>
+                {/* Net Payable */}
+                <div className="bg-slate-900 text-white rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 shadow-sm">
+                  <div className="text-center sm:text-left mb-2 sm:mb-0">
+                    <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Net Salary Payable</span>
+                    <p className="text-sm font-semibold mt-1">Rupees {amountInWords}</p>
+                  </div>
+                  <div className="text-2xl font-black font-mono tracking-tight text-emerald-400">
+                    {formatINR(netSalary)}
+                  </div>
+                </div>
 
-              {/* Visual payment validation stamp */}
-              <div className="text-center flex flex-col items-center">
-                <div className={`w-14 h-14 rounded-full border-2 ${isSaved ? 'border-emerald-500/40 text-emerald-600' : 'border-amber-500/40 text-amber-600'} flex items-center justify-center p-1`}>
-                  <div className={`w-full h-full rounded-full border border-dashed ${isSaved ? 'border-emerald-500/50' : 'border-amber-500/50'} flex flex-col items-center justify-center text-[7px] font-black`}>
-                    <span>{isSaved ? "RELEASED" : "COMPUTING"}</span>
-                    <span className="text-[4px] font-bold mt-0.5">TREASURY</span>
+                {/* Signatures */}
+                <div className="flex flex-col sm:flex-row justify-between items-end gap-8 mt-16 px-4">
+                  <div className="w-full sm:w-1/3 text-center pt-6 border-t border-slate-400">
+                    <p className="text-xs font-black uppercase text-slate-900">Employee Signature</p>
+                  </div>
+                  <div className="w-full sm:w-1/3 text-center pt-6 border-t border-slate-400">
+                    <p className="text-xs font-black uppercase text-slate-900">Authorized Signatory</p>
+                    <p className="text-[9px] font-bold text-slate-500 mt-0.5">Finance / HR Department</p>
                   </div>
                 </div>
               </div>
-
-              <div className="text-center">
-                <div className="w-24 border-t border-slate-350 mx-auto mb-1"></div>
-                <span>Disbursing Registrar Seal</span>
-              </div>
             </div>
 
           </div>
-
-        </section>
-
-      </main>
-
+        </div>
+      </div>
     </div>
   );
 }

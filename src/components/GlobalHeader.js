@@ -49,7 +49,7 @@ const GlobalHeader = ({
 			case "SCHOOL_ADMIN":
 				return "/admin/pages/settings/adminProfile"; // Typo fixed here
 			case "TEACHER":
-				return "/teachers/pages/account/teacherProfile";
+				return "/teachers/pages/settings/teacherProfile";
 			case "STUDENT":
 				return "/students/pages/settings/studentProfile";
 			case "PARENT":

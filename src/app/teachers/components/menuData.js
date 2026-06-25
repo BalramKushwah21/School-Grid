@@ -133,19 +133,7 @@ export const teacherMenuData = [
 			},
 		],
 	},
-	{
-		name: "Services",
-		icon: Library,
-		isDropdown: true,
-		subItems: [
-			{ label: "Library", link: "/teachers/services/library" },
-			{ label: "Transport", link: "/teachers/services/transport" },
-			{
-				label: "Inventory Requests",
-				link: "/teachers/services/inventory",
-			},
-		],
-	},
+	
 	{
 		name: "Leave & HR",
 		icon: CalendarDays,
@@ -158,12 +146,11 @@ export const teacherMenuData = [
 		],
 	},
 	{
-		name: "My Account",
+		name: "Setting",
 		icon: User,
 		isDropdown: true,
 		subItems: [
-			{ label: "Profile", link: "/teachers/pages/account/profile" },
-			{ label: "Settings", link: "/teachers/account/settings" },
+			{ label: "Profile", link: "/teachers/pages/settings/teacherProfile" },
 		],
 	},
 ];
