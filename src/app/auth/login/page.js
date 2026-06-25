@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -25,32 +25,35 @@ export default function LoginPage() {
 
     const result = await signIn("credentials", {
       redirect: false,
-      identifier: identifier, // Payload mein identifier bhej rahe hain
+      identifier: identifier,
       password: password,
     });
 
-    
+    // 1. Agar login fail hua
     if (result?.error) {
       setError("Invalid credentials. Please try again.");
       setLoading(false);
+      return; // Code yahan rok dein
     }
     
-    else if(result.role === "ADMIN"){
-      
+    // 2. Agar login success hua, toh session fetch karein
+    const session = await getSession();
+    const userRole = session?.user?.role; // Optional chaining (?. ) lagana best practice hai
+
+    // 3. Role ke hisaab se redirection
+    if (userRole === "ADMIN") {
       router.push("/admin/dashboard");
-    }
-    else if (result.role === "TEACHER") {
+    } else if (userRole === "TEACHER") {
       router.push("/teachers/dashboard");
-    } else if (result.role === "PARENT") {
+    } else if (userRole === "PARENT") {
       router.push("/parents/dashboard");
-    } else if (result.role === "STUDENT") {
+    } else if (userRole === "STUDENT") {
       router.push("/students/dashboard");
     } else {
-      alert("User Role:", session.user.role);
-    
-    
-  }
-
+      setError(`Unauthorized or Missing Role.`);
+      setLoading(false);
+    }
+  
   };
 
   return (
