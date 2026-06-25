@@ -26,7 +26,7 @@ export default function StudentList() {
 	const fetchStudents = async () => {
 		try {
 			setLoading(true);
-			const response = await fetch("/api/school/admin/students/get");
+			const response = await fetch("/api/school/students/get");
 			if (!response.ok) throw new Error("Failed to fetch records.");
 			const result = await response.json();
 			setStudents(result.data || []);
@@ -50,7 +50,7 @@ export default function StudentList() {
 
 		try {
 			const response = await fetch(
-				`/api/school/admin/students/${studentId}`,
+				`/api/school/students/${studentId}`,
 			);
 			if (!response.ok)
 				throw new Error("Failed to get admission dossier.");
@@ -207,10 +207,10 @@ export default function StudentList() {
 		"All",
 		...new Set(
 			students
-				.map((s) => s.class.split(" ")[0])
+				.map((s) => s.class)
 				.filter((c) => c !== "N/A"),
 		),
-	].sort();
+	].sort('asc');
 
 	return (
 		<div className="min-h-screen bg-slate-50 p-4 sm:p-8 animate-in fade-in duration-500 relative">
@@ -254,7 +254,7 @@ export default function StudentList() {
 								<option key={cls} value={cls}>
 									{cls === "All"
 										? "All Grades"
-										: `Class ${cls}`}
+										: `${cls}`}
 								</option>
 							))}
 						</select>

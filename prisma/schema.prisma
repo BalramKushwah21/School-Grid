@@ -40,6 +40,9 @@ model School {
   transportProfiles TransportProfile[]
   documentArchives DocumentArchive[]
 
+
+
+  attendances      Attendance[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -193,6 +196,7 @@ model Student {
   transportProfile   TransportProfile?
   documents          DocumentArchive?
 
+  attendances        Attendance[]
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
