@@ -218,9 +218,9 @@ export const menuConfig = [
     icon: Settings,
     isDropdown: true,
     subItems: [
-      { label: "School Profile", link: "/admin/pages/settings/profile" },
+      { label: "Admin Profile", link: "/admin/pages/settings/adminProfile" },
+      { label: "School Profile", link: "/admin/pages/settings/schoolProfile" },
       { label: "Academic Sessions", link: "/dashboard/settings/sessions" },
-      { label: "User Roles", link: "/dashboard/settings/roles" },
       { label: "Permissions", link: "/dashboard/settings/permissions" },
       { label: "Notification Settings", link: "/dashboard/settings/notifications" },
       { label: "Backup & Restore", link: "/dashboard/settings/backup" }

@@ -162,7 +162,7 @@ export const teacherMenuData = [
 		icon: User,
 		isDropdown: true,
 		subItems: [
-			{ label: "Profile", link: "/teachers/account/profile" },
+			{ label: "Profile", link: "/teachers/pages/account/profile" },
 			{ label: "Settings", link: "/teachers/account/settings" },
 		],
 	},
