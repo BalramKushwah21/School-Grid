@@ -47,13 +47,13 @@ const GlobalHeader = ({
 			case "SUPER_ADMIN":
 			case "ADMIN":
 			case "SCHOOL_ADMIN":
-				return "/admin/settings/adminProfile"; // Typo fixed here
+				return "/admin/pages/settings/adminProfile"; // Typo fixed here
 			case "TEACHER":
-				return "/teachers/settings/teacherProfile";
+				return "/teachers/pages/account/teacherProfile";
 			case "STUDENT":
-				return "/students/settings/studentProfile";
+				return "/students/pages/settings/studentProfile";
 			case "PARENT":
-				return "/parents/settings/parentProfile";
+				return "/parents/pages/settings/parentProfile";
 			default:
 				return "/"; // Fallback route
 		}

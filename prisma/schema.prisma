@@ -200,6 +200,37 @@ model Student {
   @@index([schoolId])
 }
 
+
+// ==========================================
+// 4. STUDENT ATTENDANCE (1-to-1)
+// ==========================================
+
+model Attendance {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date // Sirf date store karega (time ignore karega)
+  status    String   // "present", "absent", "late"
+  remarks   String?  // Optional remarks
+
+  // Relational IDs
+  studentId String
+  schoolId  String
+
+  // Relations (Cascade delete on student/school removal)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ek student ki ek din mein sirf ek attendance lag sakti hai
+  @@unique([studentId, date])
+  
+  // Queries ko super-fast banane ke liye indexes
+  @@index([schoolId, date])
+}
+
+
+
 // ==========================================
 // 4. STUDENT SUB-PROFILES (1-to-1)
 // ==========================================
