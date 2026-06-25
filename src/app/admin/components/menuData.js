@@ -70,14 +70,13 @@ export const menuConfig = [
 		isDropdown: true,
 		subItems: [
 			{ label: "Classes", link: "/admin/pages/academics/classes" },
-			// { label: "Sections", link: "/admin/pages/academics/sections" },
 			{ label: "Subjects", link: "/admin/pages/academics/subjects" },
 			{ label: "Timetable", link: "/admin/pages/academics/timetable" },
 			{
 				label: "Assignments",
 				link: "/admin/pages/academics/assignments",
 			},
-			{ label: "Lesson Plans", link: "/admin/pages/academics/lessons" },
+			
 			{
 				label: "Academic Calendar",
 				link: "/admin/pages/academics/calendar",
@@ -135,9 +134,8 @@ export const menuConfig = [
 		subItems: [
 			{ label: "Exam Types", link: "/admin/pages/exams/types" },
 			{ label: "Exam Schedule", link: "/admin/pages/exams/schedule" },
-			{ label: "Marks Entry", link: "/admin/pages/exams/marks-entry" },
+			{ label: "Update Marks", link: "/admin/pages/exams/UpdateMarks" },
 			{ label: "Grade System", link: "/admin/pages/exams/grade" },
-			{ label: "Report Cards", link: "/admin/pages/exams/report-cards" },
 			{ label: "Result Analysis", link: "/admin/pages/exams/analysis" },
 			{ label: "Hall Tickets", link: "/admin/pages/exams/hall-tickets" },
 		],
@@ -149,11 +147,8 @@ export const menuConfig = [
 		subItems: [
 			{ label: "Fee Structure", link: "/admin/pages/finance/structure" },
 			{ label: "Fee Collection", link: "/admin/pages/finance/collect" },
-			{ label: "Due Fees", link: "/admin/pages/finance/due" },
-			{ label: "Fee Discounts", link: "/admin/pages/finance/discounts" },
-			{ label: "Scholarships", link: "/admin/pages/finance/discounts" },
+			{ label: "Scholarships", link: "/admin/pages/finance/scholarship" },
 			{ label: "Expenses", link: "/admin/pages/finance/expenses" },
-			{ label: "Income", link: "/admin/pages/finance/income" },
 			{
 				label: "Financial Reports",
 				link: "/admin/pages/finance/reports",

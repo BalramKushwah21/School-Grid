@@ -52,7 +52,6 @@ export const teacherMenuData = [
 		isDropdown: true,
 		subItems: [
 			{ label: "Subjects", link: "/teachers/academics/subjects" },
-			{ label: "Lesson Plans", link: "/teachers/academics/lesson-plans" },
 			{
 				label: "Syllabus Progress",
 				link: "/teachers/academics/syllabus-progress",
