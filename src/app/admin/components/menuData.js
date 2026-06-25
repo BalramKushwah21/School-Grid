@@ -300,7 +300,9 @@ export const menuConfig = [
 		icon: Settings,
 		isDropdown: true,
 		subItems: [
-			{ label: "School Profile", link: "/admin/pages/settings/profile" },
+			{ label: "School Profile", link: "/admin/pages/settings/schoolProfile" },
+			{ label: "Admin Profile", link: "/admin/pages/settings/adminProfile" },
+
 			{
 				label: "Academic Sessions",
 				link: "/dashboard/settings/sessions",
