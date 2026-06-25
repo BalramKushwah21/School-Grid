@@ -147,7 +147,6 @@ export const menuConfig = [
 		subItems: [
 			{ label: "Fee Structure", link: "/admin/pages/finance/structure" },
 			{ label: "Fee Collection", link: "/admin/pages/finance/collect" },
-			{ label: "Due Fees", link: "/admin/pages/finance/due" },
 			{ label: "Scholarships", link: "/admin/pages/finance/scholarship" },
 			{ label: "Expenses", link: "/admin/pages/finance/expenses" },
 			{

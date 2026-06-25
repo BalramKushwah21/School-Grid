@@ -464,6 +464,7 @@ export default function StudentAdmissionForm() {
 									<option value="Section B">Section B</option>
 									<option value="Section C">Section C</option>
 									<option value="Section D">Section D</option>
+									<option value="Section E">Section E</option>
 								
 								</select>
 							</div>
