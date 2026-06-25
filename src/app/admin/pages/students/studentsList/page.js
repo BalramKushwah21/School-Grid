@@ -160,7 +160,7 @@ export default function StudentList() {
 		try {
 			setIsSaving(true);
 			const response = await fetch(
-				`/api/school/admin/students/${selectedStudent.id}`,
+				`/api/school/students/${selectedStudent.id}`,
 				{
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
@@ -210,7 +210,7 @@ export default function StudentList() {
 				.map((s) => s.class)
 				.filter((c) => c !== "N/A"),
 		),
-	].sort('asc');
+	].sort();
 
 	return (
 		<div className="min-h-screen bg-slate-50 p-4 sm:p-8 animate-in fade-in duration-500 relative">

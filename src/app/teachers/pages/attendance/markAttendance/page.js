@@ -18,21 +18,37 @@ import {
 	Loader2,
 } from "lucide-react";
 
+// ================= STATIC CONFIGURATION =================
+const STATIC_CLASSES = [
+	"Nursery",
+	"LKG",
+	"UKG",
+	"Class 1st",
+	"Class 2nd",
+	"Class 3rd",
+	"Class 4th",
+	"Class 5th",
+	"Class 6th",
+	"Class 7th",
+	"Class 8th",
+	"Class 9th",
+	"Class 10th",
+	"Class 11th",
+	"Class 12th",
+	
+];
+const STATIC_SECTIONS = ["Section A", "Section B", "Section C", "Section D", "Section E"];
+
 export default function FacultyAttendanceManager() {
 	// ================= STATES =================
-	const [selectedClass, setSelectedClass] = useState("All Class");
-	const [selectedSection, setSelectedSection] = useState("A");
+	const [selectedClass, setSelectedClass] = useState(STATIC_CLASSES[0]);
+	const [selectedSection, setSelectedSection] = useState(STATIC_SECTIONS[0]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [attendanceDate, setAttendanceDate] = useState(
 		new Date().toISOString().split("T")[0],
 	);
 
-	// Dynamic Dropdown States
-	const [masterStudents, setMasterStudents] = useState([]);
-	const [availableClasses, setAvailableClasses] = useState([""]); // Fallback
-	const [availableSections, setAvailableSections] = useState(["A"]); // Fallback
-
-	// Real Database States
+	// Real Database States for Students & Attendance
 	const [students, setStudents] = useState([]);
 	const [attendance, setAttendance] = useState({});
 	const [remarks, setRemarks] = useState({});
@@ -57,72 +73,6 @@ export default function FacultyAttendanceManager() {
 			attendanceDate === editableWindow.yesterday
 		);
 	}, [attendanceDate, editableWindow]);
-
-	// ================= DYNAMIC CLASS & SECTION LOGIC (BEST PRACTICES) =================
-
-	// 1. Fetch Master Data Once for Dropdowns
-	useEffect(() => {
-		const fetchMasterClassesAndSections = async () => {
-			try {
-				const response = await fetch("/api/school/students/get");
-				if (!response.ok)
-					throw new Error("Failed to fetch master data");
-				const result = await response.json();
-				const allStudents = result.data || [];
-
-				setMasterStudents(allStudents);
-
-				// Extract unique classes
-				const uniqueClasses = [
-					...new Set(
-						allStudents
-							.map((s) => s.class)
-							.filter(Boolean)
-							.filter((c) => c !== "N/A"),
-					),
-				].sort();
-
-				if (uniqueClasses.length > 0) {
-					setAvailableClasses(uniqueClasses);
-					// Set default class if current isn't valid
-					if (!uniqueClasses.includes(selectedClass)) {
-						setSelectedClass(uniqueClasses[0]);
-					}
-				}
-			} catch (error) {
-				console.error("Failed to fetch master dropdown data:", error);
-			}
-		};
-
-		fetchMasterClassesAndSections();
-	}, []); // Runs only once on component mount
-
-	// 2. Update Sections dynamically when 'selectedClass' changes
-	useEffect(() => {
-		if (masterStudents.length === 0 || !selectedClass) return;
-
-		// Filter students of the selected class to find their sections
-		// Note: Supports both 'student.section' property or parsing it from 'student.class' (e.g. "10 A")
-		const uniqueSections = [
-			...new Set(
-				masterStudents
-					.filter((s) => s.class?.split(" ")[0] === selectedClass)
-					.map((s) => s.section || s.class?.split(" ")[1])
-					.filter(Boolean)
-					.filter((sec) => sec !== "N/A"),
-			),
-		].sort();
-
-		if (uniqueSections.length > 0) {
-			setAvailableSections(uniqueSections);
-			// Auto-select the first section if the previously selected one is invalid for this class
-			if (!uniqueSections.includes(selectedSection)) {
-				setSelectedSection(uniqueSections[0]);
-			}
-		} else {
-			setAvailableSections(["A"]); // Safe Fallback
-		}
-	}, [selectedClass, masterStudents]);
 
 	// ================= DATABASE FETCHING LOGIC =================
 	useEffect(() => {
@@ -160,7 +110,6 @@ export default function FacultyAttendanceManager() {
 			}
 		};
 
-		// Only fetch if we have both Class and Section logically set
 		if (selectedClass && selectedSection) {
 			fetchAttendanceData();
 		}
@@ -318,7 +267,7 @@ export default function FacultyAttendanceManager() {
 							onChange={(e) => setSelectedClass(e.target.value)}
 							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
 						>
-							{availableClasses.map((cls) => (
+							{STATIC_CLASSES.map((cls) => (
 								<option key={cls} value={cls}>
 									{cls}
 								</option>
@@ -333,14 +282,10 @@ export default function FacultyAttendanceManager() {
 							value={selectedSection}
 							onChange={(e) => setSelectedSection(e.target.value)}
 							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
-							disabled={
-								availableSections.length <= 1 &&
-								availableSections[0] === "A"
-							} // Optional visual state
 						>
-							{availableSections.map((sec) => (
+							{STATIC_SECTIONS.map((sec) => (
 								<option key={sec} value={sec}>
-									Section {sec}
+									{sec}
 								</option>
 							))}
 						</select>
