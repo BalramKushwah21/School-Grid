@@ -51,18 +51,18 @@ export const teacherMenuData = [
 		icon: BookOpen,
 		isDropdown: true,
 		subItems: [
-			{ label: "Subjects", link: "/teachers/academics/subjects" },
+			{ label: "Subjects", link: "/teachers/pages/academics/subjects" },
 			{
 				label: "Syllabus Progress",
-				link: "/teachers/academics/syllabus-progress",
+				link: "/teachers/pages/academics/syllabus-progress",
 			},
 			{
 				label: "Study Materials",
-				link: "/teachers/academics/study-materials",
+				link: "/teachers/pages/academics/study-materials",
 			},
 			{
 				label: "Question Bank",
-				link: "/teachers/academics/question-bank",
+				link: "/teachers/pages/academics/question-bank",
 			},
 		],
 	},
