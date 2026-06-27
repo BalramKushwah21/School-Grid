@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-
 export async function registerTeacher(formData) {
 	const session = await getServerSession(authOptions);
 	if (!session || !session.user.schoolId) {
@@ -23,7 +22,7 @@ export async function registerTeacher(formData) {
 				const user = await tx.user.create({
 					data: {
 						name: `${formData.firstName} ${formData.lastName}`,
-                        username:formData.username,
+						username: formData.username,
 						email: formData.email,
 						password: hashedPassword,
 						userRole: "TEACHER",
@@ -32,7 +31,6 @@ export async function registerTeacher(formData) {
 				});
 
 				// Step B: Teacher profile create karo aur user ko link karo
-
 				const teacher = await tx.teacher.create({
 					data: {
 						schoolId: session.user.schoolId,
@@ -45,16 +43,14 @@ export async function registerTeacher(formData) {
 						designation: formData.designation,
 						department: formData.department,
 						dateOfBirth: new Date(formData.dob),
-                        qualification : formData.qualification,
-                        experienceYears :parseInt(formData.experience) || 0,
-                        
-
+						qualification: formData.qualification,
+						experienceYears: parseInt(formData.experience) || 0,
 
 						// Yahan field add kari hai:
 						dateOfJoining: new Date(formData.dateOfJoining),
 
 						gender: formData.gender,
-						// Salary ko Number mein convert karna zaruri hai
+						// Salary ko Database ke liye convert karna
 						basicSalary: parseFloat(formData.basicSalary) || 0,
 
 						// Baaki fields...
@@ -70,7 +66,24 @@ export async function registerTeacher(formData) {
 			{ timeout: 20000 },
 		);
 
-		return { success: true, data: result };
+		// ✅ FIX APPLIED HERE: Next.js Client Component ke liye Data ko Plain/Safe banana
+		const safeData = {
+			...result,
+			// Decimal object ko normal Number mein badalna
+			basicSalary: result.basicSalary ? Number(result.basicSalary) : 0,
+
+			// Date objects ko String (ISO format) mein badalna taaki error na aaye
+			dateOfBirth: result.dateOfBirth
+				? result.dateOfBirth.toISOString()
+				: null,
+			dateOfJoining: result.dateOfJoining
+				? result.dateOfJoining.toISOString()
+				: null,
+			createdAt: result.createdAt ? result.createdAt.toISOString() : null,
+			updatedAt: result.updatedAt ? result.updatedAt.toISOString() : null,
+		};
+
+		return { success: true, data: safeData };
 	} catch (error) {
 		console.error("Registration Error:", error);
 		return {

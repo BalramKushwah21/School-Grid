@@ -25,12 +25,12 @@ export async function GET(request, { params }) {
 				schoolId: session.user.schoolId,
 			},
 			include: {
-				academicProfile: true,
+				academicProfiles: true,
 				medicalProfile: true,
 				family: {
 					include: { address: true },
 				},
-				feeRecord: true,
+				feeRecords: true,
 				transportProfile: true,
 			},
 		});
@@ -90,7 +90,7 @@ export async function PUT(request, { params }) {
 					? new Date(data.admissionDate)
 					: undefined,
 
-				academicProfile: {
+				academicProfiles: {
 					update: {
 						currentClass: data.classApplyingFor,
 						section: data.section,
@@ -142,7 +142,7 @@ export async function PUT(request, { params }) {
 						allergies: data.allergies,
 					},
 				},
-				feeRecord: {
+				feeRecords: {
 					update: {
 						feeCategory: data.feeCategory,
 						scholarship: data.scholarship === "Yes",

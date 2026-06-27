@@ -1,11 +1,25 @@
 // "use client"
 
-import { label, line } from 'framer-motion/client';
-import { 
-  Users, UserCheck, BookOpen, ClipboardCheck, FileSpreadsheet, 
-  CreditCard, Users2, Bookmark, Bus, MessageSquare, HeartPulse, 
-  PartyPopper, Box, BarChart3, Settings, ShieldAlert, LayoutDashboard
-} from 'lucide-react';
+import { label, line } from "framer-motion/client";
+import {
+	Users,
+	UserCheck,
+	BookOpen,
+	ClipboardCheck,
+	FileSpreadsheet,
+	CreditCard,
+	Users2,
+	Bookmark,
+	Bus,
+	MessageSquare,
+	HeartPulse,
+	PartyPopper,
+	Box,
+	BarChart3,
+	Settings,
+	ShieldAlert,
+	LayoutDashboard,
+} from "lucide-react";
 
 export const menuConfig = [
 	{
@@ -65,6 +79,23 @@ export const menuConfig = [
 		],
 	},
 	{
+		name: "Supporting Staff",
+		icon: UserCheck,
+		isDropdown: true,
+		subItems: [
+			{ label: "Staff List", link: "/admin/pages/otherStaff/list" },
+			{ label: "Add Member", link: "/admin/pages/otherStaff/add" },
+
+			{ label: "Leave Requests", link: "/admin/pages/otherStaff/leaves" },
+			{ label: "Payroll", link: "/admin/pages/otherStaff/payroll" },
+
+			{
+				label: "Staff Documents",
+				link: "/admin/pages/otherStaff/documents",
+			},
+		],
+	},
+	{
 		name: "Academics",
 		icon: BookOpen,
 		isDropdown: true,
@@ -76,7 +107,7 @@ export const menuConfig = [
 				label: "Assignments",
 				link: "/admin/pages/academics/assignments",
 			},
-			
+
 			{
 				label: "Academic Calendar",
 				link: "/admin/pages/academics/calendar",
@@ -295,8 +326,14 @@ export const menuConfig = [
 		icon: Settings,
 		isDropdown: true,
 		subItems: [
-			{ label: "School Profile", link: "/admin/pages/settings/schoolProfile" },
-			{ label: "Admin Profile", link: "/admin/pages/settings/adminProfile" },
+			{
+				label: "School Profile",
+				link: "/admin/pages/settings/schoolProfile",
+			},
+			{
+				label: "Admin Profile",
+				link: "/admin/pages/settings/adminProfile",
+			},
 
 			{
 				label: "Academic Sessions",

@@ -3,160 +3,159 @@
 import React, { useState } from "react";
 
 export default function StudentAdmissionForm() {
-  const initialFormData = {
-    // 1. Student Info
-    admissionDate: "",
-    firstName: "",
-    lastName: "",
-    gender: "",
-    dob: "",
-    bloodGroup: "",
-    category: "",
-    religion: "",
-    nationality: "Indian",
-    isStaffChild: "No",
-    identificationMark: "",
-    aadhar: "", // Generic label for national identity cards
-    abcId: "", // Optional ABC ID
-    panNumber: "", // Optional PAN Number
+	const initialFormData = {
+		// 1. Student Info
+		admissionDate: "",
+		firstName: "",
+		lastName: "",
+		gender: "",
+		dob: "",
+		bloodGroup: "",
+		category: "",
+		religion: "",
+		nationality: "Indian",
+		isStaffChild: "No",
+		identificationMark: "",
+		aadhar: "",
+		abcId: "",
+		panNumber: "",
 
-    // 2. Academic Info
-    classApplyingFor: "",
-    section: "",
-    previousSchool: "",
-    previousClass: "",
-    tcNumber: "",
-    previousUdiseCode: "",
-    academicSession: "",
-    previousMediumOfInstruction: "English",
-    boardRegistrationNumber: "",
+		// 2. Academic Info
+		classApplyingFor: "",
+		section: "",
+		previousSchool: "",
+		previousClass: "",
+		tcNumber: "",
+		previousUdiseCode: "",
+		previousMediumOfInstruction: "English",
+		boardRegistrationNumber: "",
 
-    // 3. Parent/Guardian Info
-    parentsMaritalStatus: "Married",
-    legalCustodyHolder: "Both",
-    fatherName: "",
-    fatherMobile: "",
-    fatherOccupation: "",
-    fatherIncome: "",
-    fatherEmail: "",
-    motherName: "",
-    motherMobile: "",
-    motherOccupation: "",
-    motherEmail: "",
+		// 3. Parent/Guardian Info
+		parentsMaritalStatus: "Married",
+		legalCustodyHolder: "Both",
+		fatherName: "",
+		fatherMobile: "",
+		fatherOccupation: "",
+		fatherIncome: "",
+		fatherEmail: "",
+		motherName: "",
+		motherMobile: "",
+		motherOccupation: "",
+		motherEmail: "",
+		siblingStudyingHere: "No",
+		siblingDetails: "",
 
-    // Siblings Tracker
-    siblingStudyingHere: "No",
-    siblingDetails: "",
+		// 4. Address Info
+		houseNo: "",
+		street: "",
+		city: "",
+		district: "",
+		state: "",
+		pincode: "",
 
-    // 4. Address Info
-    houseNo: "",
-    street: "",
-    city: "",
-    district: "",
-    state: "",
-    pincode: "",
+		// 5. Emergency & Medical
+		emergencyContact: "",
+		emergencyMobile: "",
+		emergencyRelation: "",
+		medicalConditions: "",
+		allergies: "",
+		familyDoctorName: "",
+		familyDoctorMobile: "",
+		preferredHospital: "",
 
-    // 5. Emergency & Medical
-    emergencyContact: "",
-    emergencyMobile: "",
-    emergencyRelation: "",
-    medicalConditions: "",
-    allergies: "",
-    familyDoctorName: "",
-    familyDoctorMobile: "",
-    preferredHospital: "",
+		// 6. Fee Information
+		feeCategory: "General",
+		scholarship: "No",
+		concessionDetails: "",
+		admissionFeePaid: "",
+		tuitionFeeCycle: "Quarterly",
+		transportFeePaid: "",
+		securityDepositPaid: "",
+		paymentMode: "Cash",
 
-    // 6. Comprehensive Fee Information
-    feeCategory: "General", // General, Staff Discount, Sibling Discount, EWS, Merit Scholarship
-    scholarship: "No",
-    concessionDetails: "",
-    admissionFeePaid: "",
-    tuitionFeeCycle: "Quarterly", // Monthly, Quarterly, Annually
-    transportFeePaid: "",
-    securityDepositPaid: "",
-    paymentMode: "Cash", // Cash, Bank Transfer, Card, Cheque
+		// 7. Bank Details
+		bankName: "",
+		accountNumber: "",
+		ifscCode: "",
+		branchNameAndCode: "",
+	};
 
-    // 7. Bank Details (Optional)
-    bankName: "",
-    accountNumber: "",
-    ifscCode: "",
-    branchNameAndCode: "",
-  };
+	const [formData, setFormData] = useState(initialFormData);
+	const [files, setFiles] = useState({
+		studentPhoto: null,
+		birthCertificate: null,
+		studentIdCopy: null,
+		previousMarksheet: null,
+		transferCertificate: null,
+		parentIdCopy: null,
+	});
 
-  const [formData, setFormData] = useState(initialFormData);
+	const [isLoading, setIsLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
 
-  const [files, setFiles] = useState({
-    studentPhoto: null,
-    birthCertificate: null,
-    studentIdCopy: null,
-    previousMarksheet: null,
-    transferCertificate: null,
-    parentIdCopy: null,
-  });
+	const handleInputChange = (e) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+	const handleFileChange = (e) => {
+		const { name, files: uploadedFiles } = e.target;
+		setFiles((prev) => ({ ...prev, [name]: uploadedFiles[0] }));
+	};
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setIsLoading(true);
+		setErrorMessage("");
+		setSuccessMessage("");
 
-  const handleFileChange = (e) => {
-    const { name, files: uploadedFiles } = e.target;
-    setFiles((prev) => ({ ...prev, [name]: uploadedFiles[0] }));
-  };
+		try {
+			const response = await fetch(
+				"/api/school/admin/students/admission",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(formData),
+				},
+			);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
+			const result = await response.json();
 
-    try {
-      const response = await fetch("/api/school/admin/students/admission", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+			if (!response.ok) {
+				if (response.status === 401) {
+					setErrorMessage(
+						"You are not authorized. Please log in again.",
+					);
+					return;
+				}
+				throw new Error(
+					result.error || "Failed to submit admission form.",
+				);
+			}
 
-      const result = await response.json();
+			setSuccessMessage(
+				`Successfully registered student: ${result.data.firstName}!`,
+			);
+			setFormData(initialFormData);
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		} catch (error) {
+			console.error("Submission error:", error);
+			setErrorMessage(error.message || "An unexpected error occurred.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          setErrorMessage("You are not authorized. Please log in again.");
-          alert("You are not authorized. Please log in again.");
-          return;
-        }
-        throw new Error(result.error || "Failed to submit admission form.");
-      }
-
-      if (response.ok) {
-        setSuccessMessage(
-          `Successfully registered student: ${result.data.firstName}!`,
-        );
-        setFormData(initialFormData); // Reset the form
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        alert("Successfully registered student");
-      }
-    } catch (error) {
-      console.error("Submission error:", error);
-      setErrorMessage(error.message || "An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-		<div className="bg-slate-50">
-			<div className=" bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-10">
+	return (
+		<div className="bg-slate-50 min-h-screen p-4 md:p-8">
+			<div className="max-w-7xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 space-y-10">
 				{/* Form Header */}
 				<div className="text-center border-b border-slate-100 pb-6">
 					<h2 className="text-3xl font-bold text-slate-800">
-						Comprehensive Student Admission Form
+						Student Admission Form
 					</h2>
 					<p className="mt-2 text-sm text-slate-500">
 						Ensure all legal framework, academic history, and
@@ -165,10 +164,7 @@ export default function StudentAdmissionForm() {
 				</div>
 
 				{successMessage && (
-					<div
-						className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative"
-						role="alert"
-					>
+					<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl relative">
 						<span className="block sm:inline">
 							{successMessage}
 						</span>
@@ -176,10 +172,7 @@ export default function StudentAdmissionForm() {
 				)}
 
 				{errorMessage && (
-					<div
-						className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative"
-						role="alert"
-					>
+					<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative">
 						<span className="block sm:inline">{errorMessage}</span>
 					</div>
 				)}
@@ -302,8 +295,6 @@ export default function StudentAdmissionForm() {
 									<option value="Sikh">Sikh</option>
 									<option value="Buddhist">Buddhist</option>
 									<option value="Jain">Jain</option>
-									<option value="Parsi">Parsi</option>
-									<option value="Jewish">Jewish</option>
 									<option value="Other">Other</option>
 								</select>
 							</div>
@@ -376,7 +367,7 @@ export default function StudentAdmissionForm() {
 								<input
 									required
 									type="text"
-									placeholder="[Aadhaar Redacted]"
+									placeholder="12 Digit Aadhaar"
 									name="aadhar"
 									value={formData.aadhar}
 									onChange={handleInputChange}
@@ -452,36 +443,19 @@ export default function StudentAdmissionForm() {
 									Section Assign
 								</label>
 								<select
-									required
 									name="section"
 									value={formData.section}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								>
 									<option value="">Select Section</option>
-									
 									<option value="Section A">Section A</option>
 									<option value="Section B">Section B</option>
 									<option value="Section C">Section C</option>
 									<option value="Section D">Section D</option>
-									<option value="Section E">Section E</option>
-								
 								</select>
 							</div>
-							<div>
-								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Academic Session *
-								</label>
-								<input
-									required
-									type="text"
-									placeholder="e.g., 2026-2027"
-									name="academicSession"
-									value={formData.academicSession}
-									onChange={handleInputChange}
-									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
-								/>
-							</div>
+
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
 									Previous School Name
@@ -506,7 +480,9 @@ export default function StudentAdmissionForm() {
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								>
 									<option value="">Select Class</option>
-									<option value="new">new</option>
+									<option value="new">
+										New Admission (No Prev Class)
+									</option>
 									<option value="Nursery">Nursery</option>
 									<option value="LKG">LKG</option>
 									<option value="UKG">UKG</option>
@@ -538,7 +514,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Previous School UDISE Code
+									Previous School UDISE
 								</label>
 								<input
 									type="text"
@@ -551,12 +527,12 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Previous Instruction Medium
+									Instruction Medium
 								</label>
 								<input
 									type="text"
 									name="previousMediumOfInstruction"
-									placeholder="e.g., English, Hindi"
+									placeholder="e.g., English"
 									value={formData.previousMediumOfInstruction}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
@@ -564,7 +540,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Existing Board Reg Number
+									Board Reg Number
 								</label>
 								<input
 									type="text"
@@ -731,7 +707,7 @@ export default function StudentAdmissionForm() {
 									</label>
 									<input
 										type="text"
-										placeholder="e.g., Aarav Grade 4-B, Rohit Grade 9"
+										placeholder="e.g., Aarav Grade 4, Rohit Grade 9"
 										name="siblingDetails"
 										value={formData.siblingDetails}
 										onChange={handleInputChange}
@@ -755,7 +731,7 @@ export default function StudentAdmissionForm() {
 								<input
 									type="text"
 									name="houseNo"
-									placeholder="e.g., Flat 402, Block B"
+									placeholder="e.g., Flat 402"
 									value={formData.houseNo}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
@@ -777,7 +753,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Village/City *
+									City / Village *
 								</label>
 								<input
 									required
@@ -837,7 +813,7 @@ export default function StudentAdmissionForm() {
 					{/* 5. DETAILED MEDICAL PROFILE */}
 					<section className="space-y-4">
 						<h3 className="text-xl font-semibold text-indigo-700 border-b border-indigo-100 pb-2 flex items-center gap-2">
-							<span>🚑</span> Medical & Safety Infrastructure
+							<span>🚑</span> Medical Details
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 							<div>
@@ -848,7 +824,7 @@ export default function StudentAdmissionForm() {
 									required
 									type="text"
 									name="emergencyContact"
-									placeholder="Emergency Contact Name"
+									placeholder="Name"
 									value={formData.emergencyContact}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
@@ -862,7 +838,7 @@ export default function StudentAdmissionForm() {
 									required
 									type="tel"
 									name="emergencyMobile"
-									placeholder="10-digit mobile number"
+									placeholder="10-digit number"
 									value={formData.emergencyMobile}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
@@ -870,12 +846,12 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Relation with Student *
+									Relation *
 								</label>
 								<input
 									required
 									type="text"
-									placeholder="e.g., Uncle, Neighbor"
+									placeholder="e.g., Uncle"
 									name="emergencyRelation"
 									value={formData.emergencyRelation}
 									onChange={handleInputChange}
@@ -884,12 +860,12 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Family Doctor's Name
+									Family Doctor
 								</label>
 								<input
 									type="text"
 									name="familyDoctorName"
-									placeholder="Dr. Full Name"
+									placeholder="Dr. Name"
 									value={formData.familyDoctorName}
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
@@ -897,7 +873,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Family Doctor Mobile
+									Doctor Mobile
 								</label>
 								<input
 									type="tel"
@@ -914,7 +890,7 @@ export default function StudentAdmissionForm() {
 								</label>
 								<input
 									type="text"
-									placeholder="In case of emergency transport"
+									placeholder="Hospital Name"
 									name="preferredHospital"
 									value={formData.preferredHospital}
 									onChange={handleInputChange}
@@ -923,7 +899,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div className="md:col-span-3">
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Known Medical Conditions
+									Medical Conditions (If any)
 								</label>
 								<textarea
 									rows="2"
@@ -940,7 +916,7 @@ export default function StudentAdmissionForm() {
 								</label>
 								<input
 									type="text"
-									placeholder="e.g., Peanuts, Penicillin, Dust"
+									placeholder="e.g., Peanuts, Dust"
 									name="allergies"
 									value={formData.allergies}
 									onChange={handleInputChange}
@@ -950,10 +926,10 @@ export default function StudentAdmissionForm() {
 						</div>
 					</section>
 
-					{/* 6. EXPANDED FINANCIAL FEE MANAGEMENT */}
+					{/* 6. FEE MANAGEMENT */}
 					<section className="space-y-4">
 						<h3 className="text-xl font-semibold text-indigo-700 border-b border-indigo-100 pb-2 flex items-center gap-2">
-							<span>💰</span> Fee Allocation & Payment Structures
+							<span>💰</span> Fee Allocation & Payments
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-4 gap-5 bg-slate-50/80 p-5 rounded-2xl border border-slate-100">
 							<div>
@@ -975,9 +951,7 @@ export default function StudentAdmissionForm() {
 									<option value="Sibling Discount">
 										Sibling Concession
 									</option>
-									<option value="EWS">
-										Economic Weaker Section (EWS)
-									</option>
+									<option value="EWS">EWS</option>
 									<option value="Merit">
 										Merit Scholarship
 									</option>
@@ -985,7 +959,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Scholarship Allocation?
+									Scholarship?
 								</label>
 								<select
 									name="scholarship"
@@ -999,11 +973,11 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div className="md:col-span-2">
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Concession Reference Notes
+									Concession Notes
 								</label>
 								<input
 									type="text"
-									placeholder="e.g., 20% sibling relief authorized by Principal"
+									placeholder="Reference notes for discount"
 									name="concessionDetails"
 									value={formData.concessionDetails}
 									onChange={handleInputChange}
@@ -1012,10 +986,9 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Admission Fee Collected ($) *
+									Admission Fee (₹)
 								</label>
 								<input
-									required
 									type="number"
 									placeholder="0.00"
 									name="admissionFeePaid"
@@ -1026,7 +999,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Transport Fee Paid ($)
+									Transport Fee (₹)
 								</label>
 								<input
 									type="number"
@@ -1039,7 +1012,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Security Deposit (Refundable)
+									Security Deposit (₹)
 								</label>
 								<input
 									type="number"
@@ -1052,7 +1025,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Tuition Invoice Cycle
+									Tuition Cycle
 								</label>
 								<select
 									name="tuitionFeeCycle"
@@ -1067,7 +1040,7 @@ export default function StudentAdmissionForm() {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Initial Payment Mode
+									Payment Mode
 								</label>
 								<select
 									name="paymentMode"
@@ -1075,14 +1048,12 @@ export default function StudentAdmissionForm() {
 									onChange={handleInputChange}
 									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 bg-white border"
 								>
-									<option value="Cash">Cash Ledger</option>
+									<option value="Cash">Cash</option>
 									<option value="Bank Transfer">
-										Direct Bank Transfer
+										Bank Transfer
 									</option>
-									<option value="Card">
-										Credit/Debit Card
-									</option>
-									<option value="Cheque">Bank Cheque</option>
+									<option value="Card">Card</option>
+									<option value="Cheque">Cheque</option>
 								</select>
 							</div>
 						</div>
@@ -1091,25 +1062,25 @@ export default function StudentAdmissionForm() {
 					{/* 7. BANK DETAILS */}
 					<section className="space-y-4">
 						<h3 className="text-xl font-semibold text-indigo-700 border-b border-indigo-100 pb-2 flex items-center gap-2">
-							<span>🏦</span> Bank Account Details
+							<span>🏦</span> Bank Account Details (Optional)
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Bank Name (Optional)
+									Bank Name
 								</label>
 								<input
 									type="text"
-									placeholder="e.g., State Bank of India"
+									placeholder="e.g., SBI"
 									name="bankName"
 									value={formData.bankName}
 									onChange={handleInputChange}
-									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500"
+									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								/>
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Account Number (Optional)
+									Account Number
 								</label>
 								<input
 									type="text"
@@ -1117,12 +1088,12 @@ export default function StudentAdmissionForm() {
 									name="accountNumber"
 									value={formData.accountNumber}
 									onChange={handleInputChange}
-									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500"
+									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								/>
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									IFSC Code (Optional)
+									IFSC Code
 								</label>
 								<input
 									type="text"
@@ -1130,75 +1101,20 @@ export default function StudentAdmissionForm() {
 									name="ifscCode"
 									value={formData.ifscCode}
 									onChange={handleInputChange}
-									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500"
+									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								/>
 							</div>
 							<div>
 								<label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
-									Branch Name & Code (Optional)
+									Branch Details
 								</label>
 								<input
 									type="text"
-									placeholder="e.g., Downtown Branch - 01234"
+									placeholder="e.g., Main Branch"
 									name="branchNameAndCode"
 									value={formData.branchNameAndCode}
 									onChange={handleInputChange}
-									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border focus:border-indigo-500 focus:ring-indigo-500"
-								/>
-							</div>
-						</div>
-					</section>
-
-					{/* 8. LEGAL ARCHIVE DOCUMENTS UPLOAD */}
-					<section className="space-y-4">
-						<h3 className="text-xl font-semibold text-indigo-700 border-b border-indigo-100 pb-2 flex items-center gap-2">
-							<span>📄</span> Registry Document Repository
-						</h3>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-indigo-50/30 p-5 rounded-2xl border border-indigo-50">
-							<div>
-								<label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-									Student Passport Photo *
-								</label>
-								<input
-									required
-									type="file"
-									name="studentPhoto"
-									onChange={handleFileChange}
-									className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-								/>
-							</div>
-							<div>
-								<label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-									Legal Birth Certificate *
-								</label>
-								<input
-									required
-									type="file"
-									name="birthCertificate"
-									onChange={handleFileChange}
-									className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-								/>
-							</div>
-							<div>
-								<label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-									Student National ID Copy
-								</label>
-								<input
-									type="file"
-									name="studentIdCopy"
-									onChange={handleFileChange}
-									className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-								/>
-							</div>
-							<div>
-								<label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-									Previous Grade Transcripts
-								</label>
-								<input
-									type="file"
-									name="previousMarksheet"
-									onChange={handleFileChange}
-									className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+									className="mt-1 block w-full rounded-lg border-slate-200 shadow-sm text-sm p-2.5 border"
 								/>
 							</div>
 						</div>
@@ -1213,11 +1129,11 @@ export default function StudentAdmissionForm() {
 						>
 							{isLoading
 								? "Processing..."
-								: "Complete Registration & Record Financial Transaction"}
+								: "Complete Registration & Setup Profile"}
 						</button>
 					</div>
 				</form>
 			</div>
 		</div>
-  );
+	);
 }
