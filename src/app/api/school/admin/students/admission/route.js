@@ -23,7 +23,7 @@ export async function POST(request) {
 	try {
 		// 1. SECURITY: Check if user is logged in
 		const session = await getServerSession(authOptions);
-		
+
 		if (!session || !session.user) {
 			return NextResponse.json(
 				{ error: "Unauthorized access. Please login." },
@@ -39,10 +39,25 @@ export async function POST(request) {
 			);
 		}
 
-		// 2. READ FORM DATA (Parsed as JSON, not FormData)
+		// 2. FETCH ACTIVE ACADEMIC YEAR (New Logic - Best Practice)
+		// Admission hamesha current active year mein hona chahiye
+		const activeYear = await prisma.academicYear.findFirst({
+			where: { schoolId: schoolId, isActive: true },
+		});
+
+		if (!activeYear) {
+			return NextResponse.json(
+				{
+					error: "No active Academic Year found. Please setup an active session in School Settings first.",
+				},
+				{ status: 400 },
+			);
+		}
+
+		// 3. READ FORM DATA
 		const data = await request.json();
 
-		// 3. BASIC VALIDATION
+		// 4. BASIC VALIDATION
 		if (
 			!data.firstName ||
 			!data.lastName ||
@@ -56,11 +71,25 @@ export async function POST(request) {
 			);
 		}
 
-		// 4. SAVE TO DATABASE (Using Prisma Nested Writes)
-		
+		// 4.5 CHECK DUPLICATE AADHAR (Yeh naya block add karein)
+		if (data.aadhar) {
+			const existingStudent = await prisma.student.findUnique({
+				where: { nationalIdNumber: data.aadhar },
+			});
+
+			if (existingStudent) {
+				return NextResponse.json(
+					{
+						error: "A student with this Aadhar/National ID already exists in the system.",
+					},
+					{ status: 400 },
+				);
+			}
+		}
+
+		// 5. SAVE TO DATABASE (Nested Writes Fixed)
 		const newStudent = await prisma.student.create({
 			data: {
-				// FIX: Use 'connect' instead of raw 'schoolId'
 				school: { connect: { id: schoolId } },
 
 				// Student Core
@@ -69,22 +98,22 @@ export async function POST(request) {
 				admissionDate: new Date(data.admissionDate),
 				dateOfBirth: new Date(data.dob),
 				gender: data.gender ? data.gender.toUpperCase() : "OTHER",
-				bloodGroup: data.bloodGroup,
-				religion: data.religion,
+				bloodGroup: data.bloodGroup || null,
+				religion: data.religion || null,
 				category: data.category
 					? data.category.toUpperCase()
 					: "GENERAL",
 				nationality: data.nationality || "Indian",
 				isStaffChild: data.isStaffChild === "Yes",
-				identificationMark: data.identificationMark,
-				nationalIdNumber: data.aadhar,
-				abcId: data.abcId,
-				panNumber: data.panNumber,
+				identificationMark: data.identificationMark || null,
+				nationalIdNumber: data.aadhar || null,
+				abcId: data.abcId || null,
+				panNumber: data.panNumber || null,
 
-				// Create associated Family & Address Profile
+				// Family & Address Profile
 				family: {
 					create: {
-						school: { connect: { id: schoolId } }, // FIX
+						school: { connect: { id: schoolId } },
 						parentsMaritalStatus: data.parentsMaritalStatus
 							? data.parentsMaritalStatus.toUpperCase()
 							: "MARRIED",
@@ -94,21 +123,21 @@ export async function POST(request) {
 
 						fatherName: data.fatherName,
 						fatherMobile: data.fatherMobile,
-						fatherOccupation: data.fatherOccupation,
-						fatherIncome: data.fatherIncome,
-						fatherEmail: data.fatherEmail,
+						fatherOccupation: data.fatherOccupation || null,
+						fatherIncome: data.fatherIncome || null,
+						fatherEmail: data.fatherEmail || null,
 
 						motherName: data.motherName,
 						motherMobile: data.motherMobile,
-						motherOccupation: data.motherOccupation,
-						motherEmail: data.motherEmail,
+						motherOccupation: data.motherOccupation || null,
+						motherEmail: data.motherEmail || null,
 
 						siblingStudyingHere: data.siblingStudyingHere === "Yes",
-						siblingDetails: data.siblingDetails,
+						siblingDetails: data.siblingDetails || null,
 
 						address: {
 							create: {
-								houseNo: data.houseNo,
+								houseNo: data.houseNo || null,
 								street: data.street,
 								city: data.city,
 								district: data.district,
@@ -119,44 +148,50 @@ export async function POST(request) {
 					},
 				},
 
-				// Create associated Academic Profile
-				academicProfile: {
+				// Academic Profile (FIXED: Connected using Active Academic Year ID)
+				academicProfiles: {
 					create: {
-						school: { connect: { id: schoolId } }, // FIX
+						school: { connect: { id: schoolId } },
+						academicYear: { connect: { id: activeYear.id } }, // FIX APPLIED HERE
+
 						currentClass: data.classApplyingFor,
-						section: data.section,
-						academicSession: data.academicSession,
-						previousSchool: data.previousSchool,
-						previousClass: data.previousClass,
-						previousUdiseCode: data.previousUdiseCode,
-						previousSchoolMedium: data.previousMediumOfInstruction,
-						tcNumber: data.tcNumber,
-						boardRegistrationNo: data.boardRegistrationNumber,
+						section: data.section || null,
+						previousSchool: data.previousSchool || null,
+						previousClass: data.previousClass || null,
+						previousUdiseCode: data.previousUdiseCode || null,
+						previousSchoolMedium:
+							data.previousMediumOfInstruction || null,
+						tcNumber: data.tcNumber || null,
+						boardRegistrationNo:
+							data.boardRegistrationNumber || null,
 					},
 				},
 
-				// Create associated Medical Profile
+				// Medical Profile
 				medicalProfile: {
 					create: {
-						school: { connect: { id: schoolId } }, // FIX
+						school: { connect: { id: schoolId } },
 						emergencyContactName: data.emergencyContact,
 						emergencyContactNumber: data.emergencyMobile,
 						relationWithStudent: data.emergencyRelation,
-						familyDoctorName: data.familyDoctorName,
-						familyDoctorContactNumber: data.familyDoctorMobile,
-						preferredHospital: data.preferredHospital,
-						medicalConditions: data.medicalConditions,
-						allergies: data.allergies,
+						familyDoctorName: data.familyDoctorName || null,
+						familyDoctorContactNumber:
+							data.familyDoctorMobile || null,
+						preferredHospital: data.preferredHospital || null,
+						medicalConditions: data.medicalConditions || null,
+						allergies: data.allergies || null,
 					},
 				},
 
-				// Create associated Financial/Fee Profile
-				feeRecord: {
+				// Financial/Fee Profile (FIXED: pluralized to feeRecords & added academicYear connect)
+				feeRecords: {
 					create: {
-						school: { connect: { id: schoolId } }, // FIX
+						school: { connect: { id: schoolId } },
+						academicYear: { connect: { id: activeYear.id } }, // Required by schema
+
 						feeCategory: mapFeeCategory(data.feeCategory),
 						scholarship: data.scholarship === "Yes",
-						concessionDetails: data.concessionDetails,
+						concessionDetails: data.concessionDetails || null,
 
 						admissionFeePaid:
 							parseFloat(data.admissionFeePaid) || 0,
@@ -172,10 +207,10 @@ export async function POST(request) {
 							? data.paymentMode.toUpperCase().replace(" ", "_")
 							: "CASH",
 
-						bankName: data.bankName,
-						accountNumber: data.accountNumber,
-						ifscCode: data.ifscCode,
-						branchNameAndCode: data.branchNameAndCode,
+						bankName: data.bankName || null,
+						accountNumber: data.accountNumber || null,
+						ifscCode: data.ifscCode || null,
+						branchNameAndCode: data.branchNameAndCode || null,
 					},
 				},
 			},
@@ -191,7 +226,11 @@ export async function POST(request) {
 	} catch (error) {
 		console.error("Admission Backend Error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error. Please try again later." },
+			{
+				error:
+					error.message ||
+					"Internal Server Error. Please try again later.",
+			},
 			{ status: 500 },
 		);
 	}

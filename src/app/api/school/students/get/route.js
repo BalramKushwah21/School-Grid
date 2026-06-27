@@ -19,9 +19,9 @@ export async function GET(request) {
 		const students = await prisma.student.findMany({
 			where: { schoolId: schoolId },
 			include: {
-				academicProfile: true,
+				academicProfiles: true,
 				family: true,
-				feeRecord: true,
+				feeRecords: true,
 				transportProfile: true,
 			},
 			orderBy: { createdAt: "desc" },
@@ -50,7 +50,7 @@ export async function GET(request) {
 				rollNumber:
 					std.rollNumber || `TMP-${std.id.slice(-4).toUpperCase()}`,
 				name: `${std.firstName} ${std.lastName}`,
-				class: std.academicProfile?.currentClass || "N/A",
+				class: std.academicProfiles?.currentClass || "N/A",
 				section: std.academicProfile?.section || "N/A",
 				phone: phoneStr,
 				attendance: attendanceStr,

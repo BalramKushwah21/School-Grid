@@ -10,6 +10,7 @@ export default function StudentList() {
 	// Filter states
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedClass, setSelectedClass] = useState("All");
+	const [selectedSection, setSelectedSection] = useState("All");
 	const [routeFilter, setRouteFilter] = useState("All");
 	const [statusFilter, setStatusFilter] = useState("All");
 
@@ -203,6 +204,7 @@ export default function StudentList() {
 		return matchesSearch && matchesClass && matchesRoute && matchesStatus;
 	});
 	const CLASSES = [
+		"All",
 		"Nursery",
 		"LKG",
 		"UKG",
@@ -220,6 +222,7 @@ export default function StudentList() {
 		"Class 12th",
 	];
 	const SECTIONS = [
+		"All",
 		"Section A",
 		"Section B",
 		"Section C",
@@ -269,6 +272,22 @@ export default function StudentList() {
 							{CLASSES.map((cls) => (
 								<option key={cls} value={cls}>
 									{cls}
+								</option>
+							))}
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+							Section
+						</label>
+						<select
+							value={selectedSection}
+							onChange={(e) => setSelectedSection(e.target.value)}
+							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
+						>
+							{SECTIONS.map((sec) => (
+								<option key={sec} value={sec}>
+									{sec}
 								</option>
 							))}
 						</select>
