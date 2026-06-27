@@ -103,7 +103,7 @@ export const menuConfig = [
 			},
 			{
 				label: "My Templates",
-				link: "/admin/pages/reportCards/templateBuilder",
+				link: "/admin/pages/reportCards/my-templates",
 			},
 			{
 				label: "Templates",
