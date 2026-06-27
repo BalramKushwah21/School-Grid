@@ -161,9 +161,9 @@ export default function ModernTemplate() {
 
           {/* ===================== MARKS TABLE ===================== */}
           <div className="relative group flex-1 bg-white/90 backdrop-blur-md shadow-sm">
-            <button onClick={addSubject} className="absolute -left-8 top-10 bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 print:hidden transition-all shadow-md z-10" title="Add Subject Row"><Plus size={16}/></button>
+            <button onClick={addSubject} className="absolute -left-8 top-10 bg-indigo-600 text-white p-2 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden transition-all shadow-md z-10" title="Add Subject Row"><Plus size={16}/></button>
             
-            <table className="w-full border-collapse border-2 border-slate-800 text-[11px] text-center font-bold">
+            <table contentEditable suppressContentEditableWarning className="w-full border-collapse border-2 border-slate-800 text-[11px] text-center font-bold">
               <thead>
                 {/* Header Row 1 (Navy Blue) */}
                 <tr style={{ backgroundColor: templateConfig.theme.tableHeaderBg }} className="text-white text-xs">
@@ -195,7 +195,7 @@ export default function ModernTemplate() {
                 {templateConfig.subjects.map((sub) => (
                   <tr key={sub.id} className="group/row hover:bg-slate-100">
                     <td className="border border-slate-800 p-1.5 relative text-left pl-3 bg-slate-50/50">
-                      <button onClick={() => removeSubject(sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                      <button onClick={() => removeSubject(sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                       <input type="text" value={sub.name} onChange={(e) => updateSubject(sub.id, e.target.value)} className="w-full outline-none uppercase bg-transparent font-black text-slate-800"/>
                     </td>
                     

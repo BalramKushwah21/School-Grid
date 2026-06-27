@@ -189,7 +189,7 @@ export default function StateBoardTemplate() {
 
           {/* ===================== MARKS TABLE ===================== */}
           <div className="relative group mb-4 flex-1">
-            <button onClick={addSubject} className="absolute -left-8 top-1/2 bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 print:hidden transition-all shadow-md z-10" title="Add Subject Row"><Plus size={16}/></button>
+            <button onClick={addSubject} className="absolute -left-8 top-1/2 bg-indigo-600 text-white p-2 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden transition-all shadow-md z-10" title="Add Subject Row"><Plus size={16}/></button>
             
             <table className="w-full border-collapse border border-slate-800 text-[10px] text-center font-bold">
               <thead style={{ backgroundColor: templateConfig.theme.tableHeaderBg }}>
@@ -200,14 +200,14 @@ export default function StateBoardTemplate() {
                   {templateConfig.terms.map((term) => (
                     <th key={term.id} colSpan="4" className="border border-slate-800 p-1 relative group/term">
                       <input type="text" value={term.name} onChange={(e) => updateTerm(term.id, 'name', e.target.value)} className="w-full text-center outline-none bg-transparent" style={{ color: templateConfig.theme.blueLabels }}/>
-                      <button onClick={() => removeTerm(term.id)} className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover/term:opacity-100 print:hidden"><Trash2 size={12}/></button>
+                      <button onClick={() => removeTerm(term.id)} className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={12}/></button>
                     </th>
                   ))}
                   <th colSpan="2" className="border border-slate-800 p-1">Total</th>
                 </tr>
                 
                 {/* Header Row 2 */}
-                <tr>
+                <tr contentEditable suppressContentEditableWarning >
                   {templateConfig.terms.map((term) => (
                     <React.Fragment key={`${term.id}_r2`}>
                       <th rowSpan="2" className="border border-slate-800 p-1" style={{ color: templateConfig.theme.redLabels }}>
@@ -240,7 +240,7 @@ export default function StateBoardTemplate() {
                   <tr key={sub.id} className="group/row hover:bg-slate-50">
                     <td className="border border-slate-800 p-1.5">{index + 1}</td>
                     <td className="border border-slate-800 p-1 relative text-left pl-2">
-                      <button onClick={() => removeSubject(sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                      <button onClick={() => removeSubject(sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                       <input type="text" value={sub.name} onChange={(e) => updateSubject(sub.id, e.target.value)} className="w-full outline-none uppercase bg-transparent"/>
                     </td>
                     

@@ -154,7 +154,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
           
           {/* HEADER SECTION */}
           <div className="text-center mb-6 relative">
-            <div className="absolute left-0 top-0 w-24 h-24 border-2 border-slate-300 rounded-full flex flex-col items-center justify-center bg-slate-50 shadow-inner group cursor-pointer hover:bg-slate-100">
+            <div className="absolute left-0 top-16 w-24 h-24 border-2 border-slate-300 rounded-full flex flex-col items-center justify-center bg-slate-50 shadow-inner group cursor-pointer hover:bg-slate-100">
                <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-600">DB LOGO</span>
             </div>
 
@@ -194,7 +194,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
                <span className="flex-1 text-slate-800 font-mono text-xs pt-1 uppercase">{'{{student.motherName}}'}</span>
             </div>
             <div className="flex border-b border-dotted border-slate-400 pb-0.5">
-               <span className="w-24 font-medium">Scholar No.</span>
+               <span contentEditable suppressContentEditableWarning className="w-24 font-medium">Scholar No.</span>
                <span className="flex-1 text-slate-800 font-mono text-xs pt-1">{'{{student.scholarNo}}'}</span>
             </div>
             <div className="flex border-b border-dotted border-slate-400 pb-0.5">
@@ -246,7 +246,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
                 {templateConfig.subjects.map((sub) => (
                   <tr key={sub.id} className="group/row hover:bg-slate-50 relative">
                     <td className="p-1.5 border-r text-left relative flex items-center" style={{ borderColor: templateConfig.theme.tableBorder, color: templateConfig.theme.headerText }}>
-                      <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={12}/></button>
+                      <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 group-hover/row:opacity-100 print:hidden"><Trash2 size={12}/></button>
                       <input type="text" value={sub.name} onChange={(e) => updateRow('scholastic', sub.id, e.target.value)} className="w-full outline-none bg-transparent font-semibold text-[13px]"/>
                     </td>
                     
@@ -291,7 +291,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
             
             {/* Left Table: Co-Schooling */}
             <div className="relative group">
-               <button onClick={() => addSubject('coschooling')} className="absolute -left-2 -top-6 text-xs text-indigo-600 opacity-0 group-hover:opacity-100 print:hidden flex items-center gap-1 font-bold"><Plus size={14}/> Add Activity</button>
+               <button onClick={() => addSubject('coschooling')} className="absolute -left-2 -top-6 text-xs text-indigo-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden flex items-center gap-1 font-bold"><Plus size={14}/> Add Activity</button>
                <table className="w-full border-collapse border border-slate-400 text-[11px] bg-white">
                  <thead>
                    <tr>
@@ -306,7 +306,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
                     {templateConfig.coSchooling.map((item) => (
                        <tr key={item.id} className="border-b border-slate-300 relative group/row hover:bg-slate-50">
                          <td className="p-1.5 border-r border-slate-300 relative" style={{ color: templateConfig.theme.headerText }}>
-                            <button onClick={() => removeRow('coschooling', item.id)} className="absolute -left-5 top-1 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                            <button onClick={() => removeRow('coschooling', item.id)} className="absolute -left-5 top-1 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                             <input type="text" value={item.name} onChange={(e) => updateRow('coschooling', item.id, e.target.value)} className="w-full outline-none bg-transparent"/>
                          </td>
                          <td className="p-1.5 text-center font-mono text-slate-400">{'{{G}}'}</td>
@@ -318,7 +318,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
 
             {/* Right Table: Discipline */}
             <div className="relative group">
-               <button onClick={() => addSubject('discipline')} className="absolute -right-2 -top-6 text-xs text-indigo-600 opacity-0 group-hover:opacity-100 print:hidden flex items-center gap-1 font-bold"><Plus size={14}/> Add Discipline</button>
+               <button onClick={() => addSubject('discipline')} className="absolute -right-2 -top-6 text-xs text-indigo-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden flex items-center gap-1 font-bold"><Plus size={14}/> Add Discipline</button>
                <table className="w-full border-collapse border border-slate-400 text-[11px] bg-white">
                  <thead>
                    <tr>
@@ -333,7 +333,7 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
                     {templateConfig.discipline.map((item) => (
                        <tr key={item.id} className="border-b border-slate-300 relative group/row hover:bg-slate-50">
                          <td className="p-1.5 border-r border-slate-300 relative" style={{ color: templateConfig.theme.headerText }}>
-                            <button onClick={() => removeRow('discipline', item.id)} className="absolute -right-5 top-1 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                            <button onClick={() => removeRow('discipline', item.id)} className="absolute -right-5 top-1 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                             <input type="text" value={item.name} onChange={(e) => updateRow('discipline', item.id, e.target.value)} className="w-full outline-none bg-transparent"/>
                          </td>
                          <td className="p-1.5 text-center font-mono text-slate-400">{'{{G}}'}</td>
@@ -353,8 +353,8 @@ export default function ConventTemplate() { // Note: Renamed back to Certificate
              </div>
 
              <div className="flex flex-col items-center mb-8">
-                <span className="text-[10px] text-slate-600 font-bold mb-1">Grading Scale for Scholastic Areas</span>
-                <table className="border-collapse border border-slate-400 text-[10px] text-center w-[80%] bg-white">
+                <span contentEditable suppressContentEditableWarning className="text-[10px] text-slate-600 font-bold mb-1">Grading Scale for Scholastic Areas</span>
+                <table contentEditable suppressContentEditableWarning className="border-collapse border border-slate-400 text-[10px] text-center w-[80%] bg-white">
                    <thead>
                       <tr className="bg-[#0ea5e9] text-white">
                          <th className="border border-slate-400 p-1">Marks Range</th>

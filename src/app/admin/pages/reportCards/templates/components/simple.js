@@ -194,7 +194,7 @@ export default function KVTemplate() {
 
             {/* ===================== ACADEMIC PERFORMANCE TABLE ===================== */}
             <div className="mb-6 relative group flex-1">
-              <button onClick={() => addSubject('scholastic')} className="absolute -left-6 top-10 text-amber-700 opacity-0 group-hover:opacity-100 print:hidden transition-all z-20" title="Add Subject"><PlusCircle size={20}/></button>
+              <button onClick={() => addSubject('scholastic')} className="absolute -left-6 top-10 text-amber-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden transition-all z-20" title="Add Subject"><PlusCircle size={20}/></button>
 
               <table className="w-full border-collapse border border-slate-400 text-[11px] text-center bg-white/80 backdrop-blur-sm">
                 <thead>
@@ -208,7 +208,7 @@ export default function KVTemplate() {
                              const newTerms = templateConfig.terms.map(t => t.id === term.id ? {...t, name: e.target.value} : t);
                              setTemplateConfig({...templateConfig, terms: newTerms});
                           }} className="w-full text-center outline-none bg-transparent"/>
-                          <button onClick={() => removeTerm(term.id)} className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover/term:opacity-100 print:hidden"><Trash2 size={12}/></button>
+                          <button onClick={() => removeTerm(term.id)} className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={12}/></button>
                        </th>
                     ))}
                   </tr>
@@ -228,7 +228,7 @@ export default function KVTemplate() {
                   {templateConfig.subjects.map((sub) => (
                     <tr key={sub.id} className="group/row hover:bg-slate-50">
                       <td className="border border-slate-400 p-1.5 text-left relative font-bold text-slate-800 pl-3">
-                        <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={12}/></button>
+                        <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={12}/></button>
                         <input type="text" value={sub.name} onChange={(e) => updateSubject('scholastic', sub.id, e.target.value)} className="w-full outline-none bg-transparent"/>
                       </td>
                       
@@ -264,7 +264,7 @@ export default function KVTemplate() {
                
                {/* Left: Co-Curricular */}
                <div className="col-span-7 relative group">
-                  <button onClick={() => addSubject('cocurricular')} className="absolute -left-6 top-6 text-amber-700 opacity-0 group-hover:opacity-100 print:hidden"><PlusCircle size={16}/></button>
+                  <button onClick={() => addSubject('cocurricular')} className="absolute -left-6 top-6 text-amber-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><PlusCircle size={16}/></button>
                   <table className="w-full border-collapse border border-slate-400 text-[11px] text-left bg-white/80">
                      <thead>
                         <tr style={{ backgroundColor: templateConfig.theme.tableBg, color: templateConfig.theme.secondaryColor }}>
@@ -276,7 +276,7 @@ export default function KVTemplate() {
                         {templateConfig.coCurricular.map((item) => (
                            <tr key={item.id} className="group/row hover:bg-slate-50">
                               <td className="border border-slate-400 p-1.5 relative">
-                                 <button onClick={() => removeRow('cocurricular', item.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                                 <button onClick={() => removeRow('cocurricular', item.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                                  <input type="text" value={item.name} onChange={(e) => updateSubject('cocurricular', item.id, e.target.value)} className="w-full outline-none bg-transparent font-medium text-slate-800"/>
                               </td>
                               <td className="border border-slate-400 p-1.5 text-center font-mono font-bold text-slate-600">{'{{G}}'}</td>
@@ -294,7 +294,7 @@ export default function KVTemplate() {
                   </div>
                   
                   {/* Grading Key */}
-                  <div className="mt-2">
+                  <div contentEditable suppressContentEditableWarning className="mt-2">
                      <div className="text-[9px] font-bold uppercase mb-1" style={{color: templateConfig.theme.secondaryColor}}>Grading Key</div>
                      <div className="grid grid-cols-4 gap-1 text-[9px] text-center font-semibold text-slate-600">
                         <div className="border border-slate-300 bg-slate-50 p-0.5">A+ (90-100)</div>
