@@ -212,7 +212,7 @@ export default function CBSETemplate() {
         </div>
 
         <div className="text-center mb-8">
-          <span className="border-[3px] px-8 py-2 font-black uppercase tracking-widest text-sm rounded-full bg-slate-50 shadow-sm" style={{ borderColor: templateConfig.themeColor, color: templateConfig.themeColor }}>
+          <span contentEditable suppressContentEditableWarning className="border-[3px] px-8 py-2 font-black uppercase tracking-widest text-sm rounded-full bg-slate-50 shadow-sm" style={{ borderColor: templateConfig.themeColor, color: templateConfig.themeColor }}>
             Achievement Record / Progress Report
           </span>
         </div>
@@ -230,8 +230,8 @@ export default function CBSETemplate() {
         {/* ===================== DYNAMIC SCHOLASTIC TABLE ===================== */}
         <div className="mb-8 relative group">
           <div className="bg-slate-100 font-bold p-2.5 text-sm border-2 border-b-0 border-slate-800 flex justify-between items-center rounded-t-lg">
-            <span className="uppercase tracking-wider">Part 1: Scholastic Area</span>
-            <button onClick={() => addSubject('scholastic')} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded shadow-sm opacity-0 group-hover:opacity-100 print:hidden flex items-center gap-1 hover:bg-indigo-700 transition-all"><Plus size={14}/> Add Subject</button>
+            <span contentEditable suppressContentEditableWarning className="uppercase tracking-wider">Part 1: Scholastic Area</span>
+            <button onClick={() => addSubject('scholastic')} className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded shadow-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-hover:opacity-100 print:hidden flex items-center gap-1 hover:bg-indigo-700 transition-all"><Plus size={14}/> Add Subject</button>
           </div>
           
           <table className="w-full border-collapse border-2 border-slate-800 text-[11px] text-center">
@@ -245,7 +245,7 @@ export default function CBSETemplate() {
                        <input type="text" value={term.title} onChange={(e) => updateTermTitle(term.id, e.target.value)} className="w-[80%] text-center outline-none bg-transparent font-bold text-xs uppercase"/>
                      </div>
                      {/* Term Controls (Hidden in Print) */}
-                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex gap-1 opacity-0 group-hover/term:opacity-100 print:hidden z-10">
+                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 group-hover/term:opacity-100 print:hidden z-10">
                         <button onClick={() => addSubCol(term.id)} className="bg-blue-500 text-white p-1.5 rounded shadow hover:bg-blue-600" title="Add Column to this Term"><Plus size={12}/></button>
                         <button onClick={() => removeTerm(term.id)} className="bg-red-500 text-white p-1.5 rounded shadow hover:bg-red-600" title="Delete Entire Term"><Trash2 size={12}/></button>
                      </div>
@@ -258,7 +258,7 @@ export default function CBSETemplate() {
                   term.subCols.map((sc) => (
                     <th key={sc.id} className="border border-slate-800 p-1 relative group/sc hover:bg-slate-200">
                       <input type="text" value={sc.title} onChange={(e) => updateSubColTitle(term.id, sc.id, e.target.value)} className="w-full text-center outline-none bg-transparent"/>
-                      <button onClick={() => removeSubCol(term.id, sc.id)} className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full shadow-sm opacity-0 group-hover/sc:opacity-100 print:hidden z-10"><Trash2 size={10}/></button>
+                      <button onClick={() => removeSubCol(term.id, sc.id)} className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-600 p-1 rounded-full shadow-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden z-10"><Trash2 size={10}/></button>
                     </th>
                   ))
                 ))}
@@ -269,7 +269,7 @@ export default function CBSETemplate() {
               {templateConfig.scholasticSubjects.map((sub) => (
                 <tr key={sub.id} className="group/row hover:bg-slate-50 transition-colors">
                   <td className="border-2 border-slate-800 p-1.5 text-left relative flex items-center h-full">
-                    <button onClick={() => removeSubject('scholastic', sub.id)} className="absolute -left-7 bg-red-100 text-red-600 p-1.5 rounded shadow-sm opacity-0 group-hover/row:opacity-100 print:hidden transition-opacity"><Trash2 size={14}/></button>
+                    <button onClick={() => removeSubject('scholastic', sub.id)} className="absolute -left-7 bg-red-100 text-red-600 p-1.5 rounded shadow-sm  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden transition-opacity"><Trash2 size={14}/></button>
                     <input type="text" value={sub.name} onChange={(e) => updateSubject('scholastic', sub.id, e.target.value)} className="w-full outline-none px-1 font-bold text-slate-800 bg-transparent text-xs"/>
                   </td>
                   {/* Dynamic Placeholder Generation based on exact columns */}
@@ -292,8 +292,8 @@ export default function CBSETemplate() {
           {/* Co-Scholastic Area */}
           <div className="relative group">
             <div className="bg-slate-100 font-bold p-2 text-sm border-2 border-b-0 border-slate-800 flex justify-between items-center rounded-t-lg">
-              <span className="uppercase tracking-wider">Part 2: Co-Scholastic</span>
-              <button onClick={() => addSubject('coscholastic')} className="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 print:hidden flex items-center gap-1"><Plus size={12}/> Add</button>
+              <span contentEditable suppressContentEditableWarning className="uppercase tracking-wider">Part 2: Co-Scholastic</span>
+              <button onClick={() => addSubject('coscholastic')} className="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden flex items-center gap-1"><Plus size={12}/> Add</button>
             </div>
             <table className="w-full border-collapse border-2 border-slate-800 text-[11px] text-left bg-white">
               <thead>
@@ -306,7 +306,7 @@ export default function CBSETemplate() {
                 {templateConfig.coScholasticSubjects.map((sub) => (
                   <tr key={sub.id} className="group/row hover:bg-slate-50">
                     <td className="border border-slate-800 p-1 relative flex items-center h-full">
-                      <button onClick={() => removeSubject('coscholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded-full opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={12}/></button>
+                      <button onClick={() => removeSubject('coscholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-1 rounded-full opacity-100 group-hover/row:opacity-100 print:hidden"><Trash2 size={12}/></button>
                       <input type="text" value={sub.name} onChange={(e) => updateSubject('coscholastic', sub.id, e.target.value)} className="w-full outline-none px-1 font-semibold text-slate-700 bg-transparent"/>
                     </td>
                     <td className="border border-slate-800 p-1 text-center text-slate-400 font-mono">{'{{grd}}'}</td>
@@ -319,7 +319,7 @@ export default function CBSETemplate() {
           {/* Attendance & Discipline */}
           <div className="flex flex-col gap-4">
              <div>
-                <div className="bg-slate-100 font-bold p-2 text-sm border-2 border-b-0 border-slate-800 rounded-t-lg uppercase tracking-wider">Part 3: Discipline</div>
+                <div contentEditable suppressContentEditableWarning className="bg-slate-100 font-bold p-2 text-sm border-2 border-b-0 border-slate-800 rounded-t-lg uppercase tracking-wider">Part 3: Discipline</div>
                 <table className="w-full border-collapse border-2 border-slate-800 text-[11px] text-left bg-white">
                   <thead>
                     <tr className="bg-slate-50">

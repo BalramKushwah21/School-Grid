@@ -133,7 +133,7 @@ const FeeDiscount = () => {
                   </span>
                 </div>
                 <p className="text-slate-500 text-sm leading-relaxed mb-4">{policy.criteria}</p>
-                <div className="pt-4 border-t border-slate-100 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="pt-4 border-t border-slate-100 flex justify-end  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button onClick={() => handleDeletePolicy(policy.id)} className="text-xs font-bold text-rose-500 hover:text-rose-700">Remove Policy</button>
                 </div>
               </div>

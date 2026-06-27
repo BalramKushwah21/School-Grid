@@ -167,9 +167,9 @@ export default function SimpleTemplate() {
 
           {/* ===================== PART 1: SCHOLASTIC TABLE ===================== */}
           <div className="mb-4 relative group flex-1">
-            <button onClick={() => addSubject('scholastic')} className="absolute -left-6 top-10 text-blue-700 opacity-0 group-hover:opacity-100 print:hidden transition-all z-20" title="Add Subject"><PlusCircle size={20}/></button>
+            <button onClick={() => addSubject('scholastic')} className="absolute -left-6 top-10 text-blue-700  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden transition-all z-20" title="Add Subject"><PlusCircle size={20}/></button>
 
-            <div className="font-bold text-white px-2 py-1 text-xs" style={{ backgroundColor: templateConfig.theme.tableHeaderBg }}>
+            <div contentEditable suppressContentEditableWarning className="font-bold text-white px-2 py-1 text-xs" style={{ backgroundColor: templateConfig.theme.tableHeaderBg }}>
                Part 1 : Scholastic Area
             </div>
             <table className="w-full border-collapse border border-slate-400 text-[8px] text-center" style={{ color: templateConfig.theme.textColor }}>
@@ -177,13 +177,13 @@ export default function SimpleTemplate() {
                 {/* Row 1: Term Headers */}
                 <tr>
                   <th className="border border-slate-400 p-1 w-[15%]" rowSpan="2">Subject Name</th>
-                  <th className="border border-slate-400 p-1" colSpan="7">{templateConfig.terms[0].name}</th>
-                  <th className="border border-slate-400 p-1" colSpan="7">{templateConfig.terms[1].name}</th>
-                  <th className="border border-slate-400 p-1" colSpan="2">OVER ALL</th>
+                  <th contentEditable suppressContentEditableWarning className="border border-slate-400 p-1" colSpan="7">{templateConfig.terms[0].name}</th>
+                  <th contentEditable suppressContentEditableWarning className="border border-slate-400 p-1" colSpan="7">{templateConfig.terms[1].name}</th>
+                  <th contentEditable suppressContentEditableWarning className="border border-slate-400 p-1" colSpan="2">OVER ALL</th>
                 </tr>
                 
                 {/* Row 2: Sub Headers */}
-                <tr className="bg-slate-50/50">
+                <tr contentEditable suppressContentEditableWarning className="bg-slate-50/50">
                   {/* Term 1 */}
                   <th className="border border-slate-400 p-0.5">PT<br/>(10)</th>
                   <th className="border border-slate-400 p-0.5">Mult.<br/>Asses(5)</th>
@@ -209,7 +209,7 @@ export default function SimpleTemplate() {
                 {templateConfig.subjects.map((sub, i) => (
                   <tr key={sub.id} className="group/row hover:bg-slate-50 font-medium">
                     <td className="border border-slate-400 p-1 text-left relative flex items-center">
-                      <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                      <button onClick={() => removeRow('scholastic', sub.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm:group-hover:opacity-100 print:hidden"><Trash2 size={10}/></button>
                       <span className="w-3 text-[7px] text-slate-400">{i+1}.</span>
                       <input type="text" value={sub.name} onChange={(e) => updateSubject('scholastic', sub.id, e.target.value)} className="w-full outline-none bg-transparent uppercase font-bold text-slate-800"/>
                     </td>
@@ -250,11 +250,11 @@ export default function SimpleTemplate() {
 
           {/* ===================== PART 2 & 3: CO-SCHOLASTIC & DISCIPLINE ===================== */}
           <div className="mb-4">
-             <div className="font-bold text-white px-2 py-1 text-xs" style={{ backgroundColor: templateConfig.theme.tableHeaderBg }}>
+             <div contentEditable suppressContentEditableWarning className="font-bold text-white px-2 py-1 text-xs" style={{ backgroundColor: templateConfig.theme.tableHeaderBg }}>
                Part 2 : Co-Scholastic Activities (To be assessed on a 3 point scale)
              </div>
              <table className="w-full border-collapse border border-slate-400 text-[9px] bg-white text-center" style={{ color: templateConfig.theme.textColor }}>
-               <thead>
+               <thead contentEditable suppressContentEditableWarning>
                  <tr className="bg-slate-50 font-bold">
                    <th className="border border-slate-400 p-1 text-left w-1/2">Activity</th>
                    <th className="border border-slate-400 p-1">Term-1 Grade</th>
@@ -265,7 +265,7 @@ export default function SimpleTemplate() {
                   {templateConfig.coScholastic.map((item) => (
                      <tr key={item.id} className="relative group/row hover:bg-slate-50">
                         <td className="border border-slate-400 p-1 relative text-left">
-                           <button onClick={() => removeRow('co', item.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-0 group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
+                           <button onClick={() => removeRow('co', item.id)} className="absolute -left-6 bg-red-100 text-red-600 p-0.5 rounded opacity-100 sm:opacity-0 sm: group-hover/row:opacity-100 print:hidden"><Trash2 size={10}/></button>
                            <input type="text" value={item.name} onChange={(e) => updateSubject('co', item.id, e.target.value)} className="w-full outline-none bg-transparent font-medium"/>
                         </td>
                         <td className="border border-slate-400 p-1 text-slate-600 font-bold">{'{{G}}'}</td>

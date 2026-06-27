@@ -1,22 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   LayoutTemplate, 
   FileBadge, 
   Layers, 
   BookOpen, 
-  GraduationCap, 
+  ClipboardList,
   Building2,
   Award,
-  Palette,
-  ClipboardList
+  Palette
 } from "lucide-react";
 
 // 📦 Importing All Standard & Premium Templates
 import CBSETemplate from "./components/cbse";
 import KVTemplate from "./components/kv";
 import ModernTemplate from "./components/modern";
-// import ICSETemplate from "./components/ICSETemplate";
 import StateBoardTemplate from "./components/stateBoard";
 import ConventTemplate from "./components/convent";
 import CertificateTemplate from "./components/simple";
@@ -24,42 +22,27 @@ import XaviersTemplate from "./components/oxeford";
 
 export default function TemplatesPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("cbse");
+  
+  // 🌟 Auto-Scale Logic states
+  const [scale, setScale] = useState(1);
+  const [wrapperHeight, setWrapperHeight] = useState("auto");
+  const contentRef = useRef(null);
 
-  // 🗂️ Master Array for all Template Tabs
   const tabs = [
     { id: "cbse", label: "Standard CBSE" },
     { id: "xaviers", label: "Detailed CBSE" },
     { id: "modern", label: "Modern & Dynamic" },
-    // { id: "icse", label: "ICSE / Premium" },
     { id: "state", label: "State Board" },
     { id: "convent", label: "Primary Convent" },
     { id: "certificate", label: "Certificate Style" },
     { id: "kv", label: "KV Format" },
   ];
 
-  // 🎨 Safe rendering function for icons (Fixes Turbopack object error)
-  const renderIcon = (id, isActive) => {
-    const iconClass = isActive ? "text-indigo-600" : "text-slate-400";
-    switch (id) {
-      case "cbse": return <BookOpen size={16} className={iconClass} />;
-      case "xaviers": return <ClipboardList size={16} className={iconClass} />;
-      case "modern": return <Layers size={16} className={iconClass} />;
-      // case "icse": return <GraduationCap size={16} className={iconClass} />;
-      case "state": return <FileBadge size={16} className={iconClass} />;
-      case "convent": return <Palette size={16} className={iconClass} />;
-      case "certificate": return <Award size={16} className={iconClass} />;
-      case "kv": return <Building2 size={16} className={iconClass} />;
-      default: return null;
-    }
-  };
-
-  // 🖥️ Dynamic Component Renderer
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case "cbse": return <CBSETemplate />;
       case "xaviers": return <XaviersTemplate />;
       case "modern": return <ModernTemplate />;
-      // case "icse": return <ICSETemplate />;
       case "state": return <StateBoardTemplate />;
       case "convent": return <ConventTemplate />;
       case "certificate": return <CertificateTemplate />;
@@ -68,56 +51,96 @@ export default function TemplatesPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col">
-      
-      {/* 🌟 Premium Header & Navigation */}
-      <div className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between py-5 gap-4">
-            
-            {/* Title Section */}
-            <div>
-              <h1 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tight">
-                <LayoutTemplate className="text-indigo-600" size={28} />
-                Marksheet Template Gallery
-              </h1>
-              <p className="text-sm text-slate-500 mt-1 font-medium">
-                Choose and customize standard report card layouts for your institution.
-              </p>
-            </div>
+  // 🛠️ JAVASCRIPT MAGIC: Phone ki screen naap kar marksheet ko chota (scale) karega
+  useEffect(() => {
+    const fitToScreen = () => {
+      // Browser me screen ki width check karo
+      const screenWidth = window.innerWidth;
+      const marksheetFixedSize = 900; // Marksheet ki asli choudai (Width)
 
-            {/* Premium Pill Tabs - Scrollable */}
-            <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 overflow-x-auto custom-scrollbar max-w-full">
-              {tabs.map((tab) => {
-                const isActive = selectedTemplate === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setSelectedTemplate(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 whitespace-nowrap ${
-                      isActive
-                        ? "bg-white text-indigo-700 shadow-sm border border-slate-200/50"
-                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/50"
-                    }`}
-                  >
-                    {renderIcon(tab.id, isActive)}
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
+      if (screenWidth < marksheetFixedSize) {
+        // Agar phone hai, to screen ke hisaab se scale nikal lo
+        const newScale = screenWidth / marksheetFixedSize;
+        setScale(newScale);
+
+        // Blank Space Fix: Scale karne ke baad niche ki khali jagah (Height) ko bhi adjust kar do
+        if (contentRef.current) {
+          const originalHeight = contentRef.current.offsetHeight;
+          setWrapperHeight(`${originalHeight * newScale}px`);
+        }
+      } else {
+        // Laptop/PC me normal dikhao
+        setScale(1);
+        setWrapperHeight("auto");
+      }
+    };
+
+    fitToScreen();
+    // Template load hone ke baad thoda time dekar height calculate karo
+    const timeoutId = setTimeout(fitToScreen, 200);
+
+    window.addEventListener("resize", fitToScreen);
+    return () => {
+      window.removeEventListener("resize", fitToScreen);
+      clearTimeout(timeoutId);
+    };
+  }, [selectedTemplate]);
+
+  return (
+    // overflow-x-hidden: Scrollbar ko hamesha ke liye block karta hai
+    <div className="min-h-screen bg-slate-100 font-sans flex flex-col overflow-x-hidden">
+      
+      {/* 🌟 Header Section */}
+      <div className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+        <div className="max-w-[1600px] px-3 py-3">
+          <h1 className="text-lg font-black text-slate-800 flex items-center gap-2 mb-2">
+            <LayoutTemplate className="text-indigo-600" size={20} />
+            Template Gallery
+          </h1>
+          
+          {/* Scrollable Tabs */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedTemplate(tab.id)}
+                className={`px-3 py-1.5 rounded-md text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all duration-300 ${
+                  selectedTemplate === tab.id 
+                    ? "bg-indigo-600 text-white shadow-md" 
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* 🌟 Active Template Rendering Area */}
-      <div className="flex-1 max-w-[1600px] w-full mx-auto pb-12">
-        <div className="bg-white min-h-[calc(100vh-100px)] shadow-[0_0_40px_-15px_rgba(0,0,0,0.05)] border-x border-slate-200 overflow-hidden">
-          {renderTemplate()}
+      {/* 🌟 MAIN RENDERING AREA WITH AUTO-FIT */}
+      <div className="w-full flex justify-center mt-2 sm:mt-6">
+        
+        {/* Height Wrapper: Jisse niche khali space (blank gap) na bache */}
+        <div 
+          style={{ height: wrapperHeight, width: "100%", maxWidth: "100%" }} 
+          className="flex justify-center"
+        >
+          {/* Main Marksheet Container - Scale yaha apply ho raha hai */}
+          <div 
+            ref={contentRef}
+            style={{ 
+              width: "2000px",          // Isko 900px pe fix rakha hai taki content na sikude (No squishing)
+              transform: `scale(${scale})`, // JavaScript se nikala gaya zoom percentage
+              transformOrigin: "top center" // Hamesha upar aur center se chota hoga
+            }}
+            className="bg-white shadow-xl border border-slate-300 rounded-md"
+          >
+            {renderTemplate()}
+          </div>
         </div>
-      </div>
 
+      </div>
+      
     </div>
   );
 }
