@@ -267,7 +267,7 @@ export default function FacultyAttendanceManager() {
 							onChange={(e) => setSelectedClass(e.target.value)}
 							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
 						>
-							{STATIC_CLASSES.map((cls) => (
+							{CLASSES.map((cls) => (
 								<option key={cls} value={cls}>
 									{cls}
 								</option>
@@ -283,7 +283,7 @@ export default function FacultyAttendanceManager() {
 							onChange={(e) => setSelectedSection(e.target.value)}
 							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
 						>
-							{STATIC_SECTIONS.map((sec) => (
+							{SECTIONS.map((sec) => (
 								<option key={sec} value={sec}>
 									{sec}
 								</option>

@@ -1,3 +1,6 @@
+// ==========================================
+// 1. CLIENT & DATABASE CONFIGURATION
+// ==========================================
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +11,7 @@ datasource db {
 }
 
 // ==========================================
-// 1. SYSTEM & MULTI-TENANCY (SAAS CORE)
+// 2. SYSTEM & MULTI-TENANCY (SAAS CORE)
 // ==========================================
 
 model School {
@@ -30,6 +33,7 @@ model School {
   isActive         Boolean  @default(true)
 
   // Relationships (One School -> Many Entities)
+  academicYears    AcademicYear[] // Naya: Har school ke apne academic years honge
   users            User[]
   teachers         Teacher[]
   students         Student[]
@@ -39,19 +43,47 @@ model School {
   feeRecords       FeeRecord[]
   transportProfiles TransportProfile[]
   documentArchives DocumentArchive[]
-
-
-
   attendances      Attendance[]
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
+
+// ==========================================
+// 3. ACADEMIC YEAR (TEMPORAL ISOLATION)
+// ==========================================
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  year      String   // e.g., "2024-25"
+  isActive  Boolean  @default(false) // Current running year set karne ke liye
+  
+  // Tenant Isolation
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Link to temporal (year-changing) records
+  attendances      Attendance[]
+  feeRecords       FeeRecord[]
+  academicProfiles AcademicProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ek school me same year dubara add nahi ho sakta
+  @@unique([schoolId, year])
+  @@index([schoolId])
+}
+
+// ==========================================
+// 4. USERS & ROLES
+// ==========================================
 
 model User {
   id        String   @id @default(cuid())
   name      String
   userRole  UserRole
-  username  String?   @unique
+  username  String?  @unique
   email     String   @unique
   password  String
   isActive  Boolean  @default(true)
@@ -79,7 +111,7 @@ model Teacher {
   userId           String?  @unique
   user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  // 1. Personal Details
+  // Personal Details
   firstName        String
   lastName         String
   dateOfBirth      DateTime
@@ -87,9 +119,9 @@ model Teacher {
   email            String   @unique
   phone            String
   address          String?
-  nationalIdNumber String?  @unique // For Aadhar/ID mappings
+  nationalIdNumber String?  @unique 
 
-  // 2. Professional Details
+  // Professional Details
   employeeId       String
   designation      String
   department       String
@@ -99,7 +131,7 @@ model Teacher {
   isClassTeacher   Boolean  @default(false)
   status           String   @default("Active")
 
-  // 3. Payroll & Bank Details
+  // Payroll & Bank Details
   basicSalary      Decimal  @default(0.00) @db.Decimal(10, 2)
   bankName         String?
   accountNumber    String?
@@ -109,12 +141,12 @@ model Teacher {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  @@unique([schoolId, employeeId]) // Prevents duplicate Employee IDs within the same school
+  @@unique([schoolId, employeeId]) 
   @@index([schoolId])
 }
 
 // ==========================================
-// 2. FAMILY & PARENT DYNAMICS
+// 5. FAMILY & PARENT DYNAMICS
 // ==========================================
 
 model Family {
@@ -140,7 +172,7 @@ model Family {
   siblingDetails       String?
 
   address              Address?
-  students             Student[] 
+  students             Student[] // 1 Family can have multiple students (Siblings)
 
   createdAt            DateTime @default(now())
 
@@ -161,7 +193,7 @@ model Address {
 }
 
 // ==========================================
-// 3. STUDENT CORE
+// 6. STUDENT CORE
 // ==========================================
 
 model Student {
@@ -189,14 +221,16 @@ model Student {
   abcId              String?
   panNumber          String?
 
-  // Profiles (One-to-One Relationships)
-  academicProfile    AcademicProfile?
+  // Static Profiles (Ek bacche ka ek hi hota hai)
   medicalProfile     MedicalProfile?
-  feeRecord          FeeRecord?
   transportProfile   TransportProfile?
   documents          DocumentArchive?
 
+  // Temporal Profiles (Saal-dar-saal badalte hain isliye Array [] use kiya hai)
+  academicProfiles   AcademicProfile[]
+  feeRecords         FeeRecord[]
   attendances        Attendance[]
+
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -204,51 +238,24 @@ model Student {
   @@index([schoolId])
 }
 
-
 // ==========================================
-// 4. STUDENT ATTENDANCE (1-to-1)
-// ==========================================
-
-model Attendance {
-  id        String   @id @default(cuid())
-  date      DateTime @db.Date // Sirf date store karega (time ignore karega)
-  status    String   // "present", "absent", "late"
-  remarks   String?  // Optional remarks
-
-  // Relational IDs
-  studentId String
-  schoolId  String
-
-  // Relations (Cascade delete on student/school removal)
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Ek student ki ek din mein sirf ek attendance lag sakti hai
-  @@unique([studentId, date])
-  
-  // Queries ko super-fast banane ke liye indexes
-  @@index([schoolId, date])
-}
-
-
-
-// ==========================================
-// 4. STUDENT SUB-PROFILES (1-to-1)
+// 7. TEMPORAL STUDENT PROFILES (Changes Every Year)
 // ==========================================
 
 model AcademicProfile {
   id                   String  @id @default(cuid())
   schoolId             String
   school               School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId            String  @unique
+  
+  studentId            String  
   student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Academic Year Link (e.g., 2024-25)
+  academicYearId       String
+  academicYear         AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
 
   currentClass         String
   section              String?
-  academicSession      String
   udiseNumber          String?
   
   previousSchool       String?
@@ -258,34 +265,21 @@ model AcademicProfile {
   tcNumber             String?
   boardRegistrationNo  String?
 
-  @@index([schoolId])
-}
-
-model MedicalProfile {
-  id                         String  @id @default(cuid())
-  schoolId                   String
-  school                     School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId                  String  @unique
-  student                    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  emergencyContactName       String
-  emergencyContactNumber     String
-  relationWithStudent        String
-  familyDoctorName           String?
-  familyDoctorContactNumber  String?
-  preferredHospital          String?
-  medicalConditions          String? @db.Text
-  allergies                  String?
-
-  @@index([schoolId])
+  // Ek saal mein ek bacche ka sirf 1 academic profile hoga
+  @@unique([studentId, academicYearId]) 
+  @@index([schoolId, academicYearId]) // Fast query for Dashboard
 }
 
 model FeeRecord {
   id                  String       @id @default(cuid())
   schoolId            String
   school              School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId           String       @unique
+  
+  studentId           String       
   student             Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  academicYearId      String
+  academicYear        AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
 
   feeCategory         FeeCategory  @default(GENERAL)
   scholarship         Boolean      @default(false)
@@ -298,21 +292,69 @@ model FeeRecord {
   tuitionFeeCycle     TuitionCycle @default(QUARTERLY)
   paymentMode         PaymentMode  @default(CASH)
 
-  // Bank Details
   bankName            String?
   accountNumber       String?
   ifscCode            String?
   branchNameAndCode   String?
 
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([schoolId, academicYearId])
+  @@index([studentId])
+}
+
+model Attendance {
+  id             String       @id @default(cuid())
+  date           DateTime     @db.Date 
+  status         String       // "present", "absent", "late"
+  remarks        String?      
+
+  studentId      String
+  schoolId       String
+  academicYearId String
+
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  school         School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Ek student ki ek din mein sirf ek attendance
+  @@unique([studentId, date])
+  @@index([schoolId, academicYearId, date])
+}
+
+// ==========================================
+// 8. STATIC STUDENT PROFILES (1-to-1)
+// ==========================================
+
+model MedicalProfile {
+  id                        String  @id @default(cuid())
+  schoolId                  String
+  school                    School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId                 String  @unique // Ek bacche ki ek hi medical profile hogi
+  student                   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  emergencyContactName      String
+  emergencyContactNumber    String
+  relationWithStudent       String
+  familyDoctorName          String?
+  familyDoctorContactNumber String?
+  preferredHospital         String?
+  medicalConditions         String? @db.Text
+  allergies                 String?
+
   @@index([schoolId])
 }
 
 model TransportProfile {
-  id          String  @id @default(cuid())
-  schoolId    String
-  school      School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  studentId   String  @unique
-  student     Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id            String  @id @default(cuid())
+  schoolId      String
+  school        School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId     String  @unique
+  student       Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   needTransport Boolean @default(false)
   pickupPoint   String?
@@ -339,7 +381,7 @@ model DocumentArchive {
 }
 
 // ==========================================
-// 5. ENUMS
+// 9. ENUMS
 // ==========================================
 
 enum UserRole {

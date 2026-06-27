@@ -9,7 +9,7 @@ export default function StudentList() {
 
 	// Filter states
 	const [searchTerm, setSearchTerm] = useState("");
-	const [classFilter, setClassFilter] = useState("All");
+	const [selectedClass, setSelectedClass] = useState("All");
 	const [routeFilter, setRouteFilter] = useState("All");
 	const [statusFilter, setStatusFilter] = useState("All");
 
@@ -192,7 +192,7 @@ export default function StudentList() {
 			student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase());
 		const matchesClass =
-			classFilter === "All" || student.class.includes(classFilter);
+			selectedClass === "All" || student.class.includes(selectedClass);
 		const matchesRoute =
 			routeFilter === "All" ||
 			(routeFilter === "Transport" &&
@@ -202,15 +202,31 @@ export default function StudentList() {
 			statusFilter === "All" || student.status === statusFilter;
 		return matchesSearch && matchesClass && matchesRoute && matchesStatus;
 	});
+	const CLASSES = [
+		"Nursery",
+		"LKG",
+		"UKG",
+		"Class 1st",
+		"Class 2nd",
+		"Class 3rd",
+		"Class 4th",
+		"Class 5th",
+		"Class 6th",
+		"Class 7th",
+		"Class 8th",
+		"Class 9th",
+		"Class 10th",
+		"Class 11th",
+		"Class 12th",
+	];
+	const SECTIONS = [
+		"Section A",
+		"Section B",
+		"Section C",
+		"Section D",
+		"Section E",
+	];
 
-	const uniqueClasses = [
-		"All",
-		...new Set(
-			students
-				.map((s) => s.class)
-				.filter((c) => c !== "N/A"),
-		),
-	].sort();
 
 	return (
 		<div className="min-h-screen bg-slate-50 p-4 sm:p-8 animate-in fade-in duration-500 relative">
@@ -246,15 +262,13 @@ export default function StudentList() {
 							Class
 						</label>
 						<select
-							value={classFilter}
-							onChange={(e) => setClassFilter(e.target.value)}
-							className="w-full text-sm p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 bg-white outline-none"
+							value={selectedClass}
+							onChange={(e) => setSelectedClass(e.target.value)}
+							className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
 						>
-							{uniqueClasses.map((cls) => (
+							{CLASSES.map((cls) => (
 								<option key={cls} value={cls}>
-									{cls === "All"
-										? "All Grades"
-										: `${cls}`}
+									{cls}
 								</option>
 							))}
 						</select>
