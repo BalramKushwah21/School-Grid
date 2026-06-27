@@ -138,6 +138,9 @@ model Teacher {
   ifscCode         String?
   panNumber        String?
 
+  //Media File URl
+  profilePhoto  String?
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
