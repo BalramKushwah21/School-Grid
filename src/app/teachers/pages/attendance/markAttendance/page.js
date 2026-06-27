@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 // ================= STATIC CONFIGURATION =================
-const STATIC_CLASSES = [
+const CLASSES = [
 	"Nursery",
 	"LKG",
 	"UKG",
@@ -37,12 +37,12 @@ const STATIC_CLASSES = [
 	"Class 12th",
 	
 ];
-const STATIC_SECTIONS = ["Section A", "Section B", "Section C", "Section D", "Section E"];
+const SECTIONS = ["Section A", "Section B", "Section C", "Section D", "Section E"];
 
 export default function FacultyAttendanceManager() {
 	// ================= STATES =================
-	const [selectedClass, setSelectedClass] = useState(STATIC_CLASSES[0]);
-	const [selectedSection, setSelectedSection] = useState(STATIC_SECTIONS[0]);
+	const [selectedClass, setSelectedClass] = useState(CLASSES[0]);
+	const [selectedSection, setSelectedSection] = useState(SECTIONS[0]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [attendanceDate, setAttendanceDate] = useState(
 		new Date().toISOString().split("T")[0],
